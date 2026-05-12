@@ -1,3 +1,33 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+  getDatabase,
+  ref,
+  push,
+  set,
+  update,
+  remove,
+  onValue,
+  onDisconnect,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "RemovedKEY",
+  authDomain: "hc-testing-center.firebaseapp.com",
+  databaseURL: "https://hc-testing-center-default-rtdb.firebaseio.com",
+  projectId: "hc-testing-center",
+  storageBucket: "hc-testing-center.firebasestorage.app",
+  messagingSenderId: "555153286496",
+  appId: "1:555153286496:web:76dddf80bd00af838f2a05"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const timersRef = ref(db, "timers");
+const historyRef = ref(db, "history");
+const presenceRef = ref(db, "presence");
+
 const timerList = document.getElementById("timerList");
 const historyList = document.getElementById("historyList");
 const seatGrid = document.getElementById("seatGrid");
@@ -7,65 +37,46 @@ const clearAllBtn = document.getElementById("clearAllBtn");
 
 const currentTime = document.getElementById("currentTime");
 const currentDate = document.getElementById("currentDate");
-
 const timerSound = document.getElementById("timerSound");
 
 const mapButtons = document.querySelectorAll(".map-btn");
 
 let activeLab = "C";
-
 let timers = [];
 let history = [];
+let playedSounds = new Set();
 
 const seatCameraMap = {
-  C01: "green",
-  C02: "orange",
-  C03: "orange",
-  C04: "green",
-  C05: "red",
-  C06: "green",
-  C07: "orange",
-  C08: "green",
-  C09: "orange",
-  C10: "green",
-  C11: "green",
-  C12: "orange",
-  C13: "green",
-  C14: "red",
-  C15: "orange",
-  C16: "green",
-  C17: "orange",
-  C18: "green",
-  C19: "orange",
-  C20: "red",
-  C21: "red",
+  C01: "green", C02: "orange", C03: "orange", C04: "green",
+  C05: "red", C06: "green", C07: "orange", C08: "green",
+  C09: "orange", C10: "green", C11: "green", C12: "orange",
+  C13: "green", C14: "red", C15: "orange", C16: "green",
+  C17: "orange", C18: "green", C19: "orange", C20: "red",
+  C21: "red", C22: "green", C23: "green", C24: "green",
+  C25: "green", C26: "green", C27: "green", C28: "green",
+  C29: "green", C30: "green", C31: "green", C32: "green",
+  C33: "green", C34: "green", C35: "green", C36: "green",
+  C37: "green", C38: "green", C39: "green", C40: "green",
+  C41: "green", C42: "green", C43: "green", C44: "green",
+  C45: "green", C46: "green", C47: "green",
 
-  B01: "green",
-  B02: "green",
-  B03: "orange",
-  B04: "red",
-  B05: "green",
-  B06: "green",
-  B07: "orange",
-  B08: "green",
-  B09: "orange",
-  B10: "red"
+  B01: "green", B02: "green", B03: "orange", B04: "red",
+  B05: "green", B06: "green", B07: "orange", B08: "green",
+  B09: "orange", B10: "red"
 };
 
 function updateClock() {
   const now = new Date();
-
-  currentTime.textContent =
-    now.toLocaleTimeString();
-
-  currentDate.textContent =
-    now.toLocaleDateString();
+  currentTime.textContent = now.toLocaleTimeString();
+  currentDate.textContent = now.toLocaleDateString();
 }
 
 setInterval(updateClock, 1000);
 updateClock();
 
 function formatTime(seconds) {
+  seconds = Math.max(0, Math.floor(seconds));
+
   const hrs = Math.floor(seconds / 3600);
   const mins = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
@@ -77,6 +88,14 @@ function formatTime(seconds) {
   ].join(":");
 }
 
+function getRemainingSeconds(timer) {
+  if (timer.paused) {
+    return timer.pausedRemaining || 0;
+  }
+
+  return Math.max(0, Math.ceil((timer.endAt - Date.now()) / 1000));
+}
+
 function getTimerStatus(seconds) {
   if (seconds <= 300) return "red";
   if (seconds <= 900) return "orange";
@@ -84,42 +103,34 @@ function getTimerStatus(seconds) {
 }
 
 function createTimer() {
-  const lab =
-    document.getElementById("labInput").value;
-
-  const seat =
-    document.getElementById("seatInput").value.trim();
-
-  const student =
-    document.getElementById("studentInput").value.trim();
-
-  const test =
-    document.getElementById("testInput").value.trim();
-
-  const minutes =
-    parseInt(document.getElementById("minutesInput").value);
+  const lab = document.getElementById("labInput").value;
+  const seat = document.getElementById("seatInput").value.trim().toUpperCase();
+  const student = document.getElementById("studentInput").value.trim();
+  const test = document.getElementById("testInput").value.trim();
+  const minutes = parseInt(document.getElementById("minutesInput").value);
 
   if (!seat || !student || !minutes) {
     alert("Please complete all required fields.");
     return;
   }
 
+  const newTimerRef = push(timersRef);
+
   const timer = {
-    id: crypto.randomUUID(),
+    id: newTimerRef.key,
     lab,
     seat,
     student,
     test,
-    remaining: minutes * 60,
+    durationSeconds: minutes * 60,
+    endAt: Date.now() + minutes * 60 * 1000,
     paused: false,
-    timeUpPlayed: false,
-    createdAt: new Date().toLocaleString()
+    pausedRemaining: null,
+    createdAt: new Date().toLocaleString(),
+    createdAtMs: Date.now()
   };
 
-  timers.push(timer);
-
-  renderTimers();
-  renderSeats();
+  set(newTimerRef, timer);
 
   document.getElementById("seatInput").value = "";
   document.getElementById("studentInput").value = "";
@@ -131,14 +142,16 @@ startTimerBtn.addEventListener("click", createTimer);
 function renderTimers() {
   timerList.innerHTML = "";
 
+  document.getElementById("timerCount").textContent = `${timers.length} active`;
+
   if (!timers.length) {
-    timerList.innerHTML =
-      `<div class="empty-state">No active timers.</div>`;
+    timerList.innerHTML = `<div class="empty-state">No active timers.</div>`;
     return;
   }
 
   timers.forEach(timer => {
-    const status = getTimerStatus(timer.remaining);
+    const remaining = getRemainingSeconds(timer);
+    const status = getTimerStatus(remaining);
 
     const item = document.createElement("div");
     item.className = "timer-item";
@@ -159,14 +172,14 @@ function renderTimers() {
       </div>
 
       <div class="remaining ${status}">
-        ${formatTime(timer.remaining)}
+        ${formatTime(remaining)}
       </div>
 
       <div class="status-label">
         ${
           timer.paused
             ? "Paused"
-            : timer.remaining <= 0
+            : remaining <= 0
             ? "Time Up"
             : "Running"
         }
@@ -189,9 +202,6 @@ function renderTimers() {
 
     timerList.appendChild(item);
   });
-
-  document.getElementById("timerCount").textContent =
-    `${timers.length} active`;
 }
 
 function renderSeats() {
@@ -200,16 +210,16 @@ function renderSeats() {
 
   let seats = [];
 
-if (activeLab === "C") {
-  seats = [
-    "C01", "C02", "C03", "C04", "C05", "C06", "C07", "C08",
-    "C16", "C15", "C14", "C13", "C12", "C11", "C10", "C09",
-    "C17", "C18", "C19", "C20", "C21", "C22", "C23", "C24",
-    "C32", "C31", "C30", "C29", "C28", "C27", "C26", "C25",
-    "", "C33", "C34", "C35", "C36", "C37", "C38", "C39",
-    "C47", "C46", "C45", "C44", "C43", "C42", "C41", "C40"
-  ];
-} else {
+  if (activeLab === "C") {
+    seats = [
+      "C01", "C02", "C03", "C04", "C05", "C06", "C07", "C08",
+      "C16", "C15", "C14", "C13", "C12", "C11", "C10", "C09",
+      "C17", "C18", "C19", "C20", "C21", "C22", "C23", "C24",
+      "C32", "C31", "C30", "C29", "C28", "C27", "C26", "C25",
+      "", "C33", "C34", "C35", "C36", "C37", "C38", "C39",
+      "C47", "C46", "C45", "C44", "C43", "C42", "C41", "C40"
+    ];
+  } else {
     for (let i = 1; i <= 10; i++) {
       seats.push(`B${String(i).padStart(2, "0")}`);
     }
@@ -217,31 +227,27 @@ if (activeLab === "C") {
 
   seats.forEach(seatId => {
     const timer = timers.find(t => t.seat === seatId);
-
     const seat = document.createElement("div");
+
+    if (seatId === "") {
+      seat.id = "noseat";
+      seat.className = "isle";
+      seatGrid.appendChild(seat);
+      return;
+    }
 
     let statusClass = "";
 
     if (timer) {
-      const status = getTimerStatus(timer.remaining);
+      const remaining = getRemainingSeconds(timer);
+      const status = getTimerStatus(remaining);
 
-      if (status === "green")
-        statusClass = "active-green";
-
-      if (status === "orange")
-        statusClass = "active-orange";
-
-      if (status === "red")
-        statusClass = "active-red";
+      if (status === "green") statusClass = "active-green";
+      if (status === "orange") statusClass = "active-orange";
+      if (status === "red") statusClass = "active-red";
     }
-    
-    if(seatId == ""){
-      seat.id = `noseat`;
-      seat.className = `isle`;
-      console.log(seat.id);
-    }else{
-      seat.className = `seat ${statusClass}`;
-    }
+
+    seat.className = `seat ${statusClass}`;
 
     if (seatId.startsWith("C")) {
       const num = parseInt(seatId.slice(1));
@@ -255,8 +261,7 @@ if (activeLab === "C") {
       }
     }
 
-    const cameraColor =
-      seatCameraMap[seatId] || "green";
+    const cameraColor = seatCameraMap[seatId] || "green";
 
     seat.innerHTML = `
       <div class="camera-indicator ${cameraColor}"></div>
@@ -267,19 +272,12 @@ if (activeLab === "C") {
         ${
           timer
             ? `
-            <div class="seat-name">
-              ${timer.student}
-            </div>
-
-            <div class="seat-time">
-              ${formatTime(timer.remaining)}
-            </div>
-          `
+              <div class="seat-name">${timer.student}</div>
+              <div class="seat-time">${formatTime(getRemainingSeconds(timer))}</div>
+            `
             : `
-            <div class="seat-name">
-              Empty
-            </div>
-          `
+              <div class="seat-name">Empty</div>
+            `
         }
       </div>
     `;
@@ -288,93 +286,16 @@ if (activeLab === "C") {
   });
 }
 
-function updateTimers() {
-  timers.forEach(timer => {
-    if (!timer.paused && timer.remaining > 0) {
-      timer.remaining--;
-    }
-
-    if (
-      timer.remaining <= 0 &&
-      !timer.timeUpPlayed
-    ) {
-      timer.timeUpPlayed = true;
-
-      timerSound.play().catch(() => {});
-    }
-  });
-
-  renderTimers();
-  renderSeats();
-}
-
-setInterval(updateTimers, 1000);
-
-window.togglePause = function(id) {
-  const timer = timers.find(t => t.id === id);
-
-  if (!timer) return;
-
-  timer.paused = !timer.paused;
-
-  renderTimers();
-};
-
-window.addFive = function(id) {
-  const timer = timers.find(t => t.id === id);
-
-  if (!timer) return;
-
-  timer.remaining += 300;
-
-  renderTimers();
-  renderSeats();
-};
-
-window.deleteTimer = function(id) {
-  const timer = timers.find(t => t.id === id);
-
-  if (!timer) return;
-
-  history.unshift({
-    ...timer,
-    removedAt: new Date().toLocaleString()
-  });
-
-  timers = timers.filter(t => t.id !== id);
-
-  renderTimers();
-  renderSeats();
-  renderHistory();
-};
-
-clearAllBtn.addEventListener("click", () => {
-  timers.forEach(timer => {
-    history.unshift({
-      ...timer,
-      removedAt: new Date().toLocaleString()
-    });
-  });
-
-  timers = [];
-
-  renderTimers();
-  renderSeats();
-  renderHistory();
-});
-
 function renderHistory() {
   historyList.innerHTML = "";
 
   if (!history.length) {
-    historyList.innerHTML =
-      `<div class="empty-state">No history yet.</div>`;
+    historyList.innerHTML = `<div class="empty-state">No history yet.</div>`;
     return;
   }
 
   history.forEach(item => {
     const div = document.createElement("div");
-
     div.className = "history-item";
 
     div.innerHTML = `
@@ -393,7 +314,7 @@ function renderHistory() {
       </div>
 
       <div>
-        ${item.createdAt}
+        ${item.createdAt || "-"}
       </div>
 
       <div>
@@ -401,7 +322,7 @@ function renderHistory() {
       </div>
 
       <div>
-        ${item.removedAt}
+        ${item.removedAt || "-"}
       </div>
     `;
 
@@ -409,21 +330,146 @@ function renderHistory() {
   });
 }
 
+function refreshScreen() {
+  renderTimers();
+  renderSeats();
+}
+
+function checkTimerSounds() {
+  timers.forEach(timer => {
+    const remaining = getRemainingSeconds(timer);
+
+    if (remaining <= 0 && !playedSounds.has(timer.id)) {
+      playedSounds.add(timer.id);
+      timerSound.play().catch(() => {});
+    }
+  });
+}
+
+setInterval(() => {
+  refreshScreen();
+  checkTimerSounds();
+}, 1000);
+
+window.togglePause = function(id) {
+  const timer = timers.find(t => t.id === id);
+  if (!timer) return;
+
+  const timerRef = ref(db, `timers/${id}`);
+
+  if (timer.paused) {
+    const newEndAt = Date.now() + (timer.pausedRemaining || 0) * 1000;
+
+    update(timerRef, {
+      paused: false,
+      pausedRemaining: null,
+      endAt: newEndAt
+    });
+  } else {
+    update(timerRef, {
+      paused: true,
+      pausedRemaining: getRemainingSeconds(timer)
+    });
+  }
+};
+
+window.addFive = function(id) {
+  const timer = timers.find(t => t.id === id);
+  if (!timer) return;
+
+  const timerRef = ref(db, `timers/${id}`);
+
+  if (timer.paused) {
+    update(timerRef, {
+      pausedRemaining: (timer.pausedRemaining || 0) + 300
+    });
+  } else {
+    update(timerRef, {
+      endAt: Math.max(timer.endAt, Date.now()) + 300000
+    });
+  }
+
+  playedSounds.delete(id);
+};
+
+window.deleteTimer = function(id) {
+  const timer = timers.find(t => t.id === id);
+  if (!timer) return;
+
+  const historyItem = {
+    ...timer,
+    removedAt: new Date().toLocaleString(),
+    removedAtMs: Date.now()
+  };
+
+  push(historyRef, historyItem);
+  remove(ref(db, `timers/${id}`));
+};
+
+clearAllBtn.addEventListener("click", () => {
+  if (!timers.length) return;
+
+  const confirmClear = confirm("Clear all active timers?");
+  if (!confirmClear) return;
+
+  timers.forEach(timer => {
+    push(historyRef, {
+      ...timer,
+      removedAt: new Date().toLocaleString(),
+      removedAtMs: Date.now()
+    });
+  });
+
+  remove(timersRef);
+});
+
 mapButtons.forEach(btn => {
   btn.addEventListener("click", () => {
-    mapButtons.forEach(b =>
-      b.classList.remove("active")
-    );
-
+    mapButtons.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
 
     activeLab = btn.dataset.lab;
 
-    document.getElementById("mapTitle").textContent =
-      `Lab ${activeLab}`;
+    document.getElementById("mapTitle").textContent = `Lab ${activeLab}`;
 
     renderSeats();
   });
+});
+
+onValue(timersRef, snapshot => {
+  const data = snapshot.val() || {};
+
+  timers = Object.values(data).sort((a, b) => {
+    return (a.createdAtMs || 0) - (b.createdAtMs || 0);
+  });
+
+  renderTimers();
+  renderSeats();
+
+  document.getElementById("syncStatus").textContent = "Live Sync: Connected";
+});
+
+onValue(historyRef, snapshot => {
+  const data = snapshot.val() || {};
+
+  history = Object.values(data).sort((a, b) => {
+    return (b.removedAtMs || 0) - (a.removedAtMs || 0);
+  });
+
+  renderHistory();
+});
+
+const userPresenceRef = push(presenceRef);
+
+set(userPresenceRef, {
+  connectedAt: serverTimestamp()
+});
+
+onDisconnect(userPresenceRef).remove();
+
+onValue(presenceRef, snapshot => {
+  const users = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
+  document.getElementById("connectedUsers").textContent = `Connected Users: ${users}`;
 });
 
 renderTimers();
