@@ -407,6 +407,9 @@ h2 {
 #noseat div{
   display:none;
 }
+.isle{
+  margin-bottom: 1rem;
+}
 @media (max-width: 1200px) {
   .timer-item,
   .history-item {

@@ -237,10 +237,23 @@ if (activeLab === "C") {
     
     if(seatId == ""){
       seat.id = `noseat`;
+      seat.className = `isle`;
       console.log(seat.id);
     }else{
       seat.className = `seat ${statusClass}`;
     }
+
+    if (seatId.startsWith("C")) {
+      const num = parseInt(seatId.slice(1));
+
+      if (
+        (num >= 17 && num <= 24) ||
+        (num >= 33 && num <= 39)
+      ) {
+        seat.classList.add("isle");
+      }
+    }
+
     const cameraColor =
       seatCameraMap[seatId] || "green";
 
