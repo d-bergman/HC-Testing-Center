@@ -61,6 +61,11 @@ const passwordInput = document.getElementById("passwordInput");
 const passwordBtn = document.getElementById("passwordBtn");
 const passwordError = document.getElementById("passwordError");
 
+const historySearch = document.getElementById("historySearch");
+const loadMoreHistoryBtn = document.getElementById("loadMoreHistoryBtn");
+
+let historyVisibleCount = 10;
+
 let activeLab = "C";
 let timers = [];
 let history = [];
@@ -69,9 +74,9 @@ let alarmInterval = null;
 let activeAlarmTimerId = null;
 
 const seatCameraMap = {
-  C01: "green", C02: "orange", C03: "orange", C04: "green",
-  C05: "red", C06: "green", C07: "orange", C08: "green",
-  C09: "orange", C10: "green", C11: "green", C12: "orange",
+  C1: "green", C2: "orange", C3: "orange", C4: "green",
+  C5: "red", C6: "green", C7: "orange", C8: "green",
+  C9: "orange", C10: "green", C11: "green", C12: "orange",
   C13: "green", C14: "red", C15: "orange", C16: "green",
   C17: "orange", C18: "green", C19: "orange", C20: "red",
   C21: "red", C22: "green", C23: "green", C24: "green",
@@ -282,8 +287,8 @@ function renderSeats() {
 
   if (activeLab === "C") {
     seats = [
-      "C01", "C02", "C03", "C04", "C05", "C06", "C07", "C08",
-      "C16", "C15", "C14", "C13", "C12", "C11", "C10", "C09",
+      "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8",
+      "C16", "C15", "C14", "C13", "C12", "C11", "C10", "C9",
       "C17", "C18", "C19", "C20", "C21", "C22", "C23", "C24",
       "C32", "C31", "C30", "C29", "C28", "C27", "C26", "C25",
       "", "C33", "C34", "C35", "C36", "C37", "C38", "C39",
@@ -359,12 +364,32 @@ function renderSeats() {
 function renderHistory() {
   historyList.innerHTML = "";
 
-  if (!history.length) {
-    historyList.innerHTML = `<div class="empty-state">No history yet.</div>`;
+  const searchTerm = historySearch.value.trim().toLowerCase();
+
+  const filteredHistory = history.filter(item => {
+    const searchableText = [
+      item.student,
+      item.seat,
+      item.lab,
+      item.test,
+      item.createdAt,
+      item.removedAt
+    ]
+      .join(" ")
+      .toLowerCase();
+
+    return searchableText.includes(searchTerm);
+  });
+
+  const visibleHistory = filteredHistory.slice(0, historyVisibleCount);
+
+  if (!visibleHistory.length) {
+    historyList.innerHTML = `<div class="empty-state">No history found.</div>`;
+    loadMoreHistoryBtn.style.display = "none";
     return;
   }
 
-  history.forEach(item => {
+  visibleHistory.forEach(item => {
     const div = document.createElement("div");
     div.className = "history-item";
 
@@ -384,7 +409,7 @@ function renderHistory() {
       </div>
 
       <div>
-        ${item.createdAt || "-"}
+        Started:<br>${item.createdAt || "-"}
       </div>
 
       <div>
@@ -398,6 +423,9 @@ function renderHistory() {
 
     historyList.appendChild(div);
   });
+
+  loadMoreHistoryBtn.style.display =
+    visibleHistory.length < filteredHistory.length ? "block" : "none";
 }
 
 function refreshScreen() {
@@ -638,6 +666,16 @@ passwordInput.addEventListener("keydown", event => {
   if (event.key === "Enter") {
     passwordBtn.click();
   }
+});
+
+historySearch.addEventListener("input", () => {
+  historyVisibleCount = 25;
+  renderHistory();
+});
+
+loadMoreHistoryBtn.addEventListener("click", () => {
+  historyVisibleCount += 25;
+  renderHistory();
 });
 
 renderTimers();
