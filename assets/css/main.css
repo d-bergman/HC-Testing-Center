@@ -337,18 +337,6 @@ h2 {
   grid-template-columns: repeat(5, minmax(90px, 1fr));
 }
 
-.door-marker {
-  position: absolute;
-  left: 0;
-  top: 80px;
-  width: 55px;
-  height: 70px;
-  border-left: 4px solid var(--red);
-  border-bottom: 4px solid var(--red);
-  border-radius: 0 0 0 70px;
-  transform: translateX(-4px);
-}
-
 .seat {
   position: relative;
   min-height: 100px;
