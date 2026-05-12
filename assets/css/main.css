@@ -404,6 +404,9 @@ h2 {
   font-size: 0.9rem;
 }
 
+#noseat{
+  display:none;
+}
 @media (max-width: 1200px) {
   .timer-item,
   .history-item {
