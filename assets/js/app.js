@@ -234,11 +234,12 @@ if (activeLab === "C") {
       if (status === "red")
         statusClass = "active-red";
     }
-
-    seat.className = `seat ${statusClass}`;
+    
     if(seatId == ""){
       seat.id = `noseat`;
       console.log(seat.id);
+    }else{
+      seat.className = `seat ${statusClass}`;
     }
     const cameraColor =
       seatCameraMap[seatId] || "green";

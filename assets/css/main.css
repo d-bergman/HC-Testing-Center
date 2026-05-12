@@ -404,7 +404,7 @@ h2 {
   font-size: 0.9rem;
 }
 
-#noseat{
+#noseat div{
   display:none;
 }
 @media (max-width: 1200px) {
