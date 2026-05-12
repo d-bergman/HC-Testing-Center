@@ -38,13 +38,16 @@ const clearAllBtn = document.getElementById("clearAllBtn");
 const currentTime = document.getElementById("currentTime");
 const currentDate = document.getElementById("currentDate");
 const timerSound = document.getElementById("timerSound");
-
+const enableSoundBtn = document.getElementById("enableSoundBtn");
+let soundEnabled = false;
 const mapButtons = document.querySelectorAll(".map-btn");
 
 let activeLab = "C";
 let timers = [];
 let history = [];
 let playedSounds = new Set();
+let alarmInterval = null;
+let activeAlarmTimerId = null;
 
 const seatCameraMap = {
   C01: "green", C02: "orange", C03: "orange", C04: "green",
@@ -126,6 +129,7 @@ function createTimer() {
     endAt: Date.now() + minutes * 60 * 1000,
     paused: false,
     pausedRemaining: null,
+    alarmDismissed: false,
     createdAt: new Date().toLocaleString(),
     createdAtMs: Date.now()
   };
@@ -335,13 +339,58 @@ function refreshScreen() {
   renderSeats();
 }
 
+function startAlarmLoop(timer) {
+if (!soundEnabled) {
+  alert("Timer completed, but sound is not enabled. Click Enable Sound.");
+}
+
+  if (activeAlarmTimerId) return;
+
+  activeAlarmTimerId = timer.id;
+  playedSounds.add(timer.id);
+
+  const alarmMessage = document.getElementById("alarmMessage");
+  alarmMessage.textContent = `${timer.seat} - ${timer.student} timer is complete.`;
+
+  const alarmModalElement = document.getElementById("alarmModal");
+  const alarmModal = new bootstrap.Modal(alarmModalElement, {
+    backdrop: "static",
+    keyboard: false
+  });
+
+  alarmModal.show();
+
+  timerSound.currentTime = 0;
+  timerSound.play().catch(() => {});
+
+  alarmInterval = setInterval(() => {
+    timerSound.currentTime = 0;
+    timerSound.play().catch(() => {});
+  }, 5000);
+}
+
+function stopAlarmLoop() {
+  if (alarmInterval) {
+    clearInterval(alarmInterval);
+    alarmInterval = null;
+  }
+
+  timerSound.pause();
+  timerSound.currentTime = 0;
+
+  activeAlarmTimerId = null;
+}
+
 function checkTimerSounds() {
   timers.forEach(timer => {
     const remaining = getRemainingSeconds(timer);
 
-    if (remaining <= 0 && !playedSounds.has(timer.id)) {
-      playedSounds.add(timer.id);
-      timerSound.play().catch(() => {});
+    if (
+      remaining <= 0 &&
+      !timer.alarmDismissed &&
+      !playedSounds.has(timer.id)
+    ) {
+      startAlarmLoop(timer);
     }
   });
 }
@@ -381,11 +430,13 @@ window.addFive = function(id) {
 
   if (timer.paused) {
     update(timerRef, {
-      pausedRemaining: (timer.pausedRemaining || 0) + 300
+      pausedRemaining: (timer.pausedRemaining || 0) + 300,
+      alarmDismissed: false
     });
   } else {
     update(timerRef, {
-      endAt: Math.max(timer.endAt, Date.now()) + 300000
+      endAt: Math.max(timer.endAt, Date.now()) + 300000,
+      alarmDismissed: false
     });
   }
 
@@ -470,6 +521,32 @@ onDisconnect(userPresenceRef).remove();
 onValue(presenceRef, snapshot => {
   const users = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
   document.getElementById("connectedUsers").textContent = `Connected Users: ${users}`;
+});
+
+document.getElementById("dismissAlarmBtn").addEventListener("click", () => {
+  if (activeAlarmTimerId) {
+    update(ref(db, `timers/${activeAlarmTimerId}`), {
+      alarmDismissed: true
+    });
+  }
+
+  stopAlarmLoop();
+});
+
+enableSoundBtn.addEventListener("click", async () => {
+  try {
+    timerSound.volume = 1;
+    timerSound.currentTime = 0;
+    await timerSound.play();
+    timerSound.pause();
+    timerSound.currentTime = 0;
+
+    soundEnabled = true;
+    enableSoundBtn.textContent = "🔊 Sound Enabled";
+    enableSoundBtn.classList.add("enabled");
+  } catch (error) {
+    alert("Sound could not be enabled. Try clicking the page once, then click Enable Sound again.");
+  }
 });
 
 renderTimers();

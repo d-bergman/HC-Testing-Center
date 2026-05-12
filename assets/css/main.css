@@ -485,4 +485,32 @@ h2 {
   .seat {
     min-height: 90px;
   }
+
+  .alarm-modal {
+  background: #101f31;
+  border: 1px solid var(--red);
+  color: var(--text);
+  border-radius: 14px;
+}
+
+.alarm-modal .modal-header,
+.alarm-modal .modal-footer {
+  border-color: var(--border);
+}
+
+.alarm-modal .modal-title {
+  color: var(--red);
+}
+
+.btn-sound {
+  border: 1px solid var(--green);
+  color: var(--green);
+  background: rgba(67, 200, 79, 0.1);
+  font-weight: 800;
+}
+
+.btn-sound.enabled {
+  background: var(--green);
+  color: #06111f;
+}
 }

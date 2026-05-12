@@ -34,7 +34,9 @@
           <span class="sync-dot"></span>
           <span id="syncStatus">Live Sync: Connecting...</span>
         </div>
-
+        <button id="enableSoundBtn" class="btn btn-sound">
+  🔊 Enable Sound
+</button>
         <div class="time-box text-sm-end">
           <strong id="currentTime">--:--:--</strong>
           <span id="currentDate">Loading...</span>
@@ -216,7 +218,27 @@
 
   </div>
 
-  <audio id="timerSound" src="assets/audio/timer-done.mp3" preload="auto"></audio>
+  <audio id="timerSound" src="assets/audio/Alarm09.wav" preload="auto"></audio>
+
+  <div class="modal fade" id="alarmModal" tabindex="-1" aria-labelledby="alarmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content alarm-modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="alarmModalLabel">Timer Complete</h2>
+      </div>
+
+      <div class="modal-body">
+        <p id="alarmMessage" class="mb-0">A timer has finished.</p>
+      </div>
+
+      <div class="modal-footer">
+        <button id="dismissAlarmBtn" type="button" class="btn btn-primary-custom" data-bs-dismiss="modal">
+          Dismiss
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
   <!-- Bootstrap JS -->
   <script
