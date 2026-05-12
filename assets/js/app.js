@@ -196,14 +196,20 @@ function renderTimers() {
 
 function renderSeats() {
   seatGrid.innerHTML = "";
+  seatGrid.className = `seat-grid lab-${activeLab.toLowerCase()}`;
 
   let seats = [];
 
-  if (activeLab === "C") {
-    for (let i = 1; i <= 21; i++) {
-      seats.push(`C${String(i).padStart(2, "0")}`);
-    }
-  } else {
+if (activeLab === "C") {
+  seats = [
+    "C01", "C02", "C03", "C04", "C05", "C06", "C07", "C08",
+    "C16", "C15", "C14", "C13", "C12", "C11", "C10", "C09",
+    "C17", "C18", "C19", "C20", "C21", "C22", "C23", "C24",
+    "C32", "C31", "C30", "C29", "C28", "C27", "C26", "C25",
+    "C33", "C34", "C35", "C36", "C37", "C38", "C39",
+    "C47", "C46", "C45", "C44", "C43", "C42", "C41", "C40"
+  ];
+} else {
     for (let i = 1; i <= 10; i++) {
       seats.push(`B${String(i).padStart(2, "0")}`);
     }

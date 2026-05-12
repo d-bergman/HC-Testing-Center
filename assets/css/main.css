@@ -323,10 +323,30 @@ h2 {
 
 .seat-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(90px, 1fr));
-  gap: 18px;
-  max-width: 760px;
+  grid-template-columns: repeat(8, minmax(70px, 1fr));
+  gap: 12px 18px;
+  max-width: 960px;
   margin: 0 auto;
+}
+
+.seat-grid.lab-c {
+  grid-template-columns: repeat(8, minmax(70px, 1fr));
+}
+
+.seat-grid.lab-b {
+  grid-template-columns: repeat(5, minmax(90px, 1fr));
+}
+
+.door-marker {
+  position: absolute;
+  left: 0;
+  top: 80px;
+  width: 55px;
+  height: 70px;
+  border-left: 4px solid var(--red);
+  border-bottom: 4px solid var(--red);
+  border-radius: 0 0 0 70px;
+  transform: translateX(-4px);
 }
 
 .seat {
