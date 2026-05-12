@@ -247,6 +247,7 @@ if (activeLab === "C") {
       const num = parseInt(seatId.slice(1));
 
       if (
+        (num >= 1 && num <= 8) ||
         (num >= 17 && num <= 24) ||
         (num >= 33 && num <= 39)
       ) {
