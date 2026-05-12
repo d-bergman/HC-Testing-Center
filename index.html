@@ -113,10 +113,15 @@
                     <input id="testInput" class="form-control" type="text" placeholder="Math Placement" />
                   </div>
 
-                  <div class="col-12 col-sm-6 col-lg-3">
-                    <label for="minutesInput" class="form-label">Minutes</label>
-                    <input id="minutesInput" class="form-control" type="number" min="1" value="90" />
-                  </div>
+                  <div class="col-6 col-sm-3 col-lg-2">
+                  <label for="hoursInput" class="form-label">Hours</label>
+                  <input id="hoursInput" class="form-control" type="number" min="0" value="1" />
+                </div>
+
+                <div class="col-6 col-sm-3 col-lg-2">
+                  <label for="minutesInput" class="form-label">Minutes</label>
+                  <input id="minutesInput" class="form-control" type="number" min="0" max="59" value="30" />
+                </div>
 
                   <div class="col-12 col-sm-6 col-lg-9">
                     <button id="startTimerBtn" class="btn btn-primary-custom w-100">
@@ -236,6 +241,41 @@
           Dismiss
         </button>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="seatConflictModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content alarm-modal">
+
+      <div class="modal-header">
+        <h2 class="modal-title">Seat Already Occupied</h2>
+      </div>
+
+      <div class="modal-body">
+        <p id="seatConflictMessage" class="mb-0"></p>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          id="cancelSeatConflictBtn"
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cancel
+        </button>
+
+        <button
+          id="confirmSeatConflictBtn"
+          type="button"
+          class="btn btn-primary-custom"
+        >
+          Replace Timer
+        </button>
+      </div>
+
     </div>
   </div>
 </div>

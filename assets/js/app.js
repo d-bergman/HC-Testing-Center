@@ -42,6 +42,18 @@ const enableSoundBtn = document.getElementById("enableSoundBtn");
 let soundEnabled = false;
 const mapButtons = document.querySelectorAll(".map-btn");
 
+const seatConflictModalElement =
+  document.getElementById("seatConflictModal");
+
+const seatConflictModal =
+  new bootstrap.Modal(seatConflictModalElement);
+
+const seatConflictMessage =
+  document.getElementById("seatConflictMessage");
+
+const confirmSeatConflictBtn =
+  document.getElementById("confirmSeatConflictBtn");
+
 let activeLab = "C";
 let timers = [];
 let history = [];
@@ -105,18 +117,13 @@ function getTimerStatus(seconds) {
   return "green";
 }
 
-function createTimer() {
-  const lab = document.getElementById("labInput").value;
-  const seat = document.getElementById("seatInput").value.trim().toUpperCase();
-  const student = document.getElementById("studentInput").value.trim();
-  const test = document.getElementById("testInput").value.trim();
-  const minutes = parseInt(document.getElementById("minutesInput").value);
-
-  if (!seat || !student || !minutes) {
-    alert("Please complete all required fields.");
-    return;
-  }
-
+function createNewTimerObject({
+  lab,
+  seat,
+  student,
+  test,
+  minutes
+}) {
   const newTimerRef = push(timersRef);
 
   const timer = {
@@ -135,6 +142,58 @@ function createTimer() {
   };
 
   set(newTimerRef, timer);
+}
+
+function createTimer() {
+  const lab = document.getElementById("labInput").value;
+  const seat = document.getElementById("seatInput").value.trim().toUpperCase();
+  const student = document.getElementById("studentInput").value.trim();
+  const test = document.getElementById("testInput").value.trim();
+  const hours = parseInt(document.getElementById("hoursInput").value) || 0;
+const minutes = parseInt(document.getElementById("minutesInput").value) || 0;
+const totalMinutes = hours * 60 + minutes;
+
+  if (!seat || !student || totalMinutes <= 0) {
+    alert("Please complete all required fields.");
+    return;
+  }
+
+  const existingSeat = timers.find(
+  t => t.seat.toUpperCase() === seat.toUpperCase()
+);
+
+if (existingSeat) {
+
+  seatConflictMessage.textContent =
+    `${seat} already has an active timer for ${existingSeat.student}.`;
+
+  seatConflictModal.show();
+
+  confirmSeatConflictBtn.onclick = () => {
+
+    deleteTimer(existingSeat.id);
+
+    createNewTimerObject({
+  lab,
+  seat,
+  student,
+  test,
+  minutes: totalMinutes
+});
+
+    seatConflictModal.hide();
+  };
+
+  return;
+}
+
+  createNewTimerObject({
+  lab,
+  seat,
+  student,
+  test,
+  minutes: totalMinutes
+});
 
   document.getElementById("seatInput").value = "";
   document.getElementById("studentInput").value = "";

@@ -224,6 +224,12 @@ h2 {
   color: var(--red);
 }
 
+.remaining.green,
+.remaining.orange,
+.remaining.red {
+  background: transparent;
+}
+
 .status-label {
   font-size: 0.9rem;
 }
@@ -485,32 +491,43 @@ h2 {
   .seat {
     min-height: 90px;
   }
+}
 
-  .alarm-modal {
-  background: #101f31;
-  border: 1px solid var(--red);
+.alarm-modal {
+  background: linear-gradient(180deg, #15263b, #0f1d2e);
+  border: 1px solid var(--border);
   color: var(--text);
   border-radius: 14px;
 }
 
 .alarm-modal .modal-header,
 .alarm-modal .modal-footer {
-  border-color: var(--border);
+  border-color: rgba(255,255,255,0.08);
+  background: transparent;
+}
+
+.alarm-modal .modal-body {
+  color: var(--text);
+  background: transparent;
 }
 
 .alarm-modal .modal-title {
-  color: var(--red);
-}
-
-.btn-sound {
-  border: 1px solid var(--green);
-  color: var(--green);
-  background: rgba(67, 200, 79, 0.1);
+  color: #ffffff;
   font-weight: 800;
+  text-transform: uppercase;
 }
 
-.btn-sound.enabled {
-  background: var(--green);
-  color: #06111f;
+.alarm-modal p {
+  color: var(--text);
 }
+
+.alarm-modal .btn-secondary {
+  background: #5f6672;
+  border: 1px solid #727b88;
+  color: white;
+}
+
+.alarm-modal .btn-secondary:hover {
+  background: #737b88;
+  color: white;
 }
