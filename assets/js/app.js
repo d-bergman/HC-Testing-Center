@@ -236,7 +236,7 @@ if (activeLab === "C") {
     }
 
     seat.className = `seat ${statusClass}`;
-    if(seat == ""){
+    if(seatId == ""){
       seat.id = `noseat`;
       console.log(seat.id);
     }
