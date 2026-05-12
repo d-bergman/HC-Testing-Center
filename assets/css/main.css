@@ -531,3 +531,43 @@ h2 {
   background: #737b88;
   color: white;
 }
+
+.password-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at top left, rgba(38, 112, 190, 0.25), transparent 35%),
+    linear-gradient(135deg, #050b14, var(--bg));
+}
+
+.password-card {
+  width: min(420px, 92vw);
+  background: linear-gradient(180deg, #15263b, #0f1d2e);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  color: var(--text);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+.password-card h1 {
+  font-size: 1.5rem;
+}
+
+.password-card p {
+  color: var(--muted);
+}
+
+.password-error {
+  min-height: 24px;
+  margin: 12px 0 0;
+  color: var(--red) !important;
+  font-weight: 700;
+}
+
+.password-screen.hidden {
+  display: none;
+}

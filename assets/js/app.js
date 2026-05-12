@@ -54,6 +54,13 @@ const seatConflictMessage =
 const confirmSeatConflictBtn =
   document.getElementById("confirmSeatConflictBtn");
 
+const TEMP_PASSWORD = "148TEST6541";
+
+const passwordScreen = document.getElementById("passwordScreen");
+const passwordInput = document.getElementById("passwordInput");
+const passwordBtn = document.getElementById("passwordBtn");
+const passwordError = document.getElementById("passwordError");
+
 let activeLab = "C";
 let timers = [];
 let history = [];
@@ -605,6 +612,31 @@ enableSoundBtn.addEventListener("click", async () => {
     enableSoundBtn.classList.add("enabled");
   } catch (error) {
     alert("Sound could not be enabled. Try clicking the page once, then click Enable Sound again.");
+  }
+});
+
+function unlockDashboard() {
+  sessionStorage.setItem("timerDashboardUnlocked", "true");
+  passwordScreen.classList.add("hidden");
+}
+
+if (sessionStorage.getItem("timerDashboardUnlocked") === "true") {
+  passwordScreen.classList.add("hidden");
+}
+
+passwordBtn.addEventListener("click", () => {
+  if (passwordInput.value === TEMP_PASSWORD) {
+    unlockDashboard();
+  } else {
+    passwordError.textContent = "Incorrect password.";
+    passwordInput.value = "";
+    passwordInput.focus();
+  }
+});
+
+passwordInput.addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    passwordBtn.click();
   }
 });
 
