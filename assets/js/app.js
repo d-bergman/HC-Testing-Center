@@ -74,22 +74,27 @@ let alarmInterval = null;
 let activeAlarmTimerId = null;
 
 const seatCameraMap = {
-  C1: "green", C2: "orange", C3: "orange", C4: "green",
-  C5: "red", C6: "green", C7: "orange", C8: "green",
-  C9: "orange", C10: "green", C11: "green", C12: "orange",
-  C13: "green", C14: "red", C15: "orange", C16: "green",
-  C17: "orange", C18: "green", C19: "orange", C20: "red",
-  C21: "red", C22: "green", C23: "green", C24: "green",
+  C1: "orange", C2: "orange", C3: "orange", C4: "orange",
+  C5: "orange", C6: "orange", C7: "green", C8: "green",
+  C9: "green", C10: "green", C11: "green", C12: "green",
+  C13: "green", C14: "green", C15: "green", C16: "green",
+  C17: "green", C18: "green", C19: "red", C20: "red",
+  C21: "red", C22: "red", C23: "orange", C24: "green",
   C25: "green", C26: "green", C27: "green", C28: "green",
-  C29: "green", C30: "green", C31: "green", C32: "green",
-  C33: "green", C34: "green", C35: "green", C36: "green",
-  C37: "green", C38: "green", C39: "green", C40: "green",
-  C41: "green", C42: "green", C43: "green", C44: "green",
-  C45: "green", C46: "green", C47: "green",
+  C29: "orange", C30: "green", C31: "green", C32: "green",
+  C33: "orange", C34: "orange", C35: "orange", C36: "orange",
+  C37: "orange", C38: "orange", C39: "orange", C40: "orange",
+  C41: "orange", C42: "orange", C43: "orange", C44: "orange",
+  C45: "orange", C46: "orange", C47: "green", C48: "green",
 
-  B01: "green", B02: "green", B03: "orange", B04: "red",
-  B05: "green", B06: "green", B07: "orange", B08: "green",
-  B09: "orange", B10: "red"
+  B1: "red", B2: "red", B3: "red", B4: "red",
+  B5: "red", B6: "red", B7: "red", B8: "red",
+  B9: "orange", B10: "orange", B11: "red", B12: "orange",
+  B13: "green", B14: "green", B15: "green", B16: "green",
+  B17: "green", B18: "green", B19: "green", B20: "red",
+  B21: "red", B22: "green", B23: "orange", B24: "red",
+  B25: "green", B26: "green", B27: "green", B28: "green",
+  B29: "green", B30: "green", B31: "green",
 };
 
 function updateClock() {
@@ -287,18 +292,21 @@ function renderSeats() {
 
   if (activeLab === "C") {
     seats = [
-      "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8",
-      "C16", "C15", "C14", "C13", "C12", "C11", "C10", "C9",
-      "C17", "C18", "C19", "C20", "C21", "C22", "C23", "C24",
-      "C32", "C31", "C30", "C29", "C28", "C27", "C26", "C25",
-      "", "C33", "C34", "C35", "C36", "C37", "C38", "C39",
-      "C47", "C46", "C45", "C44", "C43", "C42", "C41", "C40"
+      "", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8",
+      "", "C16", "C15", "C14", "C13", "C12", "C11", "C10", "C9",
+      "", "C17", "C18", "C19", "C20", "C21", "C22", "C23", "C24",
+      "", "C32", "C31", "C30", "C29", "C28", "C27", "C26", "C25",
+      "", "", "C33", "C34", "C35", "C36", "C37", "C38", "C39",
+      "C48", "C47", "C46", "C45", "C44", "C43", "C42", "C41", "C40"
     ];
   } else {
-    for (let i = 1; i <= 10; i++) {
-      seats.push(`B${String(i).padStart(2, "0")}`);
-    }
-  }
+  seats = [
+    "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "B10",
+    "", "", "", "B17", "B16", "B15", "B14", "B13", "B12", "B11",
+    "", "", "", "B18", "B19", "B20", "B21", "B22", "B23", "B24",
+    "", "", "", "B31", "B30", "B29", "B28", "B27", "B26", "B25"
+  ];
+}
 
   seats.forEach(seatId => {
     const timer = timers.find(t => t.seat === seatId);
@@ -331,6 +339,17 @@ function renderSeats() {
         (num >= 1 && num <= 8) ||
         (num >= 17 && num <= 24) ||
         (num >= 33 && num <= 39)
+      ) {
+        seat.classList.add("isle");
+      }
+    }
+
+  if (seatId.startsWith("B")) {
+      const num = parseInt(seatId.slice(1));
+
+      if (
+        (num >= 1 && num <= 10) ||
+        (num >= 18 && num <= 24)
       ) {
         seat.classList.add("isle");
       }
