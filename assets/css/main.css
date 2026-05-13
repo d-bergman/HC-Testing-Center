@@ -169,7 +169,7 @@ h2 {
 .timer-item,
 .history-item {
   display: grid;
-  grid-template-columns: 90px minmax(110px, 1.3fr) minmax(80px, 1fr) 125px 90px 115px;
+  grid-template-columns: 80px minmax(50px, 1fr) minmax(0px, 1fr) 145px 70px 115px;
   gap: 10px;
   align-items: center;
   padding: 12px;
@@ -191,7 +191,7 @@ h2 {
   white-space: nowrap;
 }
 /* Tablet */
-@media (min-width: 1400px) and (max-width: 1850px) {
+@media (min-width: 1400px) and (max-width: 1848px) {
   .timer-item,
   .history-item {
     grid-template-columns: repeat(3, 1fr);
