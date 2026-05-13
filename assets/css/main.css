@@ -116,10 +116,11 @@ h2 {
 }
 
 .app-card {
-  background: linear-gradient(180deg, rgba(18, 38, 59, 0.95), rgba(10, 22, 36, 0.95));
-  border: 1px solid var(--border);
+  /*background: linear-gradient(180deg, rgba(18, 38, 59, 0.95), rgba(10, 22, 36, 0.95));*/
+  /*border: 1px solid var(--border);*/
+  /*border-radius: 12px;*/
+  /*padding: 18px;*/
   border-radius: 12px;
-  padding: 18px;
 }
 
 .form-label {
@@ -172,7 +173,7 @@ h2 {
   grid-template-columns: 80px minmax(50px, 1fr) minmax(0px, 1fr) 145px 70px 115px;
   gap: 10px;
   align-items: center;
-  padding: 12px;
+  padding: 5px;
   background: rgba(7, 17, 31, 0.7);
   border: 1px solid rgba(70, 95, 125, 0.6);
   border-radius: 10px;
@@ -191,12 +192,12 @@ h2 {
   white-space: nowrap;
 }
 /* Tablet */
-@media (min-width: 1400px) and (max-width: 1848px) {
+/*@media (min-width: 1400px) and (max-width: 1848px) {
   .timer-item,
   .history-item {
     grid-template-columns: repeat(3, 1fr);
   }
-}
+}*/
 
 /* Mobile */
 @media (max-width: 576px) {
@@ -264,7 +265,7 @@ h2 {
 }
 
 .remaining {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
