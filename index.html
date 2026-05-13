@@ -109,7 +109,17 @@
 
               <!-- Add Timer -->
               <section class="app-card mb-3">
-                <h2>Add New Timer</h2>
+                <div class="form-mode-toggle mb-3">
+  <button id="timerModeBtn" class="btn form-mode-btn active" type="button">
+    Add Timer
+  </button>
+
+  <button id="seatStatusModeBtn" class="btn form-mode-btn" type="button">
+    Add Seat Status
+  </button>
+</div>
+
+<h2 id="formTitle">Add New Timer</h2>
 
                 <div class="row g-3 align-items-end">
                   <div class="col-12 col-sm-6 col-lg-3">
@@ -130,26 +140,55 @@
                     <input id="studentInput" class="form-control" type="text" placeholder="John Smith" />
                   </div>
 
-                  <div class="col-12 col-md-6">
-                    <label for="testInput" class="form-label">Test Optional</label>
-                    <input id="testInput" class="form-control" type="text" placeholder="Math Placement" />
-                  </div>
+                  <div id="testOptionalField" class="col-12 col-md-6">
+  <label for="testInput" class="form-label">Test Optional</label>
+  <input id="testInput" class="form-control" type="text" placeholder="Math Placement" />
+</div>
+<div id="timerTimeFields" class="col-12 col-md-6 d-flex gap-3">
+  <div style="max-width: 110px;">
+    <label for="hoursInput" class="form-label">Hours</label>
+    <input id="hoursInput" class="form-control" type="number" min="0" value="1" />
+  </div>
 
-                  <div class="col-6 col-sm-3 col-lg-2">
-                  <label for="hoursInput" class="form-label">Hours</label>
-                  <input id="hoursInput" class="form-control" type="number" min="0" value="1" />
-                </div>
+  <div style="max-width: 110px;">
+    <label for="minutesInput" class="form-label">Minutes</label>
+    <input id="minutesInput" class="form-control" type="number" min="0" max="59" value="30" />
+  </div>
+</div>
+                  <div id="timerFields" class="row g-3 align-items-end">
+  <div class="col-12 col-sm-6 col-lg-8">
+    <button id="startTimerBtn" class="btn btn-primary-custom w-100">
+      + Start Timer
+    </button>
+  </div>
+</div>
 
-                <div class="col-6 col-sm-3 col-lg-2">
-                  <label for="minutesInput" class="form-label">Minutes</label>
-                  <input id="minutesInput" class="form-control" type="number" min="0" max="59" value="30" />
-                </div>
+<div id="seatStatusFields" class="row g-3 align-items-end d-none">
+  <div class="col-12 col-sm-6">
+    <label for="seatStatusInput" class="form-label">Seat Status</label>
+    <select id="seatStatusInput" class="form-select">
+      <option value="reserved">Reserved</option>
+      <option value="occupied">Occupied</option>
+    </select>
+  </div>
 
-                  <div class="col-12 col-sm-6 col-lg-9">
-                    <button id="startTimerBtn" class="btn btn-primary-custom w-100">
-                      + Start Timer
-                    </button>
-                  </div>
+  <div class="col-12 col-sm-6">
+    <label for="testTypeInput" class="form-label">Test Type</label>
+    <select id="testTypeInput" class="form-select">
+      <option value="CNA">CNA</option>
+      <option value="GED">GED</option>
+      <option value="TEAS">TEAS</option>
+      <option value="CLEP">CLEP</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+
+  <div class="col-12">
+    <button id="addSeatStatusBtn" class="btn btn-primary-custom w-100">
+      + Add Seat Status
+    </button>
+  </div>
+</div>
                 </div>
               </section>
 
@@ -211,6 +250,8 @@
                 <span><i class="status-dot green"></i>15+ min</span>
                 <span><i class="status-dot orange"></i>5-15 min</span>
                 <span><i class="status-dot red"></i>Under 5 min</span>
+                <span><i class="status-dot blue"></i>Occupied</span>
+<span><i class="status-dot purple-dot"></i>Reserved</span>
                 <span><i class="status-dot gray"></i>Empty</span>
               </div>
             </div>

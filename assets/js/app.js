@@ -27,6 +27,7 @@ const db = getDatabase(app);
 const timersRef = ref(db, "timers");
 const historyRef = ref(db, "history");
 const presenceRef = ref(db, "presence");
+const seatStatusesRef = ref(db, "seatStatuses");
 
 const timerList = document.getElementById("timerList");
 const historyList = document.getElementById("historyList");
@@ -34,6 +35,7 @@ const seatGrid = document.getElementById("seatGrid");
 
 const startTimerBtn = document.getElementById("startTimerBtn");
 const clearAllBtn = document.getElementById("clearAllBtn");
+const testOptionalField = document.getElementById("testOptionalField");
 
 const currentTime = document.getElementById("currentTime");
 const currentDate = document.getElementById("currentDate");
@@ -66,12 +68,22 @@ const loadMoreHistoryBtn = document.getElementById("loadMoreHistoryBtn");
 
 let historyVisibleCount = 10;
 
+const timerModeBtn = document.getElementById("timerModeBtn");
+const seatStatusModeBtn = document.getElementById("seatStatusModeBtn");
+const formTitle = document.getElementById("formTitle");
+const timerFields = document.getElementById("timerFields");
+const seatStatusFields = document.getElementById("seatStatusFields");
+const addSeatStatusBtn = document.getElementById("addSeatStatusBtn");
+
+const timerTimeFields = document.getElementById("timerTimeFields");
+
 let activeLab = "C";
 let timers = [];
 let history = [];
 let playedSounds = new Set();
 let alarmInterval = null;
 let activeAlarmTimerId = null;
+let seatStatuses = [];
 
 const seatCameraMap = {
   C1: "orange", C2: "orange", C3: "orange", C4: "orange",
@@ -107,6 +119,9 @@ setInterval(updateClock, 1000);
 updateClock();
 
 function formatTime(seconds) {
+  if (!Number.isFinite(seconds)) {
+    return "00:00:00";
+  }
   seconds = Math.max(0, Math.floor(seconds));
 
   const hrs = Math.floor(seconds / 3600);
@@ -178,6 +193,10 @@ const totalMinutes = hours * 60 + minutes;
   const existingSeat = timers.find(
   t => t.seat.toUpperCase() === seat.toUpperCase()
 );
+const existingSeatStatus = seatStatuses.find(
+  s => s.seat.toUpperCase() === seat.toUpperCase()
+);
+
 
 if (existingSeat) {
 
@@ -204,12 +223,138 @@ if (existingSeat) {
   return;
 }
 
+if (existingSeatStatus) {
+  seatConflictMessage.textContent =
+    `${seat} is currently ${existingSeatStatus.status} for ${existingSeatStatus.testType}.\n\nReplace seat status with timer?`;
+
+  seatConflictModal.show();
+
+  confirmSeatConflictBtn.onclick = () => {
+    clearSeatStatus(existingSeatStatus.id);
+
+    createNewTimerObject({
+      lab,
+      seat,
+      student,
+      test,
+      minutes: totalMinutes
+    });
+
+    seatConflictModal.hide();
+
+    document.getElementById("seatInput").value = "";
+    document.getElementById("studentInput").value = "";
+    document.getElementById("testInput").value = "";
+  };
+
+  return;
+}
   createNewTimerObject({
   lab,
   seat,
   student,
   test,
   minutes: totalMinutes
+});
+
+  document.getElementById("seatInput").value = "";
+  document.getElementById("studentInput").value = "";
+  document.getElementById("testInput").value = "";
+}
+
+function createSeatStatusObject({
+  lab,
+  seat,
+  student,
+  testType,
+  status
+}) {
+  const newSeatStatusRef = push(seatStatusesRef);
+
+  const seatStatus = {
+    id: newSeatStatusRef.key,
+    lab,
+    seat,
+    student,
+    testType,
+    status,
+    createdAt: new Date().toLocaleString(),
+    createdAtMs: Date.now()
+  };
+
+  set(newSeatStatusRef, seatStatus);
+}
+
+function createSeatStatus() {
+  const lab = document.getElementById("labInput").value;
+  const seat = document.getElementById("seatInput").value.trim().toUpperCase();
+  const student = document.getElementById("studentInput").value.trim();
+  const testType = document.getElementById("testTypeInput").value;
+  const status = document.getElementById("seatStatusInput").value;
+
+  if (!seat || !testType || !status) {
+    alert("Please complete the seat status fields.");
+    return;
+  }
+  const existingSeatStatus = seatStatuses.find(
+  s => s.seat.toUpperCase() === seat.toUpperCase()
+);
+const existingTimer = timers.find(
+  t => t.seat.toUpperCase() === seat.toUpperCase()
+);
+
+if (existingTimer) {
+  seatConflictMessage.textContent =
+    `${seat} already has an active timer for ${existingTimer.student}.\n\nReplace timer with seat status?`;
+
+  seatConflictModal.show();
+
+  confirmSeatConflictBtn.onclick = () => {
+    deleteTimer(existingTimer.id);
+
+    createSeatStatusObject({
+      lab,
+      seat,
+      student,
+      testType,
+      status
+    });
+
+    seatConflictModal.hide();
+  };
+
+  return;
+}
+
+if (existingSeatStatus) {
+  seatConflictMessage.textContent =
+    `${seat} already has a ${existingSeatStatus.status} status for ${existingSeatStatus.testType}.`;
+
+  seatConflictModal.show();
+
+  confirmSeatConflictBtn.onclick = () => {
+    clearSeatStatus(existingSeatStatus.id);
+
+    createSeatStatusObject({
+      lab,
+      seat,
+      student,
+      testType,
+      status
+    });
+
+    seatConflictModal.hide();
+  };
+
+  return;
+}
+
+  createSeatStatusObject({
+  lab,
+  seat,
+  student,
+  testType,
+  status
 });
 
   document.getElementById("seatInput").value = "";
@@ -310,6 +455,7 @@ function renderSeats() {
 
   seats.forEach(seatId => {
     const timer = timers.find(t => t.seat === seatId);
+    const seatStatus = seatStatuses.find(s => s.seat === seatId);
     const seat = document.createElement("div");
 
     if (seatId === "") {
@@ -328,6 +474,11 @@ function renderSeats() {
       if (status === "green") statusClass = "active-green";
       if (status === "orange") statusClass = "active-orange";
       if (status === "red") statusClass = "active-red";
+      } else if (seatStatus) {
+  statusClass =
+    seatStatus.status === "reserved"
+      ? "seat-reserved"
+      : "seat-occupied";
     }
 
     seat.className = `seat ${statusClass}`;
@@ -364,15 +515,21 @@ function renderSeats() {
         <div class="seat-id">${seatId}</div>
 
         ${
-          timer
-            ? `
-              <div class="seat-name">${timer.student}</div>
-              <div class="seat-time">${formatTime(getRemainingSeconds(timer))}</div>
-            `
-            : `
-              <div class="seat-name">Empty</div>
-            `
-        }
+  timer
+    ? `
+      <div class="seat-name">${timer.student}</div>
+      <div class="seat-time">${formatTime(getRemainingSeconds(timer))}</div>
+    `
+    : seatStatus
+    ? `
+      <div class="seat-name">${seatStatus.student || seatStatus.testType}</div>
+<div class="seat-time">${seatStatus.student ? seatStatus.testType : seatStatus.status}</div>
+<button class="seat-clear-btn" onclick="clearSeatStatus('${seatStatus.id}')">Clear</button>
+    `
+    : `
+      <div class="seat-name">Empty</div>
+    `
+}
       </div>
     `;
 
@@ -453,6 +610,9 @@ function refreshScreen() {
 }
 
 function startAlarmLoop(timer) {
+  const stillExists = timers.some(t => t.id === timer.id);
+if (!stillExists) return;
+
 if (!soundEnabled) {
   alert("Timer completed, but sound is not enabled. Click Enable Sound.");
 }
@@ -623,6 +783,16 @@ onValue(historyRef, snapshot => {
   renderHistory();
 });
 
+onValue(seatStatusesRef, snapshot => {
+  const data = snapshot.val() || {};
+
+  seatStatuses = Object.values(data).sort((a, b) => {
+    return (a.createdAtMs || 0) - (b.createdAtMs || 0);
+  });
+
+  renderSeats();
+});
+
 const userPresenceRef = push(presenceRef);
 
 set(userPresenceRef, {
@@ -637,7 +807,9 @@ onValue(presenceRef, snapshot => {
 });
 
 document.getElementById("dismissAlarmBtn").addEventListener("click", () => {
-  if (activeAlarmTimerId) {
+  const timerStillExists = timers.some(t => t.id === activeAlarmTimerId);
+
+  if (activeAlarmTimerId && timerStillExists) {
     update(ref(db, `timers/${activeAlarmTimerId}`), {
       alarmDismissed: true
     });
@@ -696,6 +868,46 @@ loadMoreHistoryBtn.addEventListener("click", () => {
   historyVisibleCount += 25;
   renderHistory();
 });
+
+window.clearSeatStatus = function(id) {
+  const seatStatus = seatStatuses.find(s => s.id === id);
+  if (!seatStatus) return;
+
+  push(historyRef, {
+    ...seatStatus,
+    type: "seatStatus",
+    removedAt: new Date().toLocaleString(),
+    removedAtMs: Date.now()
+  });
+
+  remove(ref(db, `seatStatuses/${id}`));
+};
+
+timerModeBtn.addEventListener("click", () => {
+  timerModeBtn.classList.add("active");
+  seatStatusModeBtn.classList.remove("active");
+
+  formTitle.textContent = "Add New Timer";
+
+  timerFields.classList.remove("d-none");
+  seatStatusFields.classList.add("d-none");
+  testOptionalField.classList.remove("d-none");
+  timerTimeFields.classList.remove("d-none");
+});
+
+seatStatusModeBtn.addEventListener("click", () => {
+  seatStatusModeBtn.classList.add("active");
+  timerModeBtn.classList.remove("active");
+
+  formTitle.textContent = "Add Seat Status";
+
+  timerFields.classList.add("d-none");
+  seatStatusFields.classList.remove("d-none");
+  testOptionalField.classList.add("d-none");
+  timerTimeFields.classList.add("d-none");
+});
+
+addSeatStatusBtn.addEventListener("click", createSeatStatus);
 
 renderTimers();
 renderSeats();

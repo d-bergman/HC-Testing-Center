@@ -165,6 +165,7 @@ h2 {
   gap: 10px;
 }
 
+
 .timer-item,
 .history-item {
   display: grid;
@@ -232,6 +233,30 @@ h2 {
   font-weight: 900;
   background: var(--blue);
   color: white;
+}
+
+.seat-clear-btn {
+  margin-top: 6px;
+  border: 1px solid rgba(255,255,255,0.5);
+  background: rgba(0,0,0,0.2);
+  color: #fff;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+}
+
+.seat-clear-btn:hover {
+  background: rgba(0,0,0,0.35);
+}
+
+.seat.seat-occupied {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+}
+
+.seat.seat-reserved {
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  color: #fff;
 }
 
 .seat-badge.lab-b {
@@ -617,4 +642,36 @@ h2 {
 
 .password-screen.hidden {
   display: none;
+}
+
+.form-mode-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.form-mode-btn {
+  border: 1px solid var(--border);
+  background: #14283f;
+  color: var(--text);
+  font-weight: 800;
+}
+
+.form-mode-btn:hover {
+  background: #1c3655;
+  color: #fff;
+}
+
+.form-mode-btn.active {
+  background: linear-gradient(135deg, #2387f2, #1262ca);
+  color: #fff;
+  border-color: transparent;
+}
+
+.blue {
+  background: #2563eb;
+}
+
+.purple-dot {
+  background: #7c3aed;
 }
