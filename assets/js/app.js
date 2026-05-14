@@ -595,6 +595,16 @@ function renderHistory() {
   }
 
   visibleHistory.forEach(item => {
+    const isSeatStatus = item.type === "seatStatus";
+
+const historyName = isSeatStatus
+  ? item.student || "-"
+  : item.student || "-";
+
+const historyTest = isSeatStatus
+  ? item.testType || "-"
+  : item.test || "-";
+
     const div = document.createElement("div");
     div.className = "history-item";
 
@@ -606,11 +616,11 @@ function renderHistory() {
       </div>
 
       <div>
-        <strong>${item.student}</strong>
+        <strong>${historyName}</strong>
       </div>
 
       <div>
-        ${item.test || "-"}
+        ${historyTest}
       </div>
 
       <div>
@@ -912,12 +922,17 @@ window.clearSeatStatus = function(id) {
   const seatStatus = seatStatuses.find(s => s.id === id);
   if (!seatStatus) return;
 
-  push(historyRef, {
-    ...seatStatus,
-    type: "seatStatus",
-    removedAt: new Date().toLocaleString(),
-    removedAtMs: Date.now()
-  });
+  const shouldLogHistory =
+    seatStatus.status === "Occupied" || seatStatus.student;
+
+  if (shouldLogHistory) {
+    push(historyRef, {
+      ...seatStatus,
+      type: "seatStatus",
+      removedAt: new Date().toLocaleString(),
+      removedAtMs: Date.now()
+    });
+  }
 
   remove(ref(db, `seatStatuses/${id}`));
 };

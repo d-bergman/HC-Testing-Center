@@ -1,3 +1,26 @@
+v1.5.0
+- Added integrated Help and Documentation modal directly inside the dashboard
+- Added dynamic changelog system loaded from external text file
+- Added in-app version tracking display
+- Added styled delete confirmation modal for timers
+- Improved dashboard control button styling and visibility
+- Added maxlength protections for:
+  - Student name field
+  - Test field
+  - Seat input field
+- Improved timer and seat layout stability for long names and labels
+- Fixed timer corruption issue causing NaN timer displays after remote deletion
+- Fixed alarm synchronization edge cases between multiple open dashboards
+- Improved duplicate seat replacement logic
+- Improved realtime synchronization reliability across multiple workstations
+- Improved history display handling for seat statuses
+- Added automatic test type display for seat status history entries
+- Added conditional history logging:
+  - Reserved seats without names no longer clutter history
+  - Occupied seats and named seat statuses are still logged
+- Improved internal documentation for shared staff workflows
+- General bug fixes and UI cleanup
+
 v1.4.0
 - Added Seat Status system for non-timed testers and reserved workstations
 - Added support for Reserved and Occupied seat states
