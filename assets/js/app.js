@@ -288,6 +288,8 @@ if (existingSeatStatus) {
     document.getElementById("seatInput").value = "";
     document.getElementById("studentInput").value = "";
     document.getElementById("testInput").value = "";
+    document.getElementById("hoursInput").value = "";
+    document.getElementById("minutesInput").value = "";
   };
 
   return;
@@ -303,6 +305,8 @@ if (existingSeatStatus) {
   document.getElementById("seatInput").value = "";
   document.getElementById("studentInput").value = "";
   document.getElementById("testInput").value = "";
+  document.getElementById("hoursInput").value = "";
+  document.getElementById("minutesInput").value = "";
 }
 
 function createSeatStatusObject({
@@ -404,6 +408,8 @@ if (existingSeatStatus) {
   document.getElementById("seatInput").value = "";
   document.getElementById("studentInput").value = "";
   document.getElementById("testInput").value = "";
+  document.getElementById("hoursInput").value = "";
+  document.getElementById("minutesInput").value = "";
 }
 
 startTimerBtn.addEventListener("click", createTimer);

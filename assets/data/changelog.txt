@@ -1,3 +1,13 @@
+v1.7.1
+- Added full timer form reset behavior after successful timer creation
+- Hours and Minutes fields now clear automatically after starting a timer
+- Improved form consistency between timer creation workflows
+- Added reset support for:
+  - Standard timer creation
+  - Seat replacement timer creation after conflict confirmation
+- Improved overall timer entry workflow speed for repeated use
+- Minor UI and workflow polish improvements
+
 v1.7.0
 - Redesigned History tab for improved readability and cleaner visual hierarchy
 - Simplified history timestamp formatting:
