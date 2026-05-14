@@ -195,9 +195,9 @@ function createNewTimerObject({
     student,
     test,
     durationSeconds: minutes * 60,
-    endAt: Date.now() + minutes * 60 * 1000,
-    paused: false,
-    pausedRemaining: null,
+    endAt: null,
+    paused: true,
+    pausedRemaining: minutes * 60,
     alarmDismissed: false,
     createdAt: new Date().toLocaleString(),
     createdAtMs: Date.now()

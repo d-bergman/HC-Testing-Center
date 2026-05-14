@@ -1,3 +1,14 @@
+v1.7.3
+- Changed timer workflow from immediate-start to staged-start operation
+- New timers are now created in a paused state by default
+- Staff can now seat and prepare students before starting countdowns
+- Added improved operational flexibility during student intake and check-in
+- Updated primary timer action button text:
+  - Changed from “Start Timer” to “Add Timer”
+- Improved real-world testing center workflow handling during high-volume periods
+- Reduced risk of timers losing active testing time before students are fully seated
+- Stress testing and operational workflow refinement improvements
+
 v1.7.2
 - Added priority seat color flags for special testing conditions
 - Added ADS seat highlighting:
