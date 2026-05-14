@@ -1,3 +1,18 @@
+v1.7.2
+- Added priority seat color flags for special testing conditions
+- Added ADS seat highlighting:
+  - Timers with subject "ADS" now display as yellow seats
+  - Designed for quick identification of accommodated testing students
+- Added AM seat highlighting:
+  - Timers with subject "AM" now display as pink seats
+  - Designed as a visual academic misconduct monitoring flag
+- Added dedicated ADS and AM indicators to map legend
+- Added priority seat color override system:
+  - ADS and AM seat colors now override normal timer urgency colors
+  - Seats remain flagged regardless of remaining timer duration
+- Improved operational visibility and staff communication through visual seating indicators
+- General seating map and timer visualization improvements
+
 v1.7.1
 - Added full timer form reset behavior after successful timer creation
 - Hours and Minutes fields now clear automatically after starting a timer

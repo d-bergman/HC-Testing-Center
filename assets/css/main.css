@@ -797,3 +797,21 @@ h2 {
   line-height: 1.25;
   white-space: nowrap;
 }
+
+.seat.active-ads {
+  background: linear-gradient(135deg, #facc15, #ca8a04);
+  color: #111827;
+}
+
+.seat.active-am {
+  background: linear-gradient(135deg, #ec4899, #be185d);
+  color: #ffffff;
+}
+
+.ads-dot {
+  background: #facc15;
+}
+
+.am-dot {
+  background: #ec4899;
+}

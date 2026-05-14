@@ -479,6 +479,21 @@ function renderTimers() {
   });
 }
 
+function getTimerSeatClass(timer, remaining) {
+  const testCode = (timer.test || "").trim().toUpperCase();
+
+  if (testCode === "ADS") return "active-ads";
+  if (testCode === "AM") return "active-am";
+
+  const status = getTimerStatus(remaining);
+
+  if (status === "green") return "active-green";
+  if (status === "orange") return "active-orange";
+  if (status === "red") return "active-red";
+
+  return "";
+}
+
 function renderSeats() {
   seatGrid.innerHTML = "";
   seatGrid.className = `seat-grid lab-${activeLab.toLowerCase()}`;
@@ -519,16 +534,14 @@ function renderSeats() {
 
     if (timer) {
       const remaining = getRemainingSeconds(timer);
-      const status = getTimerStatus(remaining);
+      statusClass = getTimerSeatClass(timer, remaining);
 
-      if (status === "green") statusClass = "active-green";
-      if (status === "orange") statusClass = "active-orange";
-      if (status === "red") statusClass = "active-red";
-      } else if (seatStatus) {
-  statusClass =
-    seatStatus.status === "Reserved"
-      ? "seat-reserved"
-      : "seat-occupied";
+    } else if (seatStatus) {
+
+      statusClass =
+        seatStatus.status === "Reserved"
+          ? "seat-reserved"
+          : "seat-occupied";
     }
 
     seat.className = `seat ${statusClass}`;
