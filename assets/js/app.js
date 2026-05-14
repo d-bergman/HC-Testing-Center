@@ -92,6 +92,21 @@ const deleteTimerModal = new bootstrap.Modal(deleteTimerModalElement);
 const deleteTimerMessage = document.getElementById("deleteTimerMessage");
 const confirmDeleteTimerBtn = document.getElementById("confirmDeleteTimerBtn");
 
+const ADMIN_PASSWORD = "bd13311";
+
+const adminUnlockModalElement = document.getElementById("adminUnlockModal");
+const adminUnlockModal = new bootstrap.Modal(adminUnlockModalElement);
+const adminPasswordInput = document.getElementById("adminPasswordInput");
+const adminPasswordError = document.getElementById("adminPasswordError");
+const adminUnlockBtn = document.getElementById("adminUnlockBtn");
+
+const deleteHistoryModalElement = document.getElementById("deleteHistoryModal");
+const deleteHistoryModal = new bootstrap.Modal(deleteHistoryModalElement);
+const deleteHistoryMessage = document.getElementById("deleteHistoryMessage");
+const confirmDeleteHistoryBtn = document.getElementById("confirmDeleteHistoryBtn");
+
+let pendingAdminAction = null;
+
 let activeLab = "C";
 let timers = [];
 let history = [];
@@ -566,6 +581,29 @@ function renderSeats() {
   });
 }
 
+function formatHistoryDate(dateString) {
+  if (!dateString) return "-";
+
+  const date = new Date(dateString);
+
+  if (Number.isNaN(date.getTime())) {
+    return dateString;
+  }
+
+  const datePart = date.toLocaleDateString([], {
+    year: "2-digit",
+    month: "numeric",
+    day: "numeric"
+  });
+
+  const timePart = date.toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit"
+  });
+
+  return `${datePart} • ${timePart}`;
+}
+
 function renderHistory() {
   historyList.innerHTML = "";
 
@@ -623,16 +661,19 @@ const historyTest = isSeatStatus
         ${historyTest}
       </div>
 
-      <div>
-        Started:<br>${item.createdAt || "-"}
+      <div class="history-meta">
+        <span class="history-date-label">Started</span><br>${formatHistoryDate(item.createdAt)}
       </div>
 
-      <div>
-        Removed:
+
+      <div class="history-meta">
+        <span class="history-date-label">Removed</span><br>${formatHistoryDate(item.removedAt)}
       </div>
 
-      <div>
-        ${item.removedAt || "-"}
+      <div class="action-buttons">
+        <button onclick="deleteHistoryItem('${item.historyId}')">
+          🗑
+        </button>
       </div>
     `;
 
@@ -779,6 +820,23 @@ window.deleteTimer = function(id) {
   deleteTimerModal.show();
 };
 
+window.deleteHistoryItem = function(historyId) {
+  requireAdmin(() => {
+    const item = history.find(h => h.historyId === historyId);
+    if (!item) return;
+
+    deleteHistoryMessage.textContent =
+      `Delete history item for ${item.seat || "unknown seat"}?`;
+
+    confirmDeleteHistoryBtn.onclick = () => {
+      remove(ref(db, `history/${historyId}`));
+      deleteHistoryModal.hide();
+    };
+
+    deleteHistoryModal.show();
+  });
+};
+
 clearAllBtn.addEventListener("click", () => {
   if (!timers.length) return;
 
@@ -825,9 +883,14 @@ onValue(timersRef, snapshot => {
 onValue(historyRef, snapshot => {
   const data = snapshot.val() || {};
 
-  history = Object.values(data).sort((a, b) => {
-    return (b.removedAtMs || 0) - (a.removedAtMs || 0);
-  });
+  history = Object.entries(data)
+  .map(([historyId, item]) => ({
+    ...item,
+    historyId
+  }))
+    .sort((a, b) => {
+      return (b.removedAtMs || 0) - (a.removedAtMs || 0);
+    });
 
   renderHistory();
 });
@@ -962,6 +1025,44 @@ seatStatusModeBtn.addEventListener("click", () => {
 });
 
 addSeatStatusBtn.addEventListener("click", createSeatStatus);
+
+function isAdminUnlocked() {
+  return sessionStorage.getItem("historyAdminUnlocked") === "true";
+}
+
+function requireAdmin(action) {
+  if (isAdminUnlocked()) {
+    action();
+    return;
+  }
+
+  pendingAdminAction = action;
+  adminPasswordInput.value = "";
+  adminPasswordError.textContent = "";
+  adminUnlockModal.show();
+}
+
+adminUnlockBtn.addEventListener("click", () => {
+  if (adminPasswordInput.value === ADMIN_PASSWORD) {
+    sessionStorage.setItem("historyAdminUnlocked", "true");
+    adminUnlockModal.hide();
+
+    if (pendingAdminAction) {
+      pendingAdminAction();
+      pendingAdminAction = null;
+    }
+  } else {
+    adminPasswordError.textContent = "Incorrect admin password.";
+    adminPasswordInput.value = "";
+    adminPasswordInput.focus();
+  }
+});
+
+adminPasswordInput.addEventListener("keydown", event => {
+  if (event.key === "Enter") {
+    adminUnlockBtn.click();
+  }
+});
 
 renderTimers();
 renderSeats();

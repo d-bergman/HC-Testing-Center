@@ -1,3 +1,35 @@
+v1.7.0
+- Redesigned History tab for improved readability and cleaner visual hierarchy
+- Simplified history timestamp formatting:
+  - Removed seconds from history timestamps
+  - Shortened year formatting from YYYY to YY
+  - Added centered separator formatting:
+    - Example: 5/13/26 • 7:51 PM
+- Added reusable history date formatting function for consistent timestamp rendering
+- Improved history metadata styling and spacing
+- Added muted visual styling for Started and Removed labels
+- Improved history row readability for long-term operational use
+- Reduced visual clutter and timestamp dominance in history rows
+- Improved spacing and alignment for history action buttons
+- Improved history row scanning and operational usability
+- Added custom dashboard favicon matching Testing Center Dashboard styling
+- General UI polish and history layout cleanup
+
+v1.6.0
+- Added admin-protected history management system
+- Added Admin Unlock modal for restricted history actions
+- Added session-based admin unlock:
+  - Admin password only needs to be entered once per browser session
+  - Additional history deletes during the same session only require confirmation
+- Added styled confirmation modal for deleting individual history records
+- Added delete button for individual history entries
+- Updated history records to track Firebase history IDs separately from timer/status IDs
+- Fixed issue where history delete confirmation appeared but did not remove the record
+- Improved history deletion reliability by deleting against the correct Firebase history key
+- Preserved regular staff access to view and search history while restricting deletion actions
+- Maintained consistent modal styling across timer, seat conflict, alarm, and history management actions
+- General history cleanup and admin workflow improvements
+
 v1.5.0
 - Added integrated Help and Documentation modal directly inside the dashboard
 - Added dynamic changelog system loaded from external text file
