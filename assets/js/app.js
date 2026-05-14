@@ -11,6 +11,16 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
+fetch("./assets/data/changelog.txt")
+  .then(res => res.text())
+  .then(text => {
+    document.getElementById("changeLogContent").textContent = text;
+  })
+  .catch(() => {
+    document.getElementById("changeLogContent").textContent =
+      "Unable to load changelog.";
+  });
+
 const firebaseConfig = {
   apiKey: "RemovedKEY",
   authDomain: "hc-testing-center.firebaseapp.com",
@@ -76,6 +86,11 @@ const seatStatusFields = document.getElementById("seatStatusFields");
 const addSeatStatusBtn = document.getElementById("addSeatStatusBtn");
 
 const timerTimeFields = document.getElementById("timerTimeFields");
+
+const deleteTimerModalElement = document.getElementById("deleteTimerModal");
+const deleteTimerModal = new bootstrap.Modal(deleteTimerModalElement);
+const deleteTimerMessage = document.getElementById("deleteTimerMessage");
+const confirmDeleteTimerBtn = document.getElementById("confirmDeleteTimerBtn");
 
 let activeLab = "C";
 let timers = [];
@@ -176,9 +191,22 @@ function createNewTimerObject({
   set(newTimerRef, timer);
 }
 
+function normalizeSeat(lab, seatInput) {
+  const cleaned = seatInput.trim().toUpperCase().replace(/\s+/g, "");
+
+  if (!cleaned) return "";
+
+  if (cleaned.startsWith("C") || cleaned.startsWith("B")) {
+    return cleaned;
+  }
+
+  return `${lab}${cleaned}`;
+}
+
 function createTimer() {
   const lab = document.getElementById("labInput").value;
-  const seat = document.getElementById("seatInput").value.trim().toUpperCase();
+  const rawSeat = document.getElementById("seatInput").value;
+  const seat = normalizeSeat(lab, rawSeat);
   const student = document.getElementById("studentInput").value.trim();
   const test = document.getElementById("testInput").value.trim();
   const hours = parseInt(document.getElementById("hoursInput").value) || 0;
@@ -287,7 +315,8 @@ function createSeatStatusObject({
 
 function createSeatStatus() {
   const lab = document.getElementById("labInput").value;
-  const seat = document.getElementById("seatInput").value.trim().toUpperCase();
+  const rawSeat = document.getElementById("seatInput").value;
+  const seat = normalizeSeat(lab, rawSeat);
   const student = document.getElementById("studentInput").value.trim();
   const testType = document.getElementById("testTypeInput").value;
   const status = document.getElementById("seatStatusInput").value;
@@ -720,14 +749,24 @@ window.deleteTimer = function(id) {
   const timer = timers.find(t => t.id === id);
   if (!timer) return;
 
-  const historyItem = {
-    ...timer,
-    removedAt: new Date().toLocaleString(),
-    removedAtMs: Date.now()
+  deleteTimerMessage.textContent =
+    `Delete timer for ${timer.seat} - ${timer.student}?`;
+
+  confirmDeleteTimerBtn.onclick = () => {
+    const historyItem = {
+      ...timer,
+      type: "timer",
+      removedAt: new Date().toLocaleString(),
+      removedAtMs: Date.now()
+    };
+
+    push(historyRef, historyItem);
+    remove(ref(db, `timers/${id}`));
+
+    deleteTimerModal.hide();
   };
 
-  push(historyRef, historyItem);
-  remove(ref(db, `timers/${id}`));
+  deleteTimerModal.show();
 };
 
 clearAllBtn.addEventListener("click", () => {

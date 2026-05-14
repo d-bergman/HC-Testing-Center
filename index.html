@@ -59,6 +59,9 @@
         <button id="enableSoundBtn" class="btn btn-sound">
   🔊 Enable Sound
 </button>
+<button class="btn btn-sound" data-bs-toggle="modal" data-bs-target="#helpModal">
+  ❔ Help
+</button>
         <div class="time-box text-sm-end">
           <strong id="currentTime">--:--:--</strong>
           <span id="currentDate">Loading...</span>
@@ -132,17 +135,17 @@
 
                   <div class="col-12 col-sm-6 col-lg-3">
                     <label for="seatInput" class="form-label">Seat</label>
-                    <input id="seatInput" class="form-control" type="text" placeholder="C16" />
+                    <input id="seatInput" class="form-control" type="text" placeholder="C16" maxlength="3" />
                   </div>
 
                   <div class="col-12 col-md-6">
                     <label for="studentInput" class="form-label">Student Name</label>
-                    <input id="studentInput" class="form-control" type="text" placeholder="John Smith" />
+                    <input id="studentInput" class="form-control" type="text" placeholder="John" maxlength="10" />
                   </div>
 
                   <div id="testOptionalField" class="col-12 col-md-6">
   <label for="testInput" class="form-label">Test Optional</label>
-  <input id="testInput" class="form-control" type="text" placeholder="Math Placement" />
+  <input id="testInput" class="form-control" type="text" placeholder="Shryock" maxlength="10"/>
 </div>
 <div id="timerTimeFields" class="col-12 col-md-6 d-flex gap-3">
   <div style="max-width: 110px;">
@@ -283,6 +286,7 @@
 
       <p class="mb-0 text-center">Harper Testing Center – Timer Dashboard</p>
       <p class="mb-0 text-center">WebApp Made by Darren Bergman</p>
+      <p class="mb-0 text-center">Version <span id="appVersion">1.5.0</span></p>
       <button id="clearAllBtn" class="btn btn-danger-outline">
         🗑 Clear All Timers
       </button>
@@ -343,6 +347,112 @@
         </button>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteTimerModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content alarm-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Delete Timer</h2>
+      </div>
+
+      <div class="modal-body">
+        <p id="deleteTimerMessage" class="mb-0"></p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button id="confirmDeleteTimerBtn" type="button" class="btn btn-primary-custom">
+          Delete Timer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="helpModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content alarm-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Testing Center Dashboard Help</h2>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body help-content">
+        <h3 class="mt-4">Change Log</h3>
+
+        <pre id="changeLogContent" class="change-log-box">
+        Loading changelog...
+        </pre>
+        <h3>Overview</h3>
+        <p>This dashboard tracks active timers, reserved seats, occupied seats, and lab seating in real time.</p>
+
+        <h3>Adding a Timer</h3>
+        <ol>
+          <li>Select Lab B or Lab C.</li>
+          <li>Enter the seat number. You can type <strong>C16</strong>, <strong>B12</strong>, or just <strong>16</strong> if the lab dropdown is correct.</li>
+          <li>Enter the student name.</li>
+          <li>Optional: enter a test label.</li>
+          <li>Enter hours and minutes.</li>
+          <li>Click <strong>Start Timer</strong>.</li>
+        </ol>
+
+        <h3>Adding a Seat Status</h3>
+        <ol>
+          <li>Click <strong>Add Seat Status</strong>.</li>
+          <li>Select the lab and enter the seat.</li>
+          <li>Student name is optional.</li>
+          <li>Select Reserved or Occupied.</li>
+          <li>Select the test type: CNA, GED, TEAS, CLEP, Placement, or Other.</li>
+          <li>Click <strong>Add Seat Status</strong>.</li>
+        </ol>
+
+        <h3>Seat Colors</h3>
+        <ul>
+          <li><strong>Green:</strong> Timer has more than 15 minutes left.</li>
+          <li><strong>Orange:</strong> Timer has 5–15 minutes left.</li>
+          <li><strong>Red:</strong> Timer has under 5 minutes left or is complete.</li>
+          <li><strong>Blue:</strong> Seat is occupied without a timer.</li>
+          <li><strong>Purple:</strong> Seat is reserved.</li>
+          <li><strong>Gray:</strong> Seat is empty.</li>
+        </ul>
+
+        <h3>Camera Dots</h3>
+        <ul>
+          <li><strong>Green dot:</strong> Full camera view.</li>
+          <li><strong>Orange dot:</strong> Partial or harder-to-see camera view.</li>
+          <li><strong>Red dot:</strong> Camera blind spot.</li>
+        </ul>
+
+        <h3>Timer Controls</h3>
+        <ul>
+          <li><strong>Pause:</strong> pauses the timer.</li>
+          <li><strong>+5:</strong> adds five minutes, even if time is already up.</li>
+          <li><strong>Trash:</strong> deletes the timer after confirmation.</li>
+        </ul>
+
+        <h3>Alarm Sound</h3>
+        <p>Click <strong>Enable Sound</strong> after opening the dashboard. Browsers usually require one click before they allow alarm audio.</p>
+
+        <h3>History</h3>
+        <p>The History tab can search past timers and cleared seat statuses by student, seat, lab, test, or date.</p>
+
+        <h3>Duplicate Seat Protection</h3>
+        <p>The dashboard prevents two active items from using the same seat. If a seat already has a timer or status, a confirmation popup will ask before replacing it.</p>
+
+        <h3>Important Notes</h3>
+        <ul>
+          <li>Do not close the dashboard tab if you need alarm sounds on that workstation.</li>
+          <li>Use <strong>Clear</strong> on reserved/occupied seats when the student leaves.</li>
+          <li>Use the trash button to remove completed timers.</li>
+          <li>The app updates live for all open staff dashboards.</li>
+        </ul>
+      </div>
     </div>
   </div>
 </div>

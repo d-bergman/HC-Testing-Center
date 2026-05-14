@@ -1,0 +1,50 @@
+v1.4.0
+- Added Seat Status system for non-timed testers and reserved workstations
+- Added support for Reserved and Occupied seat states
+- Added support for CNA, GED, TEAS, CLEP, Placement, and Other test categories
+- Added optional student assignment for occupied seats
+- Added real-time seat status syncing across all connected dashboards using Firebase
+- Added live seat coloring for occupied and reserved seats on Lab B and Lab C maps
+- Added seat clear functionality for non-timed seats
+- Added duplicate seat protection between timers and seat statuses
+- Added confirmation popups when replacing existing timers or seat statuses
+- Added dynamic seat normalization logic:
+  - Example: entering “12” with Lab C selected automatically becomes “C12”
+  - Manual seat IDs such as “B12” or “C16” override the dropdown correctly
+- Added camera visibility indicators for all testing seats:
+  - Green = full visibility
+  - Orange = partial visibility
+  - Red = blind spot
+- Added history tracking for cleared seat statuses and removed timers
+- Added searchable history system for student names, tests, seats, and labs
+- Added history pagination with Load More functionality
+- Added live timer alarm modal with dismiss controls
+- Added repeating timer alarm handling improvements
+- Added +5 minute extension button for active and expired timers
+- Added pause and resume support for timers
+- Added duplicate timer protection for occupied seats
+- Added styled dashboard confirmation modals matching application UI
+- Added password protection screen for internal staff-only access
+- Added Help documentation modal directly inside the application
+- Added application version tracking system
+- Added changelog system loaded dynamically from external text file
+- Improved mobile and responsive dashboard layout using Bootstrap 5.3
+- Improved timer layout stability and text overflow handling
+- Added character limits to seat, student name, and test fields to preserve layout integrity
+- Improved realtime synchronization reliability between multiple open dashboards
+- Fixed timer corruption issue causing NaN displays after remote timer deletion
+- Fixed multiple alarm edge cases when timers were dismissed on another workstation
+- Fixed seat replacement synchronization issues
+- Fixed seat status update inconsistencies
+- Improved active timer styling and map readability
+- Improved usability for shared testing center workflows and multi-staff operation
+
+v1.0.0
+- Initial internal release
+- Firebase realtime timer synchronization
+- Lab B and Lab C interactive seating maps
+- Active timer dashboard
+- Timer alarm audio system
+- Live countdown timers
+- Seat map visual timer indicators
+- Realtime multi-user dashboard updates

@@ -676,3 +676,53 @@ h2 {
 .purple-dot {
   background: #7c3aed;
 }
+
+.help-content h3 {
+  margin-top: 1.25rem;
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.help-content p,
+.help-content li {
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.help-content ul,
+.help-content ol {
+  padding-left: 1.25rem;
+}
+
+.btn-sound {
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 2px 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-sound:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.22);
+  color: #ffffff;
+}
+
+.btn-sound:active {
+  transform: scale(0.98);
+}
+
+.change-log-box {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  color: #dbe7f5;
+  white-space: pre-wrap;
+  font-family: Consolas, monospace;
+  max-height: 320px;
+  overflow-y: auto;
+}
