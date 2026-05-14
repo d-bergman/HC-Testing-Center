@@ -476,7 +476,7 @@ function renderSeats() {
       if (status === "red") statusClass = "active-red";
       } else if (seatStatus) {
   statusClass =
-    seatStatus.status === "reserved"
+    seatStatus.status === "Reserved"
       ? "seat-reserved"
       : "seat-occupied";
     }
@@ -613,9 +613,9 @@ function startAlarmLoop(timer) {
   const stillExists = timers.some(t => t.id === timer.id);
 if (!stillExists) return;
 
-if (!soundEnabled) {
+/*if (!soundEnabled) {
   alert("Timer completed, but sound is not enabled. Click Enable Sound.");
-}
+}*/
 
   if (activeAlarmTimerId) return;
 
