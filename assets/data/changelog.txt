@@ -1,3 +1,11 @@
+v1.7.5
+- Added Clear button support for active timers
+- Timer Clear button now mirrors seat status workflow behavior
+- Clear button and trash button now perform the same timer removal action
+- Improved operational consistency between timers and seat statuses
+- Improved usability and staff workflow clarity during live testing operations
+- General timer action and workflow polish improvements
+
 v1.7.4
 - Improved special seat flag keyword detection
 - ADS seat highlighting now activates when "ADS" appears anywhere in the Test Optional field

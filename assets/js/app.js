@@ -582,6 +582,7 @@ function renderSeats() {
     ? `
       <div class="seat-name">${timer.student}</div>
       <div class="seat-time">${formatTime(getRemainingSeconds(timer))}</div>
+      <button class="seat-clear-btn" onclick="deleteTimer('${timer.id}')">Clear</button>
     `
     : seatStatus
     ? `
