@@ -482,8 +482,8 @@ function renderTimers() {
 function getTimerSeatClass(timer, remaining) {
   const testCode = (timer.test || "").trim().toUpperCase();
 
-  if (testCode === "ADS") return "active-ads";
-  if (testCode === "AM") return "active-am";
+  if (testCode.includes("ADS")) return "active-ads";
+  if (testCode.includes("MISCONDUCT")) return "active-misconduct";
 
   const status = getTimerStatus(remaining);
 

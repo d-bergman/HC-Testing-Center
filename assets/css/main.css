@@ -803,7 +803,7 @@ h2 {
   color: #111827;
 }
 
-.seat.active-am {
+.seat.active-misconduct {
   background: linear-gradient(135deg, #ec4899, #be185d);
   color: #ffffff;
 }
@@ -812,6 +812,6 @@ h2 {
   background: #facc15;
 }
 
-.am-dot {
+.misconduct-dot {
   background: #ec4899;
 }

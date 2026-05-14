@@ -1,3 +1,12 @@
+v1.7.4
+- Improved special seat flag keyword detection
+- ADS seat highlighting now activates when "ADS" appears anywhere in the Test Optional field
+  - Example: "ADS Shryock"
+- Added Misconduct seat highlighting support
+- Misconduct keyword detection is now case-insensitive
+- Improved operational flexibility for instructor and testing annotations
+- General seat flagging and keyword detection improvements
+
 v1.7.3
 - Changed timer workflow from immediate-start to staged-start operation
 - New timers are now created in a paused state by default
