@@ -171,8 +171,8 @@
   <div class="col-12 col-sm-6">
     <label for="seatStatusInput" class="form-label">Seat Status</label>
     <select id="seatStatusInput" class="form-select">
-      <option value="Reserved">Reserved</option>
       <option value="Occupied">Occupied</option>
+      <option value="Reserved">Reserved</option>
     </select>
   </div>
 
@@ -290,7 +290,7 @@
 
       <p class="mb-0 text-center">Harper Testing Center – Timer Dashboard</p>
       <p class="mb-0 text-center">WebApp Made by Darren Bergman</p>
-      <p class="mb-0 text-center">Version <span id="appVersion">1.7.5</span></p>
+      <p class="mb-0 text-center">Version <span id="appVersion">1.8.0</span></p>
       <button id="clearAllBtn" class="btn btn-danger-outline">
         🗑 Clear All Timers
       </button>
@@ -355,6 +355,7 @@
   </div>
 </div>
 
+<!-- Modal for Deleting Timers -->
 <div class="modal fade" id="deleteTimerModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content alarm-modal">
@@ -379,6 +380,32 @@
   </div>
 </div>
 
+<!-- Modal for General Info/Errors -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content alarm-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Notice</h2>
+      </div>
+
+      <div class="modal-body">
+        <p id="infoModalMessage" class="mb-0"></p>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-primary-custom"
+          data-bs-dismiss="modal"
+        >
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Help/Instructions -->
 <div class="modal fade" id="helpModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content alarm-modal">
@@ -388,79 +415,134 @@
       </div>
 
       <div class="modal-body help-content">
-        <h3 class="mt-4">Change Log</h3>
+  <h3 class="mt-4">Change Log</h3>
 
-        <pre id="changeLogContent" class="change-log-box">
-        Loading changelog...
-        </pre>
-        <h3>Overview</h3>
-        <p>This dashboard tracks active timers, reserved seats, occupied seats, and lab seating in real time.</p>
+  <pre id="changeLogContent" class="change-log-box">
+Loading changelog...
+  </pre>
 
-        <h3>Adding a Timer</h3>
-        <ol>
-          <li>Select Lab B or Lab C.</li>
-          <li>Enter the seat number. You can type <strong>C16</strong>, <strong>B12</strong>, or just <strong>16</strong> if the lab dropdown is correct.</li>
-          <li>Enter the student name.</li>
-          <li>Optional: enter a test label.</li>
-          <li>Enter hours and minutes.</li>
-          <li>Click <strong>Start Timer</strong>.</li>
-        </ol>
+  <h3>Overview</h3>
+  <p>
+    This dashboard is used to manage live testing activity across Lab B and Lab C.
+    It tracks active timers, occupied seats, reserved seats, special testing flags,
+    projected end times, and seat history in real time.
+  </p>
 
-        <h3>Adding a Seat Status</h3>
-        <ol>
-          <li>Click <strong>Add Seat Status</strong>.</li>
-          <li>Select the lab and enter the seat.</li>
-          <li>Student name is optional.</li>
-          <li>Select Reserved or Occupied.</li>
-          <li>Select the test type: CNA, GED, TEAS, CLEP, Placement, or Other.</li>
-          <li>Click <strong>Add Seat Status</strong>.</li>
-        </ol>
+  <h3>Adding a Timer</h3>
+  <ol>
+    <li>Select Lab B or Lab C.</li>
+    <li>Enter the seat number. You can type <strong>C16</strong>, <strong>B12</strong>, or just <strong>16</strong> if the lab dropdown is correct.</li>
+    <li>Enter the student name.</li>
+    <li>Optional: enter a test label, instructor name, or special flag.</li>
+    <li>Enter hours and minutes.</li>
+    <li>Click <strong>Add Timer</strong>.</li>
+    <li>The timer will appear paused first. Press <strong>Play</strong> when the student is seated and ready to begin.</li>
+  </ol>
 
-        <h3>Seat Colors</h3>
-        <ul>
-          <li><strong>Green:</strong> Timer has more than 15 minutes left.</li>
-          <li><strong>Orange:</strong> Timer has 5–15 minutes left.</li>
-          <li><strong>Red:</strong> Timer has under 5 minutes left or is complete.</li>
-          <li><strong>Blue:</strong> Seat is occupied without a timer.</li>
-          <li><strong>Purple:</strong> Seat is reserved.</li>
-          <li><strong>Gray:</strong> Seat is empty.</li>
-        </ul>
+  <h3>Closing Time Auto-Trim</h3>
+  <p>
+    When a new timer is added, the dashboard automatically trims the timer if it would go past closing time.
+    Closing time is currently 7:00 PM Monday–Thursday and 4:30 PM on Friday.
+  </p>
+  <p>
+    Auto-trim only happens when a timer is first added. The <strong>+5</strong> button and Edit Timer feature do not auto-trim.
+  </p>
 
-        <h3>Camera Dots</h3>
-        <ul>
-          <li><strong>Green dot:</strong> Full camera view.</li>
-          <li><strong>Orange dot:</strong> Partial or harder-to-see camera view.</li>
-          <li><strong>Red dot:</strong> Camera blind spot.</li>
-        </ul>
+  <h3>Editing a Timer</h3>
+  <ol>
+    <li>Pause the timer first.</li>
+    <li>Click <strong>Edit</strong> under the student name.</li>
+    <li>Update the lab, seat, student name, test label, hours, or minutes.</li>
+    <li>Click <strong>Save Timer</strong>.</li>
+    <li>The timer stays paused after editing. Press <strong>Play</strong> to resume.</li>
+  </ol>
 
-        <h3>Timer Controls</h3>
-        <ul>
-          <li><strong>Pause:</strong> pauses the timer.</li>
-          <li><strong>+5:</strong> adds five minutes, even if time is already up.</li>
-          <li><strong>Trash:</strong> deletes the timer after confirmation.</li>
-        </ul>
+  <h3>Timer Controls</h3>
+  <ul>
+    <li><strong>Play/Pause:</strong> starts or pauses the timer.</li>
+    <li><strong>+5:</strong> adds five minutes to the timer.</li>
+    <li><strong>Trash:</strong> removes the timer after confirmation.</li>
+    <li><strong>Clear:</strong> clears the timer from the seating map and works the same as deleting the timer.</li>
+  </ul>
 
-        <h3>Alarm Sound</h3>
-        <p>Click <strong>Enable Sound</strong> after opening the dashboard. Browsers usually require one click before they allow alarm audio.</p>
+  <h3>Projected End Time</h3>
+  <p>
+    Each active timer shows an estimated end time under the countdown. This helps staff quickly see when a student is expected to finish.
+  </p>
 
-        <h3>History</h3>
-        <p>The History tab can search past timers and cleared seat statuses by student, seat, lab, test, or date.</p>
+  <h3>Adding a Seat Status</h3>
+  <ol>
+    <li>Click <strong>Add Seat Status</strong>.</li>
+    <li>Select the lab and enter the seat.</li>
+    <li>Student name is optional.</li>
+    <li>Select <strong>Reserved</strong> or <strong>Occupied</strong>.</li>
+    <li>Select the test type: CNA, GED, TEAS, CLEP, Placement, HonorLock, or Other.</li>
+    <li>Click <strong>Add Seat Status</strong>.</li>
+  </ol>
 
-        <h3>Duplicate Seat Protection</h3>
-        <p>The dashboard prevents two active items from using the same seat. If a seat already has a timer or status, a confirmation popup will ask before replacing it.</p>
+  <h3>Active Count</h3>
+  <p>
+    The Active Timers count includes active timers as <strong>Make-Up</strong> tests and also includes occupied seat statuses by test type.
+  </p>
+  <p>
+    Example: <strong>9 active - 3 Make-Up • 3 CNA • 2 GED • 1 CLEP</strong>
+  </p>
 
-        <h3>Important Notes</h3>
-        <ul>
-          <li>Do not close the dashboard tab if you need alarm sounds on that workstation.</li>
-          <li>Use <strong>Clear</strong> on reserved/occupied seats when the student leaves.</li>
-          <li>Use the trash button to remove completed timers.</li>
-          <li>The app updates live for all open staff dashboards.</li>
-        </ul>
-      </div>
+  <h3>Seat Colors</h3>
+  <ul>
+    <li><strong>Green:</strong> Timer has more than 15 minutes left.</li>
+    <li><strong>Orange:</strong> Timer has 5–15 minutes left.</li>
+    <li><strong>Red:</strong> Timer has under 5 minutes left or is complete.</li>
+    <li><strong>Blue:</strong> Seat is occupied without a timer.</li>
+    <li><strong>Purple:</strong> Seat is reserved.</li>
+    <li><strong>Yellow:</strong> ADS flag.</li>
+    <li><strong>Pink:</strong> Misconduct flag.</li>
+    <li><strong>Gray:</strong> Seat is empty.</li>
+  </ul>
+
+  <h3>Special Flags</h3>
+  <ul>
+    <li><strong>ADS:</strong> If “ADS” appears anywhere in the Test Optional field, the seat turns yellow.</li>
+    <li><strong>Misconduct:</strong> If “Misconduct” appears anywhere in the Test Optional field, the seat turns pink.</li>
+  </ul>
+
+  <h3>Camera Dots</h3>
+  <ul>
+    <li><strong>Green dot:</strong> Full camera view.</li>
+    <li><strong>Orange dot:</strong> Partial or harder-to-see camera view.</li>
+    <li><strong>Red dot:</strong> Camera blind spot.</li>
+  </ul>
+
+  <h3>Alarm Sound</h3>
+  <p>
+    Click <strong>Enable Sound</strong> after opening the dashboard. Browsers usually require one click before they allow alarm audio.
+  </p>
+
+  <h3>History</h3>
+  <p>
+    The History tab can search past timers and cleared occupied seat statuses by student, seat, lab, test, or date.
+    Reserved seats are not logged unless a student name was entered.
+  </p>
+
+  <h3>Duplicate Seat Protection</h3>
+  <p>
+    The dashboard prevents two active items from using the same seat. If a seat already has a timer or status,
+    a confirmation popup will ask before replacing it.
+  </p>
+
+  <h3>Important Notes</h3>
+  <ul>
+    <li>Do not close the dashboard tab if you need alarm sounds on that workstation.</li>
+    <li>Use <strong>Enable Sound</strong> once per workstation session.</li>
+    <li>Use <strong>Clear</strong> when a student leaves a seat.</li>
+    <li>The app updates live for all open staff dashboards.</li>
+  </ul>
+</div>
     </div>
   </div>
 </div>
 
+<!-- Modal for Admin Unlock -->
 <div class="modal fade" id="adminUnlockModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content alarm-modal">
@@ -512,6 +594,105 @@
 
         <button id="confirmDeleteHistoryBtn" type="button" class="btn btn-primary-custom">
           Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Editing Timers -->
+ <div class="modal fade" id="editTimerModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content alarm-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Edit Timer</h2>
+      </div>
+
+      <div class="modal-body">
+        <p class="text-secondary-custom mb-3">
+          Timer must stay paused after editing.
+        </p>
+
+        <div class="row g-3">
+          <div class="col-12 col-sm-4">
+            <label for="editLabInput" class="form-label">Lab</label>
+            <select id="editLabInput" class="form-select">
+              <option value="C">Lab C</option>
+              <option value="B">Lab B</option>
+            </select>
+          </div>
+
+          <div class="col-12 col-sm-4">
+            <label for="editSeatInput" class="form-label">Seat</label>
+            <input id="editSeatInput" class="form-control" type="text" maxlength="3" />
+          </div>
+
+          <div class="col-12 col-sm-4">
+            <label for="editStudentInput" class="form-label">Student</label>
+            <input id="editStudentInput" class="form-control" type="text" maxlength="10" />
+          </div>
+
+          <div class="col-12">
+            <label for="editTestInput" class="form-label">Test Optional</label>
+            <input id="editTestInput" class="form-control" type="text" maxlength="10" />
+          </div>
+
+          <div class="col-6">
+            <label for="editHoursInput" class="form-label">Hours</label>
+            <input id="editHoursInput" class="form-control" type="number" min="0" />
+          </div>
+
+          <div class="col-6">
+            <label for="editMinutesInput" class="form-label">Minutes</label>
+            <input id="editMinutesInput" class="form-control" type="number" min="0" max="59" />
+          </div>
+        </div>
+
+        <p id="editTimerError" class="password-error"></p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button id="saveEditTimerBtn" type="button" class="btn btn-primary-custom">
+          Save Timer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+// Modal for Confirming Clear All Timers
+<div class="modal fade" id="clearAllTimersModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content alarm-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Clear All Timers</h2>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-0">
+          Clear all active timers?
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cancel
+        </button>
+
+        <button
+          id="confirmClearAllTimersBtn"
+          type="button"
+          class="btn btn-primary-custom"
+        >
+          Clear All
         </button>
       </div>
     </div>

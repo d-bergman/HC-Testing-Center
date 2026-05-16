@@ -1,3 +1,96 @@
+Testing Center Dashboard — Version 1.8.0 - 1:57 AM - 5/16/26
+
+NEW FEATURES
+• Added Edit Timer functionality for paused timers
+• Added projected end times under active timer countdowns
+• Added automatic closing-time timer trimming
+• Added special seat flag colors for ADS and Misconduct
+• Added active test-type breakdown to Active Timers counter
+• Added styled in-app modals replacing browser alert/confirm popups
+• Added colored operational action buttons for Pause/Resume, +5, and Delete
+• Added paused timer color state
+• Added custom favicon support
+
+TIMER IMPROVEMENTS
+• Timers now create in a paused state by default
+• Staff can resume timers when students are seated and ready
+• Edit Timer now allows changing:
+
+* Lab
+* Seat
+* Student Name
+* Test Label
+* Hours
+* Minutes
+  • Edited timers remain paused until manually resumed
+  • +5 minute button bypasses closing-time auto-trim
+  • Edit Timer also bypasses auto-trim logic
+  • Added projected “Ends at” display beneath countdown timers
+  • Added duplicate seat protection to Edit Timer workflow
+
+AUTO-TRIM SYSTEM
+• New timers automatically trim if they would exceed closing time
+• Monday–Thursday closing time: 7:00 PM
+• Friday closing time: 4:30 PM
+• Prevents accidental timers extending beyond operating hours
+
+UI / UX IMPROVEMENTS
+• Moved Edit Timer action beneath student name for cleaner timer rows
+• Reduced clutter in Active Timers section
+• Updated History layout and compact timestamp formatting
+• Removed seconds from history timestamps
+• Shortened year formatting in History tab
+• Improved spacing and readability across timer/history rows
+• Added custom dashboard-styled modals
+• Added color-coded action buttons:
+
+* Blue = Pause/Resume
+* Gold = +5 Minutes
+* Red = Delete
+  • Added visual paused-state timer color
+  • Improved map seat readability on green/orange/red timer seats
+  • Added favicon to browser tab
+
+SPECIAL TEST FLAGS
+• “ADS” keyword anywhere in Test Optional field turns seat yellow
+• “Misconduct” keyword anywhere in Test Optional field turns seat pink
+• Flags apply dynamically regardless of text formatting or placement
+
+ACTIVE COUNTER IMPROVEMENTS
+• Active counter now includes:
+
+* Make-Up timers
+* CNA
+* GED
+* CLEP
+* Placement
+* HonorLock
+* Other occupied seat statuses
+  • Example:
+  9 active - 3 Make-Up • 3 CNA • 2 GED • 1 CLEP
+
+MODAL / CONFIRMATION SYSTEM
+• Replaced browser alert popup for Edit Timer warnings
+• Replaced browser confirm popup for Clear All Timers
+• Added unified modal styling consistent with dashboard design
+
+HELP / GUIDE UPDATES
+• Updated built-in Help guide for 1.8.0 features
+• Added instructions for:
+
+* Paused timer workflow
+* Edit Timer
+* Auto-trim behavior
+* Projected end times
+* ADS / Misconduct flags
+* Updated Active Count system
+
+STABILITY / OPERATIONS
+• Improved operational clarity during stress testing
+• Improved accessibility through color differentiation
+• Maintained real-time Firebase synchronization across workstations
+• Continued optimization for Testing Center staff workflow
+
 v1.7.5
 - Added Clear button support for active timers
 - Timer Clear button now mirrors seat status workflow behavior

@@ -170,10 +170,11 @@ h2 {
   justify-content: flex-end;
   padding-right: 16px;
 }
-
+/** Desktop */
 .timer-item,
 .history-item {
   display: grid;
+  /*grid-template-columns: 80px minmax(50px, 1fr) minmax(0px, 1fr) 100px 60px 165px;*/
   grid-template-columns: 80px minmax(50px, 1fr) minmax(0px, 1fr) 145px 70px 115px;
   gap: 10px;
   align-items: center;
@@ -468,6 +469,24 @@ h2 {
   color: #fff;
 }
 
+.seat.active-green,
+.seat.active-orange,
+.seat.active-red {
+  color: #0c1420;
+}
+
+.seat.active-green .seat-id,
+.seat.active-green .seat-name,
+.seat.active-green .seat-time,
+.seat.active-orange .seat-id,
+.seat.active-orange .seat-name,
+.seat.active-orange .seat-time,
+.seat.active-red .seat-id,
+.seat.active-red .seat-name,
+.seat.active-red .seat-time {
+  color: #0c1420;
+}
+
 .seat-id {
    font-weight: 900;
   font-size: clamp(0.85rem, 1vw, 1.05rem);
@@ -476,6 +495,7 @@ h2 {
 
 .seat-name {
   font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+  font-weight: 600;
   margin-top: 4px;
   line-height: 1.1;
   overflow: hidden;
@@ -814,4 +834,114 @@ h2 {
 
 .misconduct-dot {
   background: #ec4899;
+}
+
+.custom-tooltip {
+  position: relative;
+  cursor: help;
+}
+
+.custom-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #15263b, #0f1d2e);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.custom-tooltip::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 4px);
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--border);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: opacity 0.15s ease;
+}
+
+.custom-tooltip:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.custom-tooltip:hover::before {
+  opacity: 1;
+}
+
+.projected-end {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+.timer-edit-link {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-top: 3px;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s ease;
+}
+
+.timer-edit-link:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* New style for paused timers */
+.paused-timer {
+  color: #98430a !important;
+}
+
+/* New styles for action buttons */
+.action-buttons .delete-btn {
+  background: rgba(220, 38, 38, 0.18);
+  border-color: rgba(248, 113, 113, 0.35);
+  color: #fecaca;
+}
+
+.action-buttons .delete-btn:hover {
+  background: rgba(220, 38, 38, 0.32);
+}
+
+/* New styles for plus button */
+.action-buttons .plus-btn {
+  background: rgba(217, 119, 6, 0.18);
+  border-color: rgba(251, 191, 36, 0.35);
+  color: #fde68a;
+}
+
+.action-buttons .plus-btn:hover {
+  background: rgba(217, 119, 6, 0.3);
+}
+
+/* New styles for pause button */
+.action-buttons .pause-btn {
+  background: rgba(37, 99, 235, 0.2);
+  border-color: rgba(96, 165, 250, 0.35);
+  color: #bfdbfe;
+}
+
+.action-buttons .pause-btn:hover {
+  background: rgba(37, 99, 235, 0.35);
 }

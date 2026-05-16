@@ -87,11 +87,29 @@ const addSeatStatusBtn = document.getElementById("addSeatStatusBtn");
 
 const timerTimeFields = document.getElementById("timerTimeFields");
 
+//Delete Timer Constants
+
 const deleteTimerModalElement = document.getElementById("deleteTimerModal");
 const deleteTimerModal = new bootstrap.Modal(deleteTimerModalElement);
 const deleteTimerMessage = document.getElementById("deleteTimerMessage");
 const confirmDeleteTimerBtn = document.getElementById("confirmDeleteTimerBtn");
 
+//Delete Timer Constants
+const editTimerModalElement = document.getElementById("editTimerModal");
+const editTimerModal = new bootstrap.Modal(editTimerModalElement);
+
+const editLabInput = document.getElementById("editLabInput");
+const editSeatInput = document.getElementById("editSeatInput");
+const editStudentInput = document.getElementById("editStudentInput");
+const editTestInput = document.getElementById("editTestInput");
+const editHoursInput = document.getElementById("editHoursInput");
+const editMinutesInput = document.getElementById("editMinutesInput");
+const editTimerError = document.getElementById("editTimerError");
+const saveEditTimerBtn = document.getElementById("saveEditTimerBtn");
+
+let editingTimerId = null;
+
+// Admin Unlock Constants
 const ADMIN_PASSWORD = "bd13311";
 
 const adminUnlockModalElement = document.getElementById("adminUnlockModal");
@@ -100,10 +118,26 @@ const adminPasswordInput = document.getElementById("adminPasswordInput");
 const adminPasswordError = document.getElementById("adminPasswordError");
 const adminUnlockBtn = document.getElementById("adminUnlockBtn");
 
+// Delete History Constants
 const deleteHistoryModalElement = document.getElementById("deleteHistoryModal");
 const deleteHistoryModal = new bootstrap.Modal(deleteHistoryModalElement);
 const deleteHistoryMessage = document.getElementById("deleteHistoryMessage");
 const confirmDeleteHistoryBtn = document.getElementById("confirmDeleteHistoryBtn");
+
+// Info Modal Constants
+const infoModalElement = document.getElementById("infoModal");
+const infoModal = new bootstrap.Modal(infoModalElement);
+const infoModalMessage = document.getElementById("infoModalMessage");
+
+// Clear All Timers Constants
+const clearAllTimersModalElement =
+  document.getElementById("clearAllTimersModal");
+
+const clearAllTimersModal =
+  new bootstrap.Modal(clearAllTimersModalElement);
+
+const confirmClearAllTimersBtn =
+  document.getElementById("confirmClearAllTimersBtn");
 
 let pendingAdminAction = null;
 
@@ -127,7 +161,7 @@ const seatCameraMap = {
   C33: "orange", C34: "orange", C35: "orange", C36: "orange",
   C37: "orange", C38: "orange", C39: "orange", C40: "orange",
   C41: "orange", C42: "orange", C43: "orange", C44: "orange",
-  C45: "orange", C46: "orange", C47: "green", C48: "green",
+  C45: "orange", C46: "orange", C47: "orange", C48: "orange",
 
   B1: "red", B2: "red", B3: "red", B4: "red",
   B5: "red", B6: "red", B7: "red", B8: "red",
@@ -135,7 +169,7 @@ const seatCameraMap = {
   B13: "green", B14: "green", B15: "green", B16: "green",
   B17: "green", B18: "green", B19: "green", B20: "red",
   B21: "red", B22: "green", B23: "orange", B24: "red",
-  B25: "green", B26: "green", B27: "green", B28: "green",
+  B25: "orange", B26: "orange", B27: "orange", B28: "green",
   B29: "green", B30: "green", B31: "green",
 };
 
@@ -218,6 +252,23 @@ function normalizeSeat(lab, seatInput) {
   return `${lab}${cleaned}`;
 }
 
+function getClosingTimeToday() {
+  const now = new Date();
+  const day = now.getDay();
+
+  const closing = new Date();
+
+  // Friday
+  if (day === 5) {
+    closing.setHours(16, 30, 0, 0);
+  } else {
+    // Monday-Thursday + weekends fallback
+    closing.setHours(19, 0, 0, 0);
+  }
+
+  return closing;
+}
+
 function createTimer() {
   const lab = document.getElementById("labInput").value;
   const rawSeat = document.getElementById("seatInput").value;
@@ -227,6 +278,22 @@ function createTimer() {
   const hours = parseInt(document.getElementById("hoursInput").value) || 0;
 const minutes = parseInt(document.getElementById("minutesInput").value) || 0;
 const totalMinutes = hours * 60 + minutes;
+
+// Closing Time Enforcement
+const closingTime = getClosingTimeToday();
+
+const secondsUntilClose = Math.floor(
+  (closingTime.getTime() - Date.now()) / 1000
+);
+
+const requestedSeconds = totalMinutes * 60;
+
+const finalSeconds = Math.min(
+  requestedSeconds,
+  Math.max(0, secondsUntilClose)
+);
+
+const finalMinutes = Math.ceil(finalSeconds / 60);
 
   if (!seat || !student || totalMinutes <= 0) {
     alert("Please complete all required fields.");
@@ -257,7 +324,7 @@ if (existingSeat) {
   seat,
   student,
   test,
-  minutes: totalMinutes
+  minutes: finalMinutes
 });
 
     seatConflictModal.hide();
@@ -280,7 +347,7 @@ if (existingSeatStatus) {
       seat,
       student,
       test,
-      minutes: totalMinutes
+      minutes: finalMinutes
     });
 
     seatConflictModal.hide();
@@ -299,7 +366,7 @@ if (existingSeatStatus) {
   seat,
   student,
   test,
-  minutes: totalMinutes
+  minutes: finalMinutes
 });
 
   document.getElementById("seatInput").value = "";
@@ -414,10 +481,55 @@ if (existingSeatStatus) {
 
 startTimerBtn.addEventListener("click", createTimer);
 
+function getProjectedEndTime(timer) {
+  let endTime;
+
+  if (timer.paused) {
+    endTime = new Date(
+      Date.now() + (timer.pausedRemaining || 0) * 1000
+    );
+  } else {
+    endTime = new Date(timer.endAt);
+  }
+
+  return endTime.toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit"
+  });
+}
+
 function renderTimers() {
   timerList.innerHTML = "";
 
-  document.getElementById("timerCount").textContent = `${timers.length} active`;
+  const activeSeatStatuses = seatStatuses.filter(
+  s => s.status !== "Reserved"
+);
+
+const totalActive =
+  timers.length + activeSeatStatuses.length;
+
+const typeCounts = {};
+
+// Timers = Make-Up
+if (timers.length > 0) {
+  typeCounts["Make-Up"] = timers.length;
+}
+
+// Seat statuses
+activeSeatStatuses.forEach(s => {
+  const type = s.testType || "Other";
+
+  typeCounts[type] = (typeCounts[type] || 0) + 1;
+});
+
+const typeSummary = Object.entries(typeCounts)
+  .map(([type, count]) => `${count} ${type}`)
+  .join(" • ");
+
+document.getElementById("timerCount").textContent =
+  typeSummary
+    ? `${totalActive} active - ${typeSummary}`
+    : `${totalActive} active`;
 
   if (!timers.length) {
     timerList.innerHTML = `<div class="empty-state">No active timers.</div>`;
@@ -439,16 +551,28 @@ function renderTimers() {
       </div>
 
       <div>
-        <strong>${timer.student}</strong>
-      </div>
+  <strong>${timer.student}</strong>
+
+  <div
+    class="timer-edit-link"
+    onclick="openEditTimer('${timer.id}')"
+  >
+    Edit
+  </div>
+</div>
 
       <div>
         ${timer.test || "-"}
       </div>
 
-      <div class="remaining ${status}">
-        ${formatTime(remaining)}
-      </div>
+      <div>
+  <div class="remaining ${status} ${timer.paused ? "paused-timer" : ""}">
+    ${formatTime(remaining)}
+  </div>
+  <div class="projected-end">
+    Ends ${getProjectedEndTime(timer)}
+  </div>
+</div>
 
       <div class="status-label">
         ${
@@ -461,15 +585,20 @@ function renderTimers() {
       </div>
 
       <div class="action-buttons">
-        <button onclick="togglePause('${timer.id}')">
+
+        <!--<button onclick="openEditTimer('${timer.id}')">
+          ✏️
+        </button>-->
+
+        <button class="pause-btn" onclick="togglePause('${timer.id}')">
           ${timer.paused ? "▶" : "⏸"}
         </button>
 
-        <button onclick="addFive('${timer.id}')">
+        <button class="plus-btn" onclick="addFive('${timer.id}')">
           +5
         </button>
 
-        <button onclick="deleteTimer('${timer.id}')">
+        <button class="delete-btn" onclick="deleteTimer('${timer.id}')">
           🗑
         </button>
       </div>
@@ -795,6 +924,7 @@ window.togglePause = function(id) {
   }
 };
 
+
 window.addFive = function(id) {
   const timer = timers.find(t => t.id === id);
   if (!timer) return;
@@ -815,6 +945,38 @@ window.addFive = function(id) {
 
   playedSounds.delete(id);
 };
+
+// Expose createSeatStatus to global scope for inline onclick handler
+function showInfoModal(message) {
+  infoModalMessage.textContent = message;
+  infoModal.show();
+}
+
+// Expose functions to global scope for inline onclick handlers
+window.openEditTimer = function(id) {
+  const timer = timers.find(t => t.id === id);
+  if (!timer) return;
+
+  if (!timer.paused) {
+    showInfoModal("Pause the timer before editing.");
+    return;
+  }
+
+  editingTimerId = id;
+  editTimerError.textContent = "";
+
+  editLabInput.value = timer.lab || "C";
+  editSeatInput.value = timer.seat || "";
+  editStudentInput.value = timer.student || "";
+  editTestInput.value = timer.test || "";
+
+  const remaining = timer.pausedRemaining || 0;
+  editHoursInput.value = Math.floor(remaining / 3600);
+  editMinutesInput.value = Math.floor((remaining % 3600) / 60);
+
+  editTimerModal.show();
+};
+
 
 window.deleteTimer = function(id) {
   const timer = timers.find(t => t.id === id);
@@ -860,18 +1022,22 @@ window.deleteHistoryItem = function(historyId) {
 clearAllBtn.addEventListener("click", () => {
   if (!timers.length) return;
 
-  const confirmClear = confirm("Clear all active timers?");
-  if (!confirmClear) return;
+  clearAllTimersModal.show();
+});
 
+confirmClearAllTimersBtn.addEventListener("click", () => {
   timers.forEach(timer => {
     push(historyRef, {
       ...timer,
+      type: "timer",
       removedAt: new Date().toLocaleString(),
       removedAtMs: Date.now()
     });
   });
 
   remove(timersRef);
+
+  clearAllTimersModal.hide();
 });
 
 mapButtons.forEach(btn => {
@@ -1082,6 +1248,53 @@ adminPasswordInput.addEventListener("keydown", event => {
   if (event.key === "Enter") {
     adminUnlockBtn.click();
   }
+});
+
+saveEditTimerBtn.addEventListener("click", () => {
+  const timer = timers.find(t => t.id === editingTimerId);
+  if (!timer) return;
+
+  const lab = editLabInput.value;
+  const seat = normalizeSeat(lab, editSeatInput.value);
+  const student = editStudentInput.value.trim();
+  const test = editTestInput.value.trim();
+  const hours = parseInt(editHoursInput.value) || 0;
+  const minutes = parseInt(editMinutesInput.value) || 0;
+  const totalSeconds = (hours * 60 + minutes) * 60;
+
+  if (!seat || !student || totalSeconds <= 0) {
+    editTimerError.textContent = "Please complete all required fields.";
+    return;
+  }
+
+  const duplicateTimer = timers.find(
+    t =>
+      t.id !== editingTimerId &&
+      t.seat.toUpperCase() === seat.toUpperCase()
+  );
+
+  const duplicateStatus = seatStatuses.find(
+    s => s.seat.toUpperCase() === seat.toUpperCase()
+  );
+
+  if (duplicateTimer || duplicateStatus) {
+    editTimerError.textContent = `${seat} is already in use.`;
+    return;
+  }
+
+  update(ref(db, `timers/${editingTimerId}`), {
+    lab,
+    seat,
+    student,
+    test,
+    durationSeconds: totalSeconds,
+    paused: true,
+    pausedRemaining: totalSeconds,
+    endAt: null,
+    alarmDismissed: false
+  });
+
+  editTimerModal.hide();
 });
 
 renderTimers();
