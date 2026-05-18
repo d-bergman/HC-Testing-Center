@@ -849,6 +849,16 @@ if (!stillExists) return;
   if (activeAlarmTimerId) return;
 
   activeAlarmTimerId = timer.id;
+
+  // Send message to iframe to trigger duck animation
+  window.postMessage(
+    {
+      source: "testing-center-dashboard",
+      action: "duck"
+    },
+    "*"
+  );
+
   playedSounds.add(timer.id);
 
   const alarmMessage = document.getElementById("alarmMessage");
@@ -881,6 +891,14 @@ function stopAlarmLoop() {
   timerSound.currentTime = 0;
 
   activeAlarmTimerId = null;
+
+  window.postMessage(
+  {
+    source: "testing-center-dashboard",
+    action: "restore"
+  },
+  "*"
+);
 }
 
 function checkTimerSounds() {
@@ -1295,6 +1313,26 @@ saveEditTimerBtn.addEventListener("click", () => {
   });
 
   editTimerModal.hide();
+});
+
+window.addEventListener("message", event => {
+  if (event.source !== window) return;
+  if (event.data?.source !== "testing-center-extension") return;
+
+  if (event.data.action === "requestSeatMap") {
+    window.postMessage(
+      {
+        source: "testing-center-dashboard",
+        action: "seatMapData",
+        data: {
+          activeLab,
+          timers,
+          seatStatuses
+        }
+      },
+      "*"
+    );
+  }
 });
 
 renderTimers();

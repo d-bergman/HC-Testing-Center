@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "Testing Center Dash Controller",
+  "version": "1.9.0",
+  "description": "Ducks YouTube audio for Testing Center timer alarms and provides quick add functionality.",
+  "permissions": ["tabs", "scripting"],
+  "host_permissions": [
+    "*://*.youtube.com/*",
+    "*://youtube.com/*",
+    "*://*.music.youtube.com/*"
+  ],
+  "action": {
+    "default_title": "Audio Ducker",
+    "default_popup": "popup.html",
+    "default_icon": {
+    "16": "favicon.png",
+    "48": "favicon.png"
+}
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://127.0.0.1:*/*",
+        "http://localhost:*/*",
+        "https://*.github.io/*",
+        "file:///*"
+      ],
+      "js": ["content.js"]
+    }
+  ],
+"commands": {
+  "open-quick-add": {
+    "suggested_key": {
+      "default": "Ctrl+Shift+V"
+    },
+    "description": "Open Testing Center Quick Add"
+  }
+},
+
+"icons": {
+  "16": "favicon.png",
+  "48": "favicon.png",
+  "128": "favicon.png"
+}
+  
+}

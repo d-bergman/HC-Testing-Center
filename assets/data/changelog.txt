@@ -1,3 +1,52 @@
+Testing Center Dashboard — Version 1.9.0 - 5/16/26 - 12:08PM
+
+NEW CHROME EXTENSION
+• Added TC Dash Controller Chrome extension
+• Added automatic YouTube audio ducking when dashboard alarms trigger
+• Added smooth fade down to 10% volume
+• Added smooth restore back to original YouTube volume
+• Added manual Duck and Restore controls
+• Added extension badge indicator when alarm audio is active
+• Added keyboard shortcut popup support
+• Added styled extension popup matching dashboard theme
+• Added custom extension icon support
+
+QUICK WORKFLOW TOOLS
+• Added Quick Add Timer from extension popup
+• Added timer presets:
+
+* 30m
+* 1h
+* 1h30
+* 2h
+  • Added Quick Seat Status from extension popup
+  • Added Lab B / Lab C support in extension controls
+  • Added dashboard focus after extension actions
+
+MINI MAP
+• Added mini live seat map inside extension
+• Added Lab B / Lab C mini-map toggle
+• Added clickable seats that autofill the Quick Add seat field
+• Added mini-map color states for timed, warning, danger, occupied, reserved, and empty seats
+• Increased mini-map refresh speed to 1 second
+
+UI / POLISH
+• Added tabbed extension layout:
+
+* Quick Add
+* Seat Status
+* Audio
+  • Added custom popup title bar
+  • Added extension version footer
+  • Added success/error messaging for extension actions
+  • Improved extension popup styling to match the main dashboard
+
+NOTES
+• Extension runs unpacked through Chrome Developer Mode
+• Dashboard tab must be refreshed after reloading/updating the extension
+• Chrome notification support was skipped because workstation policy may block notifications
+
+
 Testing Center Dashboard — Version 1.8.0 - 1:57 AM - 5/16/26
 
 NEW FEATURES

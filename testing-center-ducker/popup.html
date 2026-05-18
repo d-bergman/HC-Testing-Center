@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: #0d1b2b;
+      --border: #2b4058;
+      --text: #f4f7fb;
+      --muted: #a9b7c8;
+      --blue: #1f7ae0;
+      --orange: #f5a623;
+    }
+
+    body {
+      min-width: 460px;
+      margin: 0;
+      padding: 14px;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(38, 112, 190, 0.25), transparent 40%),
+        linear-gradient(135deg, #050b14, var(--bg));
+      color: var(--text);
+    }
+
+    .popup-card {
+      background: linear-gradient(180deg, #15263b, #0f1d2e);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+    }
+
+    h1 {
+      font-size: 1rem;
+      margin: 0;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    p {
+      margin: 4px 0 12px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.35;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 8px;
+      padding: 10px;
+      border: 0;
+      border-radius: 10px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:hover {
+      opacity: 0.92;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .duck {
+      background: linear-gradient(135deg, #f5a623, #d97706);
+      color: #111827;
+    }
+
+    .restore {
+      background: linear-gradient(135deg, #2387f2, #1262ca);
+      color: white;
+    }
+
+    .footer-note {
+      margin-top: 10px;
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 14px 0;
+}
+
+input,
+select {
+  width: 100%;
+  margin-top: 8px;
+  padding: 9px;
+  border-radius: 8px;
+  border: 1px solid #38506b;
+  background: #0a1726;
+  color: var(--text);
+  font-weight: 700;
+  box-sizing: border-box;
+}
+
+input::placeholder {
+  color: #7f8a99;
+}
+
+.time-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.add-timer {
+  background: linear-gradient(135deg, #2387f2, #1262ca);
+  color: white;
+}
+
+.quick-status {
+  min-height: 18px;
+  margin-top: 10px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: center;
+  color: var(--muted);
+}
+
+.quick-status.success {
+  color: #86efac;
+}
+
+.quick-status.error {
+  color: #fecaca;
+}
+
+.preset-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.preset-btn {
+  padding: 7px 4px;
+  font-size: 0.72rem;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.mini-map-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.mini-map-tab {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px;
+  font-size: 0.72rem;
+}
+
+.mini-map-tab.active {
+  background: linear-gradient(135deg, #2387f2, #1262ca);
+}
+
+.mini-map {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.mini-map.lab-c {
+  grid-template-columns: repeat(9, 1fr);
+}
+
+.mini-map.lab-b {
+  grid-template-columns: repeat(10, 1fr);
+}
+
+.mini-seat {
+  min-height: 22px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: #7f8a99;
+  color: #111827;
+  font-size: 0.58rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.mini-seat.empty {
+  background: #94a3b8;
+}
+
+.mini-seat.timer {
+  background: #43c84f;
+}
+
+.mini-seat.warning {
+  background: #f5a623;
+}
+
+.mini-seat.danger {
+  background: #ff4b45;
+}
+
+.mini-seat.occupied {
+  background: #2563eb;
+  color: white;
+}
+
+.mini-seat.reserved {
+  background: #7c3aed;
+  color: white;
+}
+
+.mini-seat.blank {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.mini-seat:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.micro-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.micro-btn {
+  padding: 6px;
+  font-size: 0.68rem;
+  border-radius: 7px;
+}
+
+.popup-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin: 12px 0;
+}
+
+.popup-tab {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px;
+  font-size: 0.72rem;
+}
+
+.popup-tab.active {
+  background: linear-gradient(135deg, #2387f2, #1262ca);
+}
+
+.popup-section {
+  display: none;
+}
+
+.popup-section.active-section {
+  display: block;
+}
+
+.popup-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.popup-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background:
+    url("favicon.png") center/cover no-repeat,
+    linear-gradient(135deg, #303030, #303030);
+  box-shadow: 0 0 14px rgba(35,135,242,0.35);
+}
+
+.popup-title {
+  font-size: 1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.popup-subtitle {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+  </style>
+</head>
+
+<body>
+  <div class="popup-card">
+    <div class="popup-header">
+  <div class="popup-logo"></div>
+
+  <div class="popup-header-text">
+    <div class="popup-title">TC Dash Controller</div>
+    <div class="popup-subtitle">Testing Center Operations</div>
+  </div>
+</div>
+<div class="popup-tabs">
+  <button class="popup-tab active" data-tab="quickAddTab">Quick Add</button>
+  <button class="popup-tab" data-tab="seatStatusTab">Seat Status</button>
+  <button class="popup-tab" data-tab="audioTab">Audio</button>
+</div>
+<div id="seatStatusTab" class="popup-section">
+  
+    <h1>Quick Seat Status</h1>
+<p>Mark a seat as Reserved or Occupied.</p>
+
+<select id="statusLab">
+  <option value="C">Lab C</option>
+  <option value="B">Lab B</option>
+</select>
+
+<input id="statusSeat" type="text" placeholder="Seat" maxlength="3">
+
+<select id="statusType">
+  <option value="CNA">CNA</option>
+  <option value="GED">GED</option>
+  <option value="TEAS">TEAS</option>
+  <option value="CLEP">CLEP</option>
+  <option value="Placement">Placement</option>
+  <option value="HonorLock">HonorLock</option>
+  <option value="Other">Other</option>
+</select>
+
+<div class="micro-actions">
+  <button class="restore micro-btn" id="quickOccupiedBtn">Occupied</button>
+  <button class="duck micro-btn" id="quickReservedBtn">Reserved</button>
+</div>
+</div>
+<div id="quickAddTab" class="popup-section active-section">
+<hr>
+
+<h1>Mini Map</h1>
+<p>Click a seat to fill the Seat field.</p>
+
+<div class="mini-map-tabs">
+  <button class="mini-map-tab active" data-lab="C">Lab C</button>
+  <button class="mini-map-tab" data-lab="B">Lab B</button>
+</div>
+
+<div id="miniMap" class="mini-map"></div>
+
+<hr>
+
+<h1>Quick Add Timer</h1>
+
+<p>Add a timer to the open dashboard tab.</p>
+
+<select id="quickLab">
+  <option value="C">Lab C</option>
+  <option value="B">Lab B</option>
+</select>
+
+<input id="quickSeat" type="text" placeholder="Seat" maxlength="3">
+<input id="quickStudent" type="text" placeholder="Student" maxlength="10">
+<input id="quickTest" type="text" placeholder="Test Optional" maxlength="10">
+
+<div class="preset-row">
+  <button class="preset-btn" data-hours="0" data-minutes="30">30m</button>
+  <button class="preset-btn" data-hours="1" data-minutes="0">1h</button>
+  <button class="preset-btn" data-hours="1" data-minutes="30">1h30</button>
+  <button class="preset-btn" data-hours="2" data-minutes="0">2h</button>
+</div>
+
+<div class="time-row">
+  <input id="quickHours" type="number" min="0" placeholder="Hours">
+  <input id="quickMinutes" type="number" min="0" max="59" placeholder="Minutes">
+</div>
+
+<button class="add-timer" id="quickAddBtn">Add Timer</button></div>
+
+<div id="audioTab" class="popup-section">
+<div class="micro-actions">
+  <button class="duck micro-btn" id="duckBtn">Duck</button>
+  <button class="restore micro-btn" id="restoreBtn">Restore</button>
+</div>
+</div>
+<div id="quickStatus" class="quick-status"></div>
+<div class="footer-note">
+    TC Dash Controller - v1.9.0<br>
+    Dashboard alarms duck audio automatically.
+</div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
