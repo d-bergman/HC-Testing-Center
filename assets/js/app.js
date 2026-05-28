@@ -139,6 +139,78 @@ const clearAllTimersModal =
 const confirmClearAllTimersBtn =
   document.getElementById("confirmClearAllTimersBtn");
 
+
+// Quick Seat Add Modal Constants
+const seatQuickAddModalElement =
+  document.getElementById("seatQuickAddModal");
+
+const seatQuickAddModal =
+  new bootstrap.Modal(seatQuickAddModalElement);
+
+const quickSeatLabInput =
+  document.getElementById("quickSeatLabInput");
+
+const quickSeatSeatInput =
+  document.getElementById("quickSeatSeatInput");
+
+const quickSeatStudentInput =
+  document.getElementById("quickSeatStudentInput");
+
+const quickSeatTestInput =
+  document.getElementById("quickSeatTestInput");
+
+const quickSeatHoursInput =
+  document.getElementById("quickSeatHoursInput");
+
+const quickSeatMinutesInput =
+  document.getElementById("quickSeatMinutesInput");
+
+const quickSeatError =
+  document.getElementById("quickSeatError");
+
+const saveQuickSeatTimerBtn =
+  document.getElementById("saveQuickSeatTimerBtn");
+
+const quickSeatTimerModeBtn =
+  document.getElementById("quickSeatTimerModeBtn");
+
+const quickSeatStatusModeBtn =
+  document.getElementById("quickSeatStatusModeBtn");
+
+const quickSeatTimerFields =
+  document.getElementById("quickSeatTimerFields");
+
+const quickSeatStatusFields =
+  document.getElementById("quickSeatStatusFields");
+
+const quickSeatStatusInput =
+  document.getElementById("quickSeatStatusInput");
+
+const quickSeatTestTypeInput =
+  document.getElementById("quickSeatTestTypeInput");
+
+// Flag Modal Constants
+const flagModalElement = document.getElementById("flagModal");
+const flagModal = new bootstrap.Modal(flagModalElement);
+const flagModalMessage = document.getElementById("flagModalMessage");
+const flagSelectInput = document.getElementById("flagSelectInput");
+const saveFlagBtn = document.getElementById("saveFlagBtn");
+
+let pendingFlagTarget = null;
+
+// Global state variables
+const seatStatusList = document.getElementById("seatStatusList");
+
+// Startup Sound Modal Constants
+const startupSoundModalElement =
+  document.getElementById("startupSoundModal");
+
+const startupSoundModal =
+  new bootstrap.Modal(startupSoundModalElement);
+
+const dismissStartupSoundBtn =
+  document.getElementById("dismissStartupSoundBtn");
+
 let pendingAdminAction = null;
 
 let activeLab = "C";
@@ -233,6 +305,7 @@ function createNewTimerObject({
     paused: true,
     pausedRemaining: minutes * 60,
     alarmDismissed: false,
+    flag: "none",
     createdAt: new Date().toLocaleString(),
     createdAtMs: Date.now()
   };
@@ -392,6 +465,7 @@ function createSeatStatusObject({
     student,
     testType,
     status,
+    flag: "none",
     createdAt: new Date().toLocaleString(),
     createdAtMs: Date.now()
   };
@@ -553,11 +627,24 @@ document.getElementById("timerCount").textContent =
       <div>
   <strong>${timer.student}</strong>
 
-  <div
-    class="timer-edit-link"
-    onclick="openEditTimer('${timer.id}')"
-  >
-    Edit
+  <div class="timer-link-row">
+    <button
+      type="button"
+      class="timer-edit-link-btn"
+      onclick="openEditTimer('${timer.id}')"
+    >
+      Edit
+    </button>
+
+    <span class="timer-link-divider">•</span>
+
+    <button
+      type="button"
+      class="timer-edit-link-btn"
+      onclick="openFlagModal('timer', '${timer.id}')"
+    >
+      Flag
+    </button>
   </div>
 </div>
 
@@ -608,11 +695,85 @@ document.getElementById("timerCount").textContent =
   });
 }
 
-function getTimerSeatClass(timer, remaining) {
-  const testCode = (timer.test || "").trim().toUpperCase();
+// New function to render seat statuses
+function renderSeatStatuses() {
+  seatStatusList.innerHTML = "";
 
-  if (testCode.includes("ADS")) return "active-ads";
-  if (testCode.includes("MISCONDUCT")) return "active-misconduct";
+  if (!seatStatuses.length) {
+    seatStatusList.innerHTML =
+      `<div class="empty-state">No active seat statuses.</div>`;
+    return;
+  }
+
+  seatStatuses.forEach(status => {
+    const item = document.createElement("div");
+    item.className = "timer-item";
+
+    item.innerHTML = `
+      <div>
+        <div class="seat-badge ${status.lab === "B" ? "lab-b" : ""}">
+          ${status.seat}
+        </div>
+      </div>
+
+      <div>
+        <strong>
+          ${status.student || status.testType}
+        </strong>
+
+        <div class="timer-link-row">
+          <button
+            type="button"
+            class="timer-edit-link-btn"
+            onclick="openFlagModal('seatStatus', '${status.id}')"
+          >
+            Flag
+          </button>
+
+          <span class="timer-link-divider">•</span>
+
+          <button
+            type="button"
+            class="timer-edit-link-btn"
+            onclick="clearSeatStatus('${status.id}')"
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <div>
+        ${status.testType || "-"}
+      </div>
+
+      <div>
+        ${status.status}
+      </div>
+
+      <div class="status-label">
+        Active
+      </div>
+
+      <div class="action-buttons ms-auto">
+        <button
+          class="delete-btn"
+          onclick="clearSeatStatus('${status.id}')"
+        >
+          🗑
+        </button>
+      </div>
+    `;
+
+    seatStatusList.appendChild(item);
+  });
+}
+
+// Determine seat class based on timer status and flags
+function getTimerSeatClass(timer, remaining) {
+  const flag = timer.flag || "none";
+
+  if (flag === "ADS") return "active-ads";
+  if (flag === "Misconduct") return "active-misconduct";
 
   const status = getTimerStatus(remaining);
 
@@ -623,6 +784,7 @@ function getTimerSeatClass(timer, remaining) {
   return "";
 }
 
+// Determine seat class based on seat status and flags
 function renderSeats() {
   seatGrid.innerHTML = "";
   seatGrid.className = `seat-grid lab-${activeLab.toLowerCase()}`;
@@ -667,10 +829,16 @@ function renderSeats() {
 
     } else if (seatStatus) {
 
-      statusClass =
-        seatStatus.status === "Reserved"
-          ? "seat-reserved"
-          : "seat-occupied";
+      if (seatStatus.flag === "ADS") {
+        statusClass = "active-ads";
+      } else if (seatStatus.flag === "Misconduct") {
+        statusClass = "active-misconduct";
+      } else {
+        statusClass =
+          seatStatus.status === "Reserved"
+            ? "seat-reserved"
+            : "seat-occupied";
+      }
     }
 
     seat.className = `seat ${statusClass}`;
@@ -711,16 +879,20 @@ function renderSeats() {
     ? `
       <div class="seat-name">${timer.student}</div>
       <div class="seat-time">${formatTime(getRemainingSeconds(timer))}</div>
+      <!--<button class="seat-lock-btn" title="Seat is in use">🔒</button>-->
       <button class="seat-clear-btn" onclick="deleteTimer('${timer.id}')">Clear</button>
+      
     `
     : seatStatus
     ? `
       <div class="seat-name">${seatStatus.student || seatStatus.testType}</div>
-<div class="seat-time">${seatStatus.student ? seatStatus.testType : seatStatus.status}</div>
-<button class="seat-clear-btn" onclick="clearSeatStatus('${seatStatus.id}')">Clear</button>
+      <div class="seat-time">${seatStatus.student ? seatStatus.testType : seatStatus.status}</div>
+      <!--<button class="seat-lock-btn" title="Seat is in use">🔒</button>-->
+      <button class="seat-clear-btn" onclick="clearSeatStatus('${seatStatus.id}')">Clear</button>
     `
     : `
       <div class="seat-name">Empty</div>
+      <button class="seat-add-btn" onclick="openSeatQuickAdd('${seatId}')">+</button>
     `
 }
       </div>
@@ -835,6 +1007,7 @@ const historyTest = isSeatStatus
 
 function refreshScreen() {
   renderTimers();
+  renderSeatStatuses();
   renderSeats();
 }
 
@@ -892,6 +1065,13 @@ function stopAlarmLoop() {
 
   activeAlarmTimerId = null;
 
+  const alarmModalElement = document.getElementById("alarmModal");
+  const openAlarmModal = bootstrap.Modal.getInstance(alarmModalElement);
+
+  if (openAlarmModal) {
+    openAlarmModal.hide();
+  }
+
   window.postMessage(
   {
     source: "testing-center-dashboard",
@@ -942,6 +1122,48 @@ window.togglePause = function(id) {
   }
 };
 
+//Chrome extensions link copy function
+window.copyChromeExtensionsLink = async function() {
+  try {
+    await navigator.clipboard.writeText("chrome://extensions");
+
+    const btn = document.querySelector(".copy-code-btn");
+
+    if (btn) {
+      const original = btn.textContent;
+
+      btn.textContent = "Copied!";
+
+      setTimeout(() => {
+        btn.textContent = original;
+      }, 1500);
+    }
+  } catch (error) {
+    alert("Unable to copy.");
+  }
+};
+
+// Expose openFlagModal to global scope for inline onclick handler
+window.openFlagModal = function(type, id) {
+  pendingFlagTarget = { type, id };
+
+  let item = null;
+
+  if (type === "timer") {
+    item = timers.find(t => t.id === id);
+  } else {
+    item = seatStatuses.find(s => s.id === id);
+  }
+
+  if (!item) return;
+
+  flagModalMessage.textContent =
+    `Set flag for ${item.seat} - ${item.student || item.testType || "Seat Status"}`;
+
+  flagSelectInput.value = item.flag || "none";
+
+  flagModal.show();
+};
 
 window.addFive = function(id) {
   const timer = timers.find(t => t.id === id);
@@ -1020,6 +1242,23 @@ window.deleteTimer = function(id) {
   deleteTimerModal.show();
 };
 
+// Expose createSeatStatus to global scope for inline onclick handler
+window.openSeatQuickAdd = function(seatId) {
+  quickSeatError.textContent = "";
+
+  const lab = seatId.startsWith("B") ? "B" : "C";
+
+  quickSeatLabInput.value = lab;
+  quickSeatSeatInput.value = seatId;
+
+  quickSeatStudentInput.value = "";
+  quickSeatTestInput.value = "";
+  quickSeatHoursInput.value = "";
+  quickSeatMinutesInput.value = "";
+
+  seatQuickAddModal.show();
+};
+
 window.deleteHistoryItem = function(historyId) {
   requireAdmin(() => {
     const item = history.find(h => h.historyId === historyId);
@@ -1078,7 +1317,16 @@ onValue(timersRef, snapshot => {
     return (a.createdAtMs || 0) - (b.createdAtMs || 0);
   });
 
+  if (activeAlarmTimerId) {
+  const activeAlarmTimer = timers.find(t => t.id === activeAlarmTimerId);
+
+  if (!activeAlarmTimer || activeAlarmTimer.alarmDismissed) {
+    stopAlarmLoop();
+  }
+}
+
   renderTimers();
+  renderSeatStatuses();
   renderSeats();
 
   document.getElementById("syncStatus").textContent = "Live Sync: Connected";
@@ -1107,6 +1355,7 @@ onValue(seatStatusesRef, snapshot => {
   });
 
   renderSeats();
+  renderSeatStatuses();
 });
 
 const userPresenceRef = push(presenceRef);
@@ -1150,9 +1399,17 @@ enableSoundBtn.addEventListener("click", async () => {
   }
 });
 
+dismissStartupSoundBtn.addEventListener("click", () => {
+  sessionStorage.setItem("startupSoundReminderDismissed", "true");
+});
+
 function unlockDashboard() {
   sessionStorage.setItem("timerDashboardUnlocked", "true");
   passwordScreen.classList.add("hidden");
+
+  setTimeout(() => {
+    showStartupSoundReminder();
+  }, 300);
 }
 
 if (sessionStorage.getItem("timerDashboardUnlocked") === "true") {
@@ -1335,6 +1592,128 @@ window.addEventListener("message", event => {
   }
 });
 
+// Quick add mode for seats
+quickSeatTimerModeBtn.addEventListener("click", () => {
+  quickSeatTimerModeBtn.classList.add("active");
+  quickSeatStatusModeBtn.classList.remove("active");
+
+  quickSeatTimerFields.classList.remove("d-none");
+  quickSeatStatusFields.classList.add("d-none");
+
+  saveQuickSeatTimerBtn.textContent = "Add Timer";
+  quickSeatError.textContent = "";
+});
+
+quickSeatStatusModeBtn.addEventListener("click", () => {
+  quickSeatStatusModeBtn.classList.add("active");
+  quickSeatTimerModeBtn.classList.remove("active");
+
+  quickSeatStatusFields.classList.remove("d-none");
+  quickSeatTimerFields.classList.add("d-none");
+
+  saveQuickSeatTimerBtn.textContent = "Add Seat Status";
+  quickSeatError.textContent = "";
+});
+
+
+saveQuickSeatTimerBtn.addEventListener("click", () => {
+  const lab = quickSeatLabInput.value;
+  const seat = normalizeSeat(lab, quickSeatSeatInput.value);
+  const student = quickSeatStudentInput.value.trim();
+
+  if (!seat) {
+    quickSeatError.textContent = "Seat is required.";
+    return;
+  }
+
+  if (quickSeatStatusModeBtn.classList.contains("active")) {
+    const testType = quickSeatTestTypeInput.value;
+    const status = quickSeatStatusInput.value;
+
+    if (!testType || !status) {
+      quickSeatError.textContent = "Please complete the seat status fields.";
+      return;
+    }
+
+    createSeatStatusObject({
+      lab,
+      seat,
+      student,
+      testType,
+      status
+    });
+
+    seatQuickAddModal.hide();
+    return;
+  }
+
+  const test = quickSeatTestInput.value.trim();
+  const hours = parseInt(quickSeatHoursInput.value) || 0;
+  const minutes = parseInt(quickSeatMinutesInput.value) || 0;
+  const totalMinutes = hours * 60 + minutes;
+
+  if (!student || totalMinutes <= 0) {
+    quickSeatError.textContent = "Please complete all timer fields.";
+    return;
+  }
+
+  const closingTime = getClosingTimeToday();
+
+const secondsUntilClose = Math.floor(
+  (closingTime.getTime() - Date.now()) / 1000
+);
+
+const requestedSeconds = totalMinutes * 60;
+
+const finalSeconds = Math.min(
+  requestedSeconds,
+  Math.max(0, secondsUntilClose)
+);
+
+const finalMinutes = Math.ceil(finalSeconds / 60);
+
+createNewTimerObject({
+  lab,
+  seat,
+  student,
+  test,
+  minutes: finalMinutes
+});
+
+  seatQuickAddModal.hide();
+});
+
+// Flagging functionality
+saveFlagBtn.addEventListener("click", () => {
+  if (!pendingFlagTarget) return;
+
+  const { type, id } = pendingFlagTarget;
+
+  const selectedFlag = flagSelectInput.value;
+
+  const targetRef =
+    type === "timer"
+      ? ref(db, `timers/${id}`)
+      : ref(db, `seatStatuses/${id}`);
+
+  update(targetRef, {
+    flag: selectedFlag
+  });
+
+  flagModal.hide();
+
+  pendingFlagTarget = null;
+});
+
+function showStartupSoundReminder() {
+  if (sessionStorage.getItem("startupSoundReminderDismissed") === "true") {
+    return;
+  }
+
+  startupSoundModal.show();
+}
+
 renderTimers();
+renderSeatStatuses();
 renderSeats();
 renderHistory();

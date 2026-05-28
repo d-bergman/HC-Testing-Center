@@ -141,12 +141,12 @@
 
                   <div class="col-12 col-md-6">
                     <label for="studentInput" class="form-label">Student Name</label>
-                    <input id="studentInput" class="form-control" type="text" placeholder="John" maxlength="10" />
+                    <input id="studentInput" class="form-control" type="text" placeholder="John" maxlength="12" />
                   </div>
 
                   <div id="testOptionalField" class="col-12 col-md-6">
   <label for="testInput" class="form-label">Test Optional</label>
-  <input id="testInput" class="form-control" type="text" placeholder="Shryock" maxlength="10"/>
+  <input id="testInput" class="form-control" type="text" placeholder="Shryock" maxlength="12"/>
 </div>
 <div id="timerTimeFields" class="col-12 col-md-6 d-flex gap-3">
   <div style="max-width: 110px;">
@@ -206,6 +206,11 @@
                 </div>
 
                 <div id="timerList" class="timer-list"></div>
+                <div class="d-flex align-items-center justify-content-between gap-2 mt-4 mb-2">
+                  <h2 class="mb-0">Seat Statuses</h2>
+                </div>
+
+                <div id="seatStatusList" class="timer-list"></div>
               </section>
             </div>
 
@@ -290,7 +295,7 @@
 
       <p class="mb-0 text-center">Harper Testing Center – Timer Dashboard</p>
       <p class="mb-0 text-center">WebApp Made by Darren Bergman</p>
-      <p class="mb-0 text-center">Version <span id="appVersion">1.9.0</span></p>
+      <p class="mb-0 text-center">Version <span id="appVersion">2.0.0</span></p>
       <button id="clearAllBtn" class="btn btn-danger-outline">
         🗑 Clear All Timers
       </button>
@@ -415,170 +420,219 @@
       </div>
 
       <div class="modal-body help-content">
-  <h3 class="mt-4">Change Log</h3>
+        <h3 class="mt-4">Change Log</h3>
 
-  <pre id="changeLogContent" class="change-log-box">
+        <pre id="changeLogContent" class="change-log-box">
 Loading changelog...
-  </pre>
+        </pre>
 
-  <h3>Overview</h3>
-  <p>
-    This dashboard is used to manage live testing activity across Lab B and Lab C.
-    It tracks active timers, occupied seats, reserved seats, special testing flags,
-    projected end times, and seat history in real time.
-  </p>
+        <h3>Overview</h3>
+        <p>
+          This dashboard is used to manage live testing activity across Lab B and Lab C.
+          It tracks active timers, occupied seats, reserved seats, seat flags,
+          projected end times, alarms, connected users, and seat history in real time.
+        </p>
 
-  <h3>Adding a Timer</h3>
-  <ol>
-    <li>Select Lab B or Lab C.</li>
-    <li>Enter the seat number. You can type <strong>C16</strong>, <strong>B12</strong>, or just <strong>16</strong> if the lab dropdown is correct.</li>
-    <li>Enter the student name.</li>
-    <li>Optional: enter a test label, instructor name, or special flag.</li>
-    <li>Enter hours and minutes.</li>
-    <li>Click <strong>Add Timer</strong>.</li>
-    <li>The timer will appear paused first. Press <strong>Play</strong> when the student is seated and ready to begin.</li>
-  </ol>
+        <p>
+          Staff can add timers or seat statuses from the main form, or directly from an
+          empty seat on the map using the seat Quick Add button. Active timers and seat
+          statuses appear on the left side for quick management.
+        </p>
 
-  <h3>Closing Time Auto-Trim</h3>
-  <p>
-    When a new timer is added, the dashboard automatically trims the timer if it would go past closing time.
-    Closing time is currently 7:00 PM Monday–Thursday and 4:30 PM on Friday.
-  </p>
-  <p>
-    Auto-trim only happens when a timer is first added. The <strong>+5</strong> button and Edit Timer feature do not auto-trim.
-  </p>
+        <h3>Adding a Timer</h3>
+        <ol>
+          <li>Select Lab B or Lab C.</li>
+          <li>Enter the seat number. You can type <strong>C16</strong>, <strong>B12</strong>, or just <strong>16</strong> if the lab dropdown is correct.</li>
+          <li>Enter the student name.</li>
+          <li>Optional: enter a test label, instructor name, or other note in <strong>Test Optional</strong>.</li>
+          <li>Enter hours and minutes.</li>
+          <li>Click <strong>Add Timer</strong>.</li>
+          <li>The timer will appear paused first. Press <strong>Play</strong> when the student is seated and ready to begin.</li>
+        </ol>
 
-  <h3>Editing a Timer</h3>
-  <ol>
-    <li>Pause the timer first.</li>
-    <li>Click <strong>Edit</strong> under the student name.</li>
-    <li>Update the lab, seat, student name, test label, hours, or minutes.</li>
-    <li>Click <strong>Save Timer</strong>.</li>
-    <li>The timer stays paused after editing. Press <strong>Play</strong> to resume.</li>
-  </ol>
+        <h3>Adding From the Seat Map</h3>
+        <ol>
+          <li>Find an empty seat on the Lab B or Lab C map.</li>
+          <li>Click the <strong>+</strong> button on the seat.</li>
+          <li>The Add From Seat modal opens with the lab and seat already filled in.</li>
+          <li>Choose <strong>Add Timer</strong> or <strong>Add Seat Status</strong>.</li>
+          <li>Complete the required fields and click <strong>Add</strong>.</li>
+        </ol>
 
-  <h3>Timer Controls</h3>
-  <ul>
-    <li><strong>Play/Pause:</strong> starts or pauses the timer.</li>
-    <li><strong>+5:</strong> adds five minutes to the timer.</li>
-    <li><strong>Trash:</strong> removes the timer after confirmation.</li>
-    <li><strong>Clear:</strong> clears the timer from the seating map and works the same as deleting the timer.</li>
-  </ul>
+        <h3>Closing Time Auto-Trim</h3>
+        <p>
+          When a new timer is added, the dashboard automatically trims the timer if it would go past closing time.
+          Closing time is currently 7:00 PM Monday–Thursday and 4:30 PM on Friday.
+        </p>
+        <p>
+          Auto-trim only happens when a timer is first added. The <strong>+5</strong> button and Edit Timer feature do not auto-trim.
+        </p>
 
-  <h3>Projected End Time</h3>
-  <p>
-    Each active timer shows an estimated end time under the countdown. This helps staff quickly see when a student is expected to finish.
-  </p>
+        <h3>Editing a Timer</h3>
+        <ol>
+          <li>Pause the timer first.</li>
+          <li>Click <strong>Edit</strong> under the student name.</li>
+          <li>Update the lab, seat, student name, test label, hours, or minutes.</li>
+          <li>Click <strong>Save Timer</strong>.</li>
+          <li>The timer stays paused after editing. Press <strong>Play</strong> to resume.</li>
+        </ol>
 
-  <h3>Adding a Seat Status</h3>
-  <ol>
-    <li>Click <strong>Add Seat Status</strong>.</li>
-    <li>Select the lab and enter the seat.</li>
-    <li>Student name is optional.</li>
-    <li>Select <strong>Reserved</strong> or <strong>Occupied</strong>.</li>
-    <li>Select the test type: CNA, GED, TEAS, CLEP, Placement, HonorLock, or Other.</li>
-    <li>Click <strong>Add Seat Status</strong>.</li>
-  </ol>
+        <h3>Timer Controls</h3>
+        <ul>
+          <li><strong>Play/Pause:</strong> starts or pauses the timer.</li>
+          <li><strong>+5:</strong> adds five minutes to the timer.</li>
+          <li><strong>Edit:</strong> allows a paused timer to be updated.</li>
+          <li><strong>Flag:</strong> applies or removes ADS/Misconduct seat coloring.</li>
+          <li><strong>Trash:</strong> removes the timer after confirmation.</li>
+          <li><strong>Clear:</strong> clears the timer from the seating map and works the same as deleting the timer.</li>
+        </ul>
 
-  <h3>Active Count</h3>
-  <p>
-    The Active Timers count includes active timers as <strong>Make-Up</strong> tests and also includes occupied seat statuses by test type.
-  </p>
-  <p>
-    Example: <strong>9 active - 3 Make-Up • 3 CNA • 2 GED • 1 CLEP</strong>
-  </p>
+        <h3>Projected End Time</h3>
+        <p>
+          Each active timer shows an estimated end time under the countdown. This helps staff quickly see when a student is expected to finish.
+        </p>
 
-  <h3>Seat Colors</h3>
-  <ul>
-    <li><strong>Green:</strong> Timer has more than 15 minutes left.</li>
-    <li><strong>Orange:</strong> Timer has 5–15 minutes left.</li>
-    <li><strong>Red:</strong> Timer has under 5 minutes left or is complete.</li>
-    <li><strong>Blue:</strong> Seat is occupied without a timer.</li>
-    <li><strong>Purple:</strong> Seat is reserved.</li>
-    <li><strong>Yellow:</strong> ADS flag.</li>
-    <li><strong>Pink:</strong> Misconduct flag.</li>
-    <li><strong>Gray:</strong> Seat is empty.</li>
-  </ul>
+        <h3>Adding a Seat Status</h3>
+        <ol>
+          <li>Click <strong>Add Seat Status</strong>.</li>
+          <li>Select the lab and enter the seat.</li>
+          <li>Student name is optional.</li>
+          <li>Select <strong>Reserved</strong> or <strong>Occupied</strong>.</li>
+          <li>Select the test type: CNA, GED, TEAS, CLEP, Placement, HonorLock, or Other.</li>
+          <li>Click <strong>Add Seat Status</strong>.</li>
+        </ol>
 
-  <h3>Special Flags</h3>
-  <ul>
-    <li><strong>ADS:</strong> If “ADS” appears anywhere in the Test Optional field, the seat turns yellow.</li>
-    <li><strong>Misconduct:</strong> If “Misconduct” appears anywhere in the Test Optional field, the seat turns pink.</li>
-  </ul>
+        <h3>Seat Statuses List</h3>
+        <p>
+          Occupied and reserved seats also appear in the <strong>Seat Statuses</strong> section under Active Timers.
+          This section allows staff to quickly clear a seat status or apply a seat flag.
+        </p>
 
-  <h3>Camera Dots</h3>
-  <ul>
-    <li><strong>Green dot:</strong> Full camera view.</li>
-    <li><strong>Orange dot:</strong> Partial or harder-to-see camera view.</li>
-    <li><strong>Red dot:</strong> Camera blind spot.</li>
-  </ul>
+        <h3>Active Count</h3>
+        <p>
+          The Active Timers count includes active timers as <strong>Make-Up</strong> tests and also includes occupied seat statuses by test type.
+        </p>
+        <p>
+          Example: <strong>9 active - 3 Make-Up • 3 CNA • 2 GED • 1 CLEP</strong>
+        </p>
 
-  <h3>Alarm Sound</h3>
-  <p>
-    Click <strong>Enable Sound</strong> after opening the dashboard. Browsers usually require one click before they allow alarm audio.
-  </p>
+        <h3>Seat Colors</h3>
+        <ul>
+          <li><strong>Green:</strong> Timer has more than 15 minutes left.</li>
+          <li><strong>Orange:</strong> Timer has 5–15 minutes left.</li>
+          <li><strong>Red:</strong> Timer has under 5 minutes left or is complete.</li>
+          <li><strong>Blue:</strong> Seat is occupied without a timer.</li>
+          <li><strong>Purple:</strong> Seat is reserved.</li>
+          <li><strong>Yellow:</strong> ADS flag.</li>
+          <li><strong>Pink:</strong> Misconduct flag.</li>
+          <li><strong>Gray:</strong> Seat is empty.</li>
+        </ul>
 
-  <h3>History</h3>
-  <p>
-    The History tab can search past timers and cleared occupied seat statuses by student, seat, lab, test, or date.
-    Reserved seats are not logged unless a student name was entered.
-  </p>
+        <h3>Seat Flags</h3>
+        <p>
+          Seat flags are managed separately from the Test Optional field. Applying a flag changes the seat color
+          without overwriting the test label, instructor name, or other notes.
+        </p>
+        <ul>
+          <li><strong>ADS:</strong> turns the seat yellow.</li>
+          <li><strong>Misconduct:</strong> turns the seat pink.</li>
+          <li><strong>None:</strong> removes the flag and returns the seat to its normal timer or seat status color.</li>
+        </ul>
 
-  <h3>Duplicate Seat Protection</h3>
-  <p>
-    The dashboard prevents two active items from using the same seat. If a seat already has a timer or status,
-    a confirmation popup will ask before replacing it.
-  </p>
+        <h3>Camera Dots</h3>
+        <ul>
+          <li><strong>Green dot:</strong> Full camera view.</li>
+          <li><strong>Orange dot:</strong> Partial or harder-to-see camera view.</li>
+          <li><strong>Red dot:</strong> Camera blind spot.</li>
+        </ul>
 
-  <h3>Important Notes</h3>
-  <ul>
-    <li>Do not close the dashboard tab if you need alarm sounds on that workstation.</li>
-    <li>Use <strong>Enable Sound</strong> once per workstation session.</li>
-    <li>Use <strong>Clear</strong> when a student leaves a seat.</li>
-    <li>The app updates live for all open staff dashboards.</li>
-  </ul>
-  <h3>TC Dash Controller Chrome Extension (Optional)</h3>
+        <h3>Alarm Sound</h3>
+        <p>
+          Click <strong>Enable Sound</strong> after opening the dashboard. Browsers usually require one click before they allow alarm audio.
+        </p>
+        <p>
+          A startup reminder appears after unlocking the dashboard to remind staff to enable sound on the workstation.
+        </p>
 
-<p>
-  The TC Dash Controller extension adds workstation audio ducking,
-  Quick Add tools, Quick Seat Status controls, and a live mini-map
-  directly inside Chrome.
-</p>
+        <h3>Alarm Dismissal</h3>
+        <p>
+          When an alarm is dismissed on one dashboard, the dismissal syncs across all open dashboards.
+        </p>
 
-<ul>
-  <li>Automatic YouTube audio ducking during alarms</li>
-  <li>Quick Add Timer popup</li>
-  <li>Quick Seat Status controls</li>
-  <li>Live Lab B / Lab C mini-map</li>
-  <li>Keyboard shortcut support (<strong>Ctrl + Shift + V</strong>)</li>
-</ul>
+        <h3>History</h3>
+        <p>
+          The History tab can search past timers and cleared occupied seat statuses by student, seat, lab, test, or date.
+          Reserved seats are not logged unless a student name was entered.
+        </p>
 
-<h3>Installing the Extension</h3>
+        <h3>Duplicate Seat Protection</h3>
+        <p>
+          The dashboard prevents two active items from using the same seat. If a seat already has a timer or status,
+          a confirmation popup will ask before replacing it.
+        </p>
 
-<ol>
-  <li>Download the extension ZIP below.</li>
-  <li>Extract the ZIP file.</li>
-  <li>Open Chrome and go to:
-    <a href="chrome://extensions" target="_blank" class="help-link">chrome://extensions</a>
-  </li>
-  <li>Enable <strong>Developer Mode</strong> located at the top right.</li>
-  <li>Click <strong>Load unpacked</strong>.</li>
-  <li>Select the extracted extension folder.</li>
-</ol>
+        <h3>Important Notes</h3>
+        <ul>
+          <li>Do not close the dashboard tab if you need alarm sounds on that workstation.</li>
+          <li>Use <strong>Enable Sound</strong> once per workstation session.</li>
+          <li>Use <strong>Clear</strong> when a student leaves a seat.</li>
+          <li>The app updates live for all open staff dashboards.</li>
+        </ul>
 
-<p>
-  The extension is optional. The dashboard works normally without it.
-</p>
+        <h3>TC Dash Controller Chrome Extension (Optional)</h3>
 
-<a
-  class="download-extension-btn"
-  href="assets/downloads/tc-dash-controller-v1.9.0.zip"
-  download
->
-  ⬇ Download TC Dash Controller Extension
-</a>
+        <p>
+          The TC Dash Controller extension adds workstation audio ducking,
+          Quick Add tools, Quick Seat Status controls, and a live mini-map
+          directly inside Chrome.
+        </p>
 
-</div>
+        <ul>
+          <li>Automatic YouTube audio ducking during alarms</li>
+          <li>Quick Add Timer popup</li>
+          <li>Quick Seat Status controls</li>
+          <li>Live Lab B / Lab C mini-map</li>
+          <li>Keyboard shortcut support (<strong>Ctrl + Shift + V</strong>)</li>
+        </ul>
+
+        <h3>Installing the Extension</h3>
+
+        <ol>
+          <li>Download the extension ZIP below.</li>
+          <li>Extract the ZIP file.</li>
+          <li>
+            Open Chrome and go to:
+
+            <div class="copy-code-row">
+              <code class="help-code" id="chromeExtensionsText">
+                chrome://extensions
+              </code>
+
+              <button
+                class="copy-code-btn"
+                onclick="copyChromeExtensionsLink()"
+              >
+                Copy
+              </button>
+            </div>
+          </li>
+          <li>Enable <strong>Developer Mode</strong> located at the top right.</li>
+          <li>Click <strong>Load unpacked</strong>.</li>
+          <li>Select the extracted extension folder.</li>
+        </ol>
+
+        <p>
+          The extension is optional. The dashboard works normally without it.
+        </p>
+
+        <a
+          class="download-extension-btn"
+          href="assets/downloads/tc-dash-controller-v1.9.0.zip"
+          download
+        >
+          ⬇ Download TC Dash Controller Extension
+        </a>
+      </div>
     </div>
   </div>
 </div>
@@ -705,6 +759,104 @@ Loading changelog...
   </div>
 </div>
 
+<!-- Modal for Quick Add From Seat Map -->
+<div class="modal fade" id="seatQuickAddModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content alarm-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Add From Seat</h2>
+      </div>
+
+      <div class="modal-body">
+        <p class="text-secondary-custom mb-3">
+          Selected seat is prefilled from the map.
+        </p>
+        <div class="form-mode-toggle mb-3">
+        <button id="quickSeatTimerModeBtn" class="btn form-mode-btn active" type="button">
+          Add Timer
+        </button>
+
+        <button id="quickSeatStatusModeBtn" class="btn form-mode-btn" type="button">
+          Add Seat Status
+        </button>
+      </div>
+
+        <div class="row g-3">
+  <div class="col-12 col-sm-4">
+    <label for="quickSeatLabInput" class="form-label">Lab</label>
+    <select id="quickSeatLabInput" class="form-select">
+      <option value="C">Lab C</option>
+      <option value="B">Lab B</option>
+    </select>
+  </div>
+
+  <div class="col-12 col-sm-4">
+    <label for="quickSeatSeatInput" class="form-label">Seat</label>
+    <input id="quickSeatSeatInput" class="form-control" type="text" maxlength="3" />
+  </div>
+
+  <div class="col-12 col-sm-4">
+    <label for="quickSeatStudentInput" class="form-label">Student</label>
+    <input id="quickSeatStudentInput" class="form-control" type="text" maxlength="12" />
+  </div>
+</div>
+
+<div id="quickSeatTimerFields" class="row g-3 mt-1">
+  <div class="col-12">
+    <label for="quickSeatTestInput" class="form-label">Test Optional</label>
+    <input id="quickSeatTestInput" class="form-control" type="text" maxlength="12" />
+  </div>
+
+  <div class="col-6">
+    <label for="quickSeatHoursInput" class="form-label">Hours</label>
+    <input id="quickSeatHoursInput" class="form-control" type="number" min="0" />
+  </div>
+
+  <div class="col-6">
+    <label for="quickSeatMinutesInput" class="form-label">Minutes</label>
+    <input id="quickSeatMinutesInput" class="form-control" type="number" min="0" max="59" />
+  </div>
+</div>
+
+        <div id="quickSeatStatusFields" class="row g-3 d-none">
+  <div class="col-12 col-sm-6">
+    <label for="quickSeatStatusInput" class="form-label">Seat Status</label>
+    <select id="quickSeatStatusInput" class="form-select">
+      <option value="Occupied">Occupied</option>
+      <option value="Reserved">Reserved</option>
+    </select>
+  </div>
+
+  <div class="col-12 col-sm-6">
+    <label for="quickSeatTestTypeInput" class="form-label">Test Type</label>
+    <select id="quickSeatTestTypeInput" class="form-select">
+      <option value="CNA">CNA</option>
+      <option value="GED">GED</option>
+      <option value="TEAS">TEAS</option>
+      <option value="CLEP">CLEP</option>
+      <option value="Placement">Placement</option>
+      <option value="HonorLock">HonorLock</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+</div>
+
+        <p id="quickSeatError" class="password-error"></p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button id="saveQuickSeatTimerBtn" type="button" class="btn btn-primary-custom">
+          Add Timer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Modal for Clearing All Timers -->
 <div class="modal fade" id="clearAllTimersModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -734,6 +886,71 @@ Loading changelog...
           class="btn btn-primary-custom"
         >
           Clear All
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Setting Seat Flags (ADS/Misconduct) -->
+<div class="modal fade" id="flagModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content alarm-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Set Seat Flag</h2>
+      </div>
+
+      <div class="modal-body">
+        <p id="flagModalMessage" class="text-secondary-custom mb-3">
+          Select a flag for this seat.
+        </p>
+
+        <select id="flagSelectInput" class="form-select">
+          <option value="none">None</option>
+          <option value="ADS">ADS</option>
+          <option value="Misconduct">Misconduct</option>
+        </select>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button id="saveFlagBtn" type="button" class="btn btn-primary-custom">
+          Save Flag
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Enabling Startup Sound -->
+<div class="modal fade" id="startupSoundModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content alarm-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Enable Alarm Sound</h2>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-2">
+          Before using this workstation, click <strong>Enable Sound</strong> at the top of the dashboard.
+        </p>
+
+        <p class="text-secondary-custom mb-0">
+          Browsers require this click before alarm audio can play. You only need to do this once per workstation session that plays alarm audio.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          id="dismissStartupSoundBtn"
+          type="button"
+          class="btn btn-primary-custom"
+          data-bs-dismiss="modal"
+        >
+          I’ll Enable Sound
         </button>
       </div>
     </div>

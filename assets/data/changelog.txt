@@ -1,3 +1,83 @@
+Testing Center Dashboard — Version 2.0.0 - 5/28/26 - 5:24PM
+Major Dashboard & Seat Management Update
+
+New Features
+Seat Quick Add System
+
+• Added seat-map Quick Add buttons for empty seats.
+• Clicking a seat now opens a modal with the selected seat automatically prefilled.
+• Quick Add modal supports:
+
+  • Add Timer
+  • Add Seat Status
+• Quick Add modal now follows the same closing-time auto-trim logic as the main timer form.
+
+Live Alarm Sync
+
+• Alarm dismissals are now synced across all open dashboards.
+• Dismissing an alarm on one workstation dismisses it for everyone.
+
+Seat Status Management
+
+• Added dedicated Seat Statuses section below Active Timers.
+• Seat statuses now display in a live list with:
+
+  • Seat badge
+  • Student/Test label
+  • Flag controls
+  • Clear button
+  • Trash shortcut
+• Seat statuses now update live alongside timers.
+
+Seat Flags System
+
+• Added independent seat flag system:
+
+  • ADS
+  • Misconduct
+• Flags are no longer tied to the Test Optional field.
+• Flags override seat color visually without overwriting testing data.
+• Flags now work for:
+
+  • Active timers
+  • Occupied seats
+  • Reserved seats
+
+Map Improvements
+
+• Empty seats now show Quick Add buttons.
+• Occupied seats now support faster clearing workflows.
+• Added support for live map-based workflow management.
+
+Sound Reminder System
+
+• Added startup reminder modal after dashboard unlock.
+• Reminds staff to click Enable Sound before using the workstation.
+• Reminder only appears once per browser session.
+
+Improvements
+
+• Improved operational workflow for live seat management.
+• Improved visibility for occupied and reserved seats.
+• Improved dashboard synchronization behavior.
+• Improved modal consistency and styling.
+• Improved active seat handling and seat replacement workflows.
+
+Fixes
+
+• Fixed alarm dismissal syncing issues.
+• Fixed Quick Add modal field handling.
+• Fixed seat conflict replacement handling.
+• Fixed timer rendering and seat color priority behavior.
+• Fixed multiple UI alignment and spacing inconsistencies.
+
+Internal Changes
+
+• Added separate `flag` data support for timers and seat statuses.
+• Added centralized seat flag rendering logic.
+• Added session-based startup reminder tracking.
+• Refactored Quick Add modal logic for multiple modes.
+
 Testing Center Dashboard — Version 1.9.0 - 5/16/26 - 12:08PM
 
 NEW CHROME EXTENSION
