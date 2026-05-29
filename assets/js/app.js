@@ -369,7 +369,7 @@ const finalSeconds = Math.min(
 const finalMinutes = Math.ceil(finalSeconds / 60);
 
   if (!seat || !student || totalMinutes <= 0) {
-    alert("Please complete all required fields.");
+    showInfoModal("Please complete all required fields.");
     return;
   }
 
@@ -482,7 +482,7 @@ function createSeatStatus() {
   const status = document.getElementById("seatStatusInput").value;
 
   if (!seat || !testType || !status) {
-    alert("Please complete the seat status fields.");
+    showInfoModal("Please complete the seat status fields.");
     return;
   }
   const existingSeatStatus = seatStatuses.find(
@@ -1395,7 +1395,7 @@ enableSoundBtn.addEventListener("click", async () => {
     enableSoundBtn.textContent = "🔊 Sound Enabled";
     enableSoundBtn.classList.add("enabled");
   } catch (error) {
-    alert("Sound could not be enabled. Try clicking the page once, then click Enable Sound again.");
+    showInfoModal("Sound could not be enabled. Try clicking the page once, then click Enable Sound again.");
   }
 });
 
@@ -1712,6 +1712,22 @@ function showStartupSoundReminder() {
 
   startupSoundModal.show();
 }
+
+// Load version from version.txt and display in elements with class "app-version"
+async function loadVersion() {
+  try {
+    const response = await fetch("./assets/data/version.txt");
+    const version = (await response.text()).trim();
+
+    document.querySelectorAll(".app-version").forEach(el => {
+      el.textContent = version;
+    });
+  } catch (error) {
+    console.error("Unable to load version.", error);
+  }
+}
+
+loadVersion();
 
 renderTimers();
 renderSeatStatuses();

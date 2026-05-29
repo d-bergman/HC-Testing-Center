@@ -1,3 +1,42 @@
+Testing Center Dashboard – Version 2.1.0 - 5/29/26 - 8:35 AM
+
+Resources Management Update
+
+New Features
+
+Resources Page
+
+• Added dedicated Resources page for storing useful Testing Center links.
+• Resources are stored in Firebase and synced live across all users.
+• Resources can be accessed from the new Resources button on the dashboard.
+
+Resource Management
+
+• Added ability to create new resources.
+• Added ability to edit existing resources.
+• Added ability to delete resources.
+• Added resource categories for organization.
+
+Search & Filtering
+
+• Added resource search functionality.
+• Added category filtering.
+• Resource counts now update automatically based on filters.
+
+User Interface Improvements
+
+• Resource titles are now clickable links.
+• Added Open button for quick access to resources.
+• Improved resource card layout and action button styling.
+• Added confirmation modal for resource deletion.
+• Resource management now follows the same modal design standards used throughout the dashboard.
+
+System Improvements
+
+• Added centralized version management using version.txt.
+• Version number now updates across all pages from a single file.
+
+
 Testing Center Dashboard — Version 2.0.0 - 5/28/26 - 5:24PM
 Major Dashboard & Seat Management Update
 
