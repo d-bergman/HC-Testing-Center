@@ -108,16 +108,42 @@ function renderResources() {
     return;
   }
 
+  const RECENT_RESOURCE_MS = 48 * 60 * 60 * 1000;
+  const now = Date.now();
+
   filteredResources.forEach(resource => {
     const item = document.createElement("div");
     item.className = "resource-item";
 
 item.innerHTML = `
   <div class="resource-main">
-    <a class="resource-title-link" href="${resource.url}" target="_blank" rel="noopener noreferrer">${resource.title}</a>
+    <div class="resource-title-row">
+  <a
+    class="resource-title-link"
+    href="${resource.url}"
+    target="_blank"
+    rel="noopener noreferrer"
+    onclick="trackResourceOpen('${resource.id}')"
+  >
+    ${resource.title}
+  </a>
+
+  ${
+    resource.pinned
+      ? `<span class="resource-pin-badge">📌 Pinned</span>`
+      : ""
+  }
+
+  ${
+  resource.createdAtMs &&
+  now - resource.createdAtMs <= RECENT_RESOURCE_MS
+    ? `<span class="resource-new-badge">New</span>`
+    : ""
+}
+</div>
 
     <div class="resource-meta">
-      ${resource.category || "Uncategorized"} • ${resource.createdAt || "-"}
+      ${resource.category || "Uncategorized"} • ${resource.createdAt || "-"} • Opened ${resource.openCount || 0} times
     </div>
 
     ${
@@ -126,7 +152,7 @@ item.innerHTML = `
         : ""
     }
 
-    <div class="resource-url">${resource.url}</div>
+    <!-- <div class="resource-url">${resource.url}</div> -->
   </div>
 
   <div class="resource-actions">
@@ -135,6 +161,7 @@ item.innerHTML = `
       href="${resource.url}"
       target="_blank"
       rel="noopener noreferrer"
+      onclick="trackResourceOpen('${resource.id}')"
     >
       Open
     </a>
@@ -144,6 +171,13 @@ item.innerHTML = `
       onclick="openEditResourceModal('${resource.id}')"
     >
       Edit
+    </button>
+
+    <button
+        class="resource-edit-btn"
+        onclick="toggleResourcePin('${resource.id}')"
+        >
+        ${resource.pinned ? "Unpin" : "Pin"}
     </button>
 
     <button
@@ -231,12 +265,26 @@ onValue(resourcesRef, snapshot => {
   const data = snapshot.val() || {};
 
   resources = Object.values(data).sort((a, b) => {
-    return (b.createdAtMs || 0) - (a.createdAtMs || 0);
-  });
+  if ((a.pinned || false) !== (b.pinned || false)) {
+    return (b.pinned || false) - (a.pinned || false);
+  }
+
+  return (b.createdAtMs || 0) - (a.createdAtMs || 0);
+});
 
   updateCategoryFilter();
   renderResources();
 });
+
+// Toggle pin/unpin resource
+window.toggleResourcePin = function(id) {
+  const resource = resources.find(r => r.id === id);
+  if (!resource) return;
+
+  update(ref(db, `resources/${id}`), {
+    pinned: !resource.pinned
+  });
+};
 
 window.openEditResourceModal = function(id) {
   const resource = resources.find(r => r.id === id);
@@ -281,6 +329,18 @@ saveEditResourceBtn.addEventListener("click", () => {
   editResourceModal.hide();
   editingResourceId = null;
 });
+
+// Track resource opens by updating open count and last opened timestamp in Firebase
+window.trackResourceOpen = function(id) {
+  const resource = resources.find(r => r.id === id);
+  if (!resource) return;
+
+  update(ref(db, `resources/${id}`), {
+    openCount: (resource.openCount || 0) + 1,
+    lastOpenedAt: new Date().toLocaleString(),
+    lastOpenedAtMs: Date.now()
+  });
+};
 
 window.openDeleteResourceModal = function(id) {
   const resource = resources.find(r => r.id === id);

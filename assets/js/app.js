@@ -11,16 +11,6 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 
-fetch("./assets/data/changelog.txt")
-  .then(res => res.text())
-  .then(text => {
-    document.getElementById("changeLogContent").textContent = text;
-  })
-  .catch(() => {
-    document.getElementById("changeLogContent").textContent =
-      "Unable to load changelog.";
-  });
-
 const firebaseConfig = {
   apiKey: "RemovedKEY",
   authDomain: "hc-testing-center.firebaseapp.com",
@@ -31,22 +21,27 @@ const firebaseConfig = {
   appId: "1:555153286496:web:76dddf80bd00af838f2a05"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+// Database references
 const timersRef = ref(db, "timers");
 const historyRef = ref(db, "history");
 const presenceRef = ref(db, "presence");
 const seatStatusesRef = ref(db, "seatStatuses");
 
+// UI element references
 const timerList = document.getElementById("timerList");
 const historyList = document.getElementById("historyList");
 const seatGrid = document.getElementById("seatGrid");
 
+// Form elements
 const startTimerBtn = document.getElementById("startTimerBtn");
 const clearAllBtn = document.getElementById("clearAllBtn");
 const testOptionalField = document.getElementById("testOptionalField");
 
+// Sound and map elements
 const currentTime = document.getElementById("currentTime");
 const currentDate = document.getElementById("currentDate");
 const timerSound = document.getElementById("timerSound");
@@ -54,6 +49,48 @@ const enableSoundBtn = document.getElementById("enableSoundBtn");
 let soundEnabled = false;
 const mapButtons = document.querySelectorAll(".map-btn");
 
+// Staff Check-In Modal Constants
+const staffCheckInModalElement =
+  document.getElementById("staffCheckInModal");
+
+const staffCheckInModal =
+  new bootstrap.Modal(staffCheckInModalElement);
+
+const staffNameButtons =
+  document.getElementById("staffNameButtons");
+
+const staffCheckInError =
+  document.getElementById("staffCheckInError");
+
+const STAFF_NAMES = [
+  "Darren",
+  "Yuliia",
+  "Jae",
+  "Dani",
+  "Anita",
+  "Joe",
+  "TC"
+];
+
+let userPresenceRef = null;
+let currentStaffName = null;
+
+
+// Startup Video Modal Constants
+const startupVideoModalElement =
+  document.getElementById("startupVideoModal");
+
+const startupVideo =
+  document.getElementById("startupVideo");
+
+const startupVideoModal =
+  startupVideoModalElement
+    ? new bootstrap.Modal(startupVideoModalElement)
+    : null;
+
+const appShell = document.getElementById("appShell");
+
+// Modal elements
 const seatConflictModalElement =
   document.getElementById("seatConflictModal");
 
@@ -66,6 +103,7 @@ const seatConflictMessage =
 const confirmSeatConflictBtn =
   document.getElementById("confirmSeatConflictBtn");
 
+// Admin Password Constants
 const TEMP_PASSWORD = "148TEST6541";
 
 const passwordScreen = document.getElementById("passwordScreen");
@@ -73,11 +111,13 @@ const passwordInput = document.getElementById("passwordInput");
 const passwordBtn = document.getElementById("passwordBtn");
 const passwordError = document.getElementById("passwordError");
 
+// History elements
 const historySearch = document.getElementById("historySearch");
 const loadMoreHistoryBtn = document.getElementById("loadMoreHistoryBtn");
 
 let historyVisibleCount = 10;
 
+// Form mode toggle elements
 const timerModeBtn = document.getElementById("timerModeBtn");
 const seatStatusModeBtn = document.getElementById("seatStatusModeBtn");
 const formTitle = document.getElementById("formTitle");
@@ -221,6 +261,7 @@ let alarmInterval = null;
 let activeAlarmTimerId = null;
 let seatStatuses = [];
 
+// Map of seat IDs to camera colors
 const seatCameraMap = {
   C1: "orange", C2: "orange", C3: "orange", C4: "orange",
   C5: "orange", C6: "orange", C7: "green", C8: "green",
@@ -774,6 +815,7 @@ function getTimerSeatClass(timer, remaining) {
 
   if (flag === "ADS") return "active-ads";
   if (flag === "Misconduct") return "active-misconduct";
+  if (flag === "Broken") return "active-broken";
 
   const status = getTimerStatus(remaining);
 
@@ -833,6 +875,8 @@ function renderSeats() {
         statusClass = "active-ads";
       } else if (seatStatus.flag === "Misconduct") {
         statusClass = "active-misconduct";
+      } else if (seatStatus.flag === "Broken") {
+        statusClass = "active-broken";
       } else {
         statusClass =
           seatStatus.status === "Reserved"
@@ -1358,19 +1402,102 @@ onValue(seatStatusesRef, snapshot => {
   renderSeatStatuses();
 });
 
-const userPresenceRef = push(presenceRef);
+//const userPresenceRef = push(presenceRef);
 
-set(userPresenceRef, {
-  connectedAt: serverTimestamp()
-});
+//set(userPresenceRef, {
+//  connectedAt: serverTimestamp()
+//});
 
-onDisconnect(userPresenceRef).remove();
+//onDisconnect(userPresenceRef).remove();
+
+//onValue(presenceRef, snapshot => {
+//  const users = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
+//  document.getElementById("connectedUsers").textContent = `Connected Users: ${users}`;
+//});
+
+//Enhanced presence tracking with staff names
+let latestPresenceData = {};
+function registerPresence(staffName) {
+  currentStaffName = staffName;
+
+  userPresenceRef = push(presenceRef);
+
+  set(userPresenceRef, {
+    name: staffName,
+    connectedAt: serverTimestamp()
+  });
+
+  onDisconnect(userPresenceRef).remove();
+}
 
 onValue(presenceRef, snapshot => {
-  const users = snapshot.exists() ? Object.keys(snapshot.val()).length : 0;
-  document.getElementById("connectedUsers").textContent = `Connected Users: ${users}`;
+  latestPresenceData = snapshot.val() || {};
+
+  const data = latestPresenceData;
+
+  const users = Object.values(data);
+
+  const names = users
+    .map(user => user.name)
+    .filter(Boolean);
+
+  const uniqueNames = [...new Set(names)];
+
+  document.getElementById("connectedUsers").textContent =
+    uniqueNames.length
+      ? `Connected Users: ${users.length} • ${uniqueNames.join(" • ")}`
+      : `Connected Users: ${users.length}`;
 });
 
+// Placeholder function to get active staff names from presence data
+function getActiveStaffNames() {
+  const presenceData = [];
+
+  return presenceData;
+}
+
+function openStaffCheckInModal() {
+  staffCheckInError.textContent = "";
+  staffNameButtons.innerHTML = "";
+
+  const activeNames = new Set(
+    Object.values(latestPresenceData || {})
+      .map(user => user.name)
+      .filter(Boolean)
+  );
+
+  STAFF_NAMES.forEach(name => {
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.className = "staff-name-btn";
+    button.textContent = name;
+
+    if (activeNames.has(name)) {
+      button.disabled = true;
+      button.textContent = `${name} — Active`;
+    }
+
+    button.addEventListener("click", () => {
+      registerPresence(name);
+
+      sessionStorage.setItem("staffCheckedIn", "true");
+      sessionStorage.setItem("staffName", name);
+
+      staffCheckInModal.hide();
+
+      setTimeout(() => {
+        showStartupSoundReminder();
+      }, 300);
+    });
+
+    staffNameButtons.appendChild(button);
+  });
+
+  staffCheckInModal.show();
+}
+
+// Dismiss alarm and mark as dismissed in database to prevent repeat alarms on same timer
 document.getElementById("dismissAlarmBtn").addEventListener("click", () => {
   const timerStillExists = timers.some(t => t.id === activeAlarmTimerId);
 
@@ -1407,13 +1534,58 @@ function unlockDashboard() {
   sessionStorage.setItem("timerDashboardUnlocked", "true");
   passwordScreen.classList.add("hidden");
 
+ appShell.classList.remove("startup-hidden");
+passwordScreen.classList.add("hidden");
+
+if (sessionStorage.getItem("staffCheckedIn") !== "true") {
   setTimeout(() => {
-    showStartupSoundReminder();
+    openStaffCheckInModal();
   }, 300);
 }
+}
 
+//if (sessionStorage.getItem("timerDashboardUnlocked") === "true") {
+//  passwordScreen.classList.add("hidden");
+//}
+
+// Show startup video if not unlocked, otherwise show password screen
 if (sessionStorage.getItem("timerDashboardUnlocked") === "true") {
+
+  appShell.classList.remove("startup-hidden");
   passwordScreen.classList.add("hidden");
+
+  const savedStaffName = sessionStorage.getItem("staffName");
+
+if (sessionStorage.getItem("staffCheckedIn") === "true" && savedStaffName) {
+  registerPresence(savedStaffName);
+} else {
+  setTimeout(() => {
+    openStaffCheckInModal();
+  }, 300);
+}
+} else if (startupVideoModal && startupVideo) {
+
+  passwordScreen.classList.add("hidden");
+  startupVideoModal.show();
+
+  startupVideo.play().catch(() => {
+    startupVideoModal.hide();
+
+    appShell.classList.remove("startup-hidden");
+    passwordScreen.classList.remove("hidden");
+  });
+
+  startupVideo.addEventListener("ended", () => {
+    startupVideoModal.hide();
+
+    appShell.classList.remove("startup-hidden");
+    passwordScreen.classList.remove("hidden");
+  });
+
+} else {
+
+  appShell.classList.remove("startup-hidden");
+  passwordScreen.classList.remove("hidden");
 }
 
 passwordBtn.addEventListener("click", () => {
@@ -1728,6 +1900,56 @@ async function loadVersion() {
 }
 
 loadVersion();
+
+// Load markdown content from specified path and insert into target element
+async function loadMarkdown(path, targetId) {
+  try {
+    const response = await fetch(path);
+
+    if (!response.ok) {
+      throw new Error(`Failed to load ${path}`);
+    }
+
+    const markdown = await response.text();
+
+    document.getElementById(targetId).innerHTML =
+      marked.parse(markdown);
+  } catch (error) {
+    console.error(error);
+
+    document.getElementById(targetId).innerHTML =
+      "<p>Unable to load content.</p>";
+  }
+}
+
+loadMarkdown(
+  "./assets/data/help.md",
+  "helpContent"
+);
+
+loadMarkdown(
+  "./assets/data/changelog.md",
+  "changeLogContent"
+);
+
+const helpBody = document.querySelector("#helpModal .modal-body");
+const helpBackToTopBtn = document.getElementById("helpBackToTopBtn");
+
+if (helpBody && helpBackToTopBtn) {
+  helpBackToTopBtn.style.display = "none";
+
+  helpBody.addEventListener("scroll", () => {
+    helpBackToTopBtn.style.display =
+      helpBody.scrollTop > 150 ? "block" : "none";
+  });
+
+  helpBackToTopBtn.addEventListener("click", () => {
+    helpBody.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
+}
 
 renderTimers();
 renderSeatStatuses();

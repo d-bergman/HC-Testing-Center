@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Testing Center Guides</title>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+</head>
+
+<body>
+  <div class="app-shell container-fluid py-3">
+
+    <header class="app-header d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3 mb-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="clock-icon">📚</div>
+        <div>
+          <h1 class="mb-0">Testing Center Guides</h1>
+          <p class="mb-0 text-secondary-custom">Operations guides and staff procedures</p>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <a href="resources.html" class="btn btn-sound">🔗 Resources</a>
+        <a href="index.html" class="btn btn-sound">← Back to Dashboard</a>
+      </div>
+    </header>
+
+    <main class="row g-3">
+      <section class="col-12 col-xl-4">
+        <div class="panel h-100">
+          <section class="app-card">
+            <h2>Add Guide</h2>
+
+            <label for="guideTitleInput" class="form-label mt-2">Title</label>
+            <input id="guideTitleInput" class="form-control" type="text" placeholder="Placement Testing" />
+
+            <label for="guideCategoryInput" class="form-label mt-3">Category</label>
+            <input id="guideCategoryInput" class="form-control" type="text" placeholder="Testing Procedures" />
+
+            <label for="guideContentInput" class="form-label mt-3">Guide Content Markdown</label>
+            <textarea
+              id="guideContentInput"
+              class="form-control"
+              rows="12"
+              placeholder="# Placement Testing&#10;&#10;## Check In&#10;- Verify photo ID&#10;- Confirm appointment&#10;- Assign seat"
+            ></textarea>
+
+            <button id="addGuideBtn" class="btn btn-primary-custom w-100 mt-3">
+              + Add Guide
+            </button>
+
+            <p id="guideError" class="password-error"></p>
+          </section>
+        </div>
+      </section>
+
+      <section class="col-12 col-xl-8">
+        <div class="panel h-100">
+          <section class="app-card">
+            <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+              <h2 class="mb-0">Guides</h2>
+              <span id="guideCount" class="small text-secondary-custom">0 guides</span>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-12 col-md-8">
+                <input
+                  id="guideSearchInput"
+                  class="form-control"
+                  type="text"
+                  placeholder="Search guides..."
+                />
+              </div>
+
+              <div class="col-12 col-md-4">
+                <select id="guideCategoryFilter" class="form-select">
+                  <option value="">All Categories</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="guideList" class="timer-list">
+              <div class="empty-state">No guides added yet.</div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3 mt-3">
+      <p class="mb-0 text-center">Harper Testing Center – Guides</p>
+      <p class="mb-0 text-center">Version <span class="app-version">Loading...</span></p>
+    </footer>
+  </div>
+
+  <!-- Modal for Viewing Guide -->
+<div class="modal fade" id="viewGuideModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content alarm-modal">
+      <div class="modal-header">
+        <h2 id="viewGuideTitle" class="modal-title">Guide</h2>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body help-content">
+        <div id="viewGuideMeta" class="resource-meta mb-3"></div>
+        <div id="viewGuideContent"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Editing Guide -->
+<div class="modal fade" id="editGuideModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content alarm-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Edit Guide</h2>
+      </div>
+
+      <div class="modal-body">
+        <label for="editGuideTitleInput" class="form-label">Title</label>
+        <input id="editGuideTitleInput" class="form-control" type="text" />
+
+        <label for="editGuideCategoryInput" class="form-label mt-3">Category</label>
+        <input id="editGuideCategoryInput" class="form-control" type="text" />
+
+        <label for="editGuideContentInput" class="form-label mt-3">Guide Content Markdown</label>
+        <textarea id="editGuideContentInput" class="form-control" rows="14"></textarea>
+
+        <p id="editGuideError" class="password-error"></p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button id="saveEditGuideBtn" type="button" class="btn btn-primary-custom">
+          Save Guide
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Deleting Guide -->
+<div class="modal fade" id="deleteGuideModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content alarm-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Delete Guide</h2>
+      </div>
+
+      <div class="modal-body">
+        <p id="deleteGuideMessage" class="mb-0"></p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button id="confirmDeleteGuideBtn" type="button" class="resource-delete-btn">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script type="module" src="./assets/js/guides.js"></script>
+</body>
+</html>
