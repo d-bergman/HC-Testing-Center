@@ -371,4 +371,31 @@ async function loadVersion() {
   }
 }
 
-loadVersion();a
+//Sidebar toggle functionality
+const sidebarToggleBtn =
+  document.getElementById("sidebarToggleBtn");
+
+const sidebarCloseBtn =
+  document.getElementById("sidebarCloseBtn");
+
+const appSidebar =
+  document.getElementById("appSidebar");
+
+const sidebarOverlay =
+  document.getElementById("sidebarOverlay");
+
+function openSidebar() {
+  appSidebar.classList.add("open");
+  sidebarOverlay.classList.add("show");
+}
+
+function closeSidebar() {
+  appSidebar.classList.remove("open");
+  sidebarOverlay.classList.remove("show");
+}
+
+sidebarToggleBtn?.addEventListener("click", openSidebar);
+sidebarCloseBtn?.addEventListener("click", closeSidebar);
+sidebarOverlay?.addEventListener("click", closeSidebar);
+
+loadVersion();

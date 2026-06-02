@@ -1,3 +1,185 @@
+# Version 2.3.0 - 6/2/26 - 1:58 AM
+
+### Dashboard Expansion, Analytics & Knowledge Management Update
+
+## New Features
+
+### Dashboard Loader
+
+* Replaced startup video system with a custom dashboard loader.
+* Added lightweight animated loading screen.
+* Loader now matches dashboard styling and branding.
+* Improved startup performance and reduced loading complexity.
+
+---
+
+### Global Timer Alarm System
+
+* Added Global Alarm support across all dashboard pages.
+* Timer completion alerts now appear on:
+  * Dashboard
+  * Resources
+  * Guides
+  * Metrics
+  * Instructor Directory
+  * FAQ
+* Added Dismiss and Open Dashboard actions.
+* Dismissing an alarm now syncs across all connected users.
+* Added automatic alarm monitoring outside the dashboard page.
+* Added sound support for global alarm notifications.
+
+---
+
+### Metrics Dashboard
+
+* Added dedicated Metrics page.
+* Added Day metrics.
+* Added Week metrics.
+* Added Month metrics.
+* Added Last Month metrics.
+* Added All-Time statistics section.
+
+### Testing Analytics
+
+* Students Processed
+* Placement Tests
+* Make-Up Tests
+* CLEP
+* GED
+* CNA
+* Additional testing categories tracked automatically
+
+### All-Time Analytics
+
+* All-time totals by test type
+* Most Popular Test
+* Top Seats (all-time)
+* Historical activity statistics
+
+### Seat Usage Analytics
+
+* Added Lab C Seat Usage Heat Map.
+* Added Lab B Seat Usage Heat Map.
+* Displays all-time workstation utilization.
+* Color-coded usage intensity levels.
+* Identifies most frequently used workstations.
+
+---
+
+### Announcement Banner System
+
+* Added dashboard-wide Announcement Banner system.
+* Staff can create announcements.
+* Staff can edit announcements.
+* Staff can delete announcements.
+* Added announcement priority levels:
+  * Information
+  * Success
+  * Warning
+  * Critical
+* Added optional expiration date and time.
+* Expired announcements automatically remove themselves.
+* Added maximum active announcement limit to prevent clutter.
+* Announcement banners automatically hide when no active announcements exist.
+
+---
+
+### Instructor Directory
+
+* Added dedicated Instructor Directory page.
+* Added searchable instructor database.
+
+### Instructor Records Include
+
+* Instructor Name
+* Department
+* Department Code
+* Extension
+* Alternate Phone Number
+
+### Directory Features
+
+* Add Instructor
+* Edit Instructor
+* Delete Instructor
+* Pin Instructor
+* Search Instructors
+* Recently Added badge
+* Last Updated tracking
+
+---
+
+### FAQ Knowledge Base
+
+* Added dedicated FAQ page.
+* Added searchable staff knowledge base.
+* Designed for storing commonly asked student questions and answers.
+
+### FAQ Features
+
+* Add FAQ
+* Edit FAQ
+* Delete FAQ
+* Pin FAQ
+* Search FAQs
+* Category Filtering
+* Recently Added badge
+* Last Updated tracking
+* Full FAQ viewing modal
+* Condensed FAQ summaries for improved browsing
+
+---
+
+### Navigation Improvements
+
+* Added dashboard sidebar navigation.
+* Added collapsible Menu system.
+* Reduced header clutter by moving secondary tools into the sidebar.
+* Sidebar now provides access to:
+
+  * Resources
+  * Guides
+  * FAQ
+  * Metrics
+  * Instructor Directory
+  * Help
+  * Sound Controls
+
+---
+
+### Sound Management
+
+* Startup sound confirmation now enables dashboard audio directly.
+* Reduced sound setup from two clicks to one.
+* Added backup sound control inside sidebar navigation.
+* Improved overall sound workflow for staff.
+
+---
+
+## Improvements
+
+* Improved dashboard organization.
+* Improved page navigation.
+* Improved analytics visibility.
+* Improved staff knowledge sharing.
+* Improved instructor lookup workflow.
+* Improved timer awareness across all dashboard pages.
+* Improved startup experience and load performance.
+* Reduced header button clutter.
+* Improved long-term maintainability of operational information.
+
+---
+
+## Notes
+
+* Global alarms now function across all major dashboard pages.
+* Seat utilization analytics are based on historical timer data.
+* Metrics automatically reset by period (daily, weekly, monthly) while preserving all-time statistics.
+* Instructor Directory is intended to replace paper-based instructor lookup sheets.
+* FAQ page serves as a shared knowledge repository for Testing Center staff.
+* Firebase Authentication and enhanced security controls remain planned for Version 2.4.0.
+
+
 # Version 2.2.0 - 6/1/26 - 1:04 PM
 ### Guides, Resources & Staff Workflow Update
 
@@ -87,7 +269,6 @@
 
 - Staff presence tracking is session-based and does not require user accounts.
 - Firebase Authentication and enhanced security controls are planned for a future update.
-
 
 # Version 2.1.0 — 5/29/26 — 8:35 AM
 

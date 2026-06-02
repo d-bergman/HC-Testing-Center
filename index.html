@@ -18,6 +18,24 @@
 </head>
 
 <body>
+
+  <div id="appLoader" class="app-loader" role="status" aria-live="polite">
+  <div class="loader-card">
+    <div class="loader-orbit">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <h2>Loading Dashboard</h2>
+    <p>Preparing your workspace...</p>
+
+    <div class="loader-bar">
+      <div class="loader-bar-fill"></div>
+    </div>
+  </div>
+</div>
+  
   <div id="passwordScreen" class="password-screen">
   <div class="password-card">
     <h1>Testing Center Dashboard</h1>
@@ -57,18 +75,51 @@
           <span class="sync-dot"></span>
           <span id="syncStatus">Live Sync: Connecting...</span>
         </div>
-        <button id="enableSoundBtn" class="btn btn-sound">
-  🔊 Enable Sound
-</button>
-<button class="btn btn-sound" data-bs-toggle="modal" data-bs-target="#helpModal">
-  ❔ Help
-</button>
-<a
-  href="resources.html"
+<button
+  id="addAnnouncementBtn"
   class="btn btn-sound"
 >
-  🔗 Resources
-</a>
+  📢
+</button>
+<button
+  id="sidebarToggleBtn"
+  class="btn btn-sound"
+  type="button"
+>
+  ☰ Menu
+</button>
+
+<div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+<nav id="appSidebar" class="app-sidebar">
+  <div class="sidebar-header">
+    <h2>Dashboard Menu</h2>
+    <button id="sidebarCloseBtn" type="button">×</button>
+  </div>
+
+  <a href="resources.html">🔗 Resources</a>
+  <a href="guides.html">📚 Guides</a>
+  <a href="faq.html">❓ FAQ</a>
+  <a href="metrics.html">📊 Metrics</a>
+  <a href="directory.html">👨‍🏫 Instructor Directory</a>
+  <div class="sidebar-divider"></div>
+
+<button
+  id="sidebarHelpBtn"
+  class="sidebar-action-btn"
+  type="button"
+>
+  ❔ Help
+</button>
+
+<button
+  id="enableSoundBtn"
+  class="sidebar-action-btn"
+  type="button"
+>
+  🔊 Sound Backup
+</button>
+</nav>
         <div class="time-box text-sm-end">
           <strong id="currentTime">--:--:--</strong>
           <span id="currentDate">Loading...</span>
@@ -76,6 +127,12 @@
       </div>
     </header>
 
+    <!--Announcement Banner-->
+    <section
+  id="announcementBannerContainer"
+  class="announcement-banner-container mb-3"
+>
+</section>
     <!-- Main Layout -->
     <main class="row g-3">
 
@@ -788,7 +845,7 @@
 
       <div class="modal-body">
         <p class="mb-2">
-          Before using this workstation, click <strong>Enable Sound</strong> at the top of the dashboard.
+          Before using this workstation, click <strong>Enable Sound</strong> to allow alarm audio to play when timers finish.
         </p>
 
         <p class="text-secondary-custom mb-0">
@@ -803,35 +860,9 @@
           class="btn btn-primary-custom"
           data-bs-dismiss="modal"
         >
-          I’ll Enable Sound
+          Enable Sound
         </button>
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- Startup Video Modal -->
-<div
-  class="modal fade"
-  id="startupVideoModal"
-  tabindex="-1"
-  aria-hidden="true"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
->
-  <div class="modal-dialog startup-video-dialog">
-    <div class="modal-content startup-video-content">
-
-      <video
-        id="startupVideo"
-        autoplay
-        muted
-        playsinline
-        class="startup-video"
-      >
-        <source src="./assets/vid/startup.mp4" type="video/mp4">
-      </video>
-
     </div>
   </div>
 </div>
@@ -860,6 +891,73 @@
 
         <p id="staffCheckInError" class="password-error"></p>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Announcement Modal -->
+<div
+  class="modal fade"
+  id="announcementModal"
+  tabindex="-1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content alarm-modal">
+
+      <div class="modal-header">
+        <h2 class="modal-title">
+          Announcement
+        </h2>
+      </div>
+
+      <div class="modal-body">
+
+        <label class="form-label">
+          Announcement
+        </label>
+
+        <textarea
+          id="announcementTextInput"
+          class="form-control"
+          rows="4"
+        ></textarea>
+
+        <label class="form-label mt-3">
+          Priority
+        </label>
+
+        <select
+          id="announcementPriorityInput"
+          class="form-select"
+        >
+          <option value="info">Info</option>
+          <option value="success">Success</option>
+          <option value="warning">Warning</option>
+          <option value="critical">Critical</option>
+        </select>
+
+        <label class="form-label mt-3">
+          Expiration
+        </label>
+
+        <input
+          id="announcementExpirationInput"
+          type="datetime-local"
+          class="form-control"
+        />
+
+      </div>
+
+      <div class="modal-footer">
+        <button
+          id="saveAnnouncementBtn"
+          class="btn btn-primary-custom"
+        >
+          Save
+        </button>
+      </div>
+
     </div>
   </div>
 </div>

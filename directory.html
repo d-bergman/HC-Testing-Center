@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Instructor Directory</title>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+</head>
+
+<body>
+  <div class="app-shell container-fluid py-3">
+
+    <header class="app-header d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3 mb-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="clock-icon">👨‍🏫</div>
+        <div>
+          <h1 class="mb-0">Instructor Directory</h1>
+          <p class="mb-0 text-secondary-custom">Instructor lookup by name, department, code, and extension</p>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button id="sidebarToggleBtn" class="btn btn-sound" type="button">
+          ☰ Menu
+        </button>
+
+        <a href="index.html" class="btn btn-sound align-items-center d-inline-flex gap-1">
+          <img src="assets/img/chevron-left-solid-full.svg" width="20" height="20" /> Back to Dashboard
+        </a>
+      </div>
+    </header>
+
+    <main class="row g-3"> 
+      <section class="col-12 col-xl-4">
+        <div class="panel h-100">
+          <section class="app-card">
+            <h2>Add Instructor</h2>
+
+            <label for="firstNameInput" class="form-label mt-2">First Name</label>
+            <input id="firstNameInput" class="form-control" type="text" placeholder="Daniel" />
+
+            <label for="lastNameInput" class="form-label mt-3">Last Name</label>
+            <input id="lastNameInput" class="form-control" type="text" placeholder="Loprieno" />
+
+            <label for="departmentInput" class="form-label mt-3">Department</label>
+            <input id="departmentInput" class="form-control" type="text" placeholder="Math and Science" />
+
+            <div class="row g-2">
+              <div class="col-12 col-md-6">
+                <label for="codeInput" class="form-label mt-3">Code</label>
+                <input id="codeInput" class="form-control" type="text" placeholder="MS" />
+              </div>
+
+              <div class="col-12 col-md-6">
+                <label for="extensionInput" class="form-label mt-3">Extension</label>
+                <input id="extensionInput" class="form-control" type="text" placeholder="6209" />
+              </div>
+            </div>
+
+            <label for="alternatePhoneInput" class="form-label mt-3">Alternate Phone</label>
+            <input id="alternatePhoneInput" class="form-control" type="text" placeholder="Optional" />
+
+            <button id="addInstructorBtn" class="btn btn-primary-custom w-100 mt-3">
+              + Add Instructor
+            </button>
+
+            <p id="instructorError" class="password-error"></p>
+          </section>
+        </div>
+      </section>
+
+      <section class="col-12 col-xl-8">
+        <div class="panel h-100">
+          <section class="app-card">
+            <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+              <h2 class="mb-0">Instructors</h2>
+              <span id="instructorCount" class="small text-secondary-custom">0 instructors</span>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-12 col-md-8">
+                <input
+                  id="instructorSearchInput"
+                  class="form-control"
+                  type="text"
+                  placeholder="Search instructors..."
+                />
+              </div>
+
+              <div class="col-12 col-md-4">
+                <select id="departmentFilter" class="form-select">
+                  <option value="">All Departments</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="instructorList" class="timer-list">
+              <div class="empty-state">No instructors added yet.</div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-3 mt-3">
+      <p class="mb-0 text-center">Harper Testing Center – Instructor Directory</p>
+      <p class="mb-0 text-center">Version <span class="app-version">Loading...</span></p>
+    </footer>
+
+  </div>
+
+  <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+  <nav id="appSidebar" class="app-sidebar">
+    <div class="sidebar-header">
+      <h2>Dashboard Menu</h2>
+      <button id="sidebarCloseBtn" type="button">×</button>
+    </div>
+
+  <a href="resources.html">🔗 Resources</a>
+  <a href="guides.html">📚 Guides</a>
+  <a href="faq.html">❓ FAQ</a>
+  <a href="metrics.html">📊 Metrics</a>
+  <a href="directory.html">👨‍🏫 Instructor Directory</a>
+  </nav>
+
+  <!-- Modal for Editing Instructor -->
+  <div class="modal fade" id="editInstructorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+      <div class="modal-content alarm-modal">
+        <div class="modal-header">
+          <h2 class="modal-title">Edit Instructor</h2>
+        </div>
+
+        <div class="modal-body">
+          <label for="editFirstNameInput" class="form-label">First Name</label>
+          <input id="editFirstNameInput" class="form-control" type="text" />
+
+          <label for="editLastNameInput" class="form-label mt-3">Last Name</label>
+          <input id="editLastNameInput" class="form-control" type="text" />
+
+          <label for="editDepartmentInput" class="form-label mt-3">Department</label>
+          <input id="editDepartmentInput" class="form-control" type="text" />
+
+          <div class="row g-2">
+            <div class="col-12 col-md-6">
+              <label for="editCodeInput" class="form-label mt-3">Code</label>
+              <input id="editCodeInput" class="form-control" type="text" />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label for="editExtensionInput" class="form-label mt-3">Extension</label>
+              <input id="editExtensionInput" class="form-control" type="text" />
+            </div>
+          </div>
+
+          <label for="editAlternatePhoneInput" class="form-label mt-3">Alternate Phone</label>
+          <input id="editAlternatePhoneInput" class="form-control" type="text" />
+
+          <p id="editInstructorError" class="password-error"></p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Cancel
+          </button>
+
+          <button id="saveEditInstructorBtn" type="button" class="btn btn-primary-custom">
+            Save Instructor
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Deleting Instructor -->
+  <div class="modal fade" id="deleteInstructorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content alarm-modal">
+        <div class="modal-header">
+          <h2 class="modal-title">Delete Instructor</h2>
+        </div>
+
+        <div class="modal-body">
+          <p id="deleteInstructorMessage" class="mb-0"></p>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            Cancel
+          </button>
+
+          <button id="confirmDeleteInstructorBtn" type="button" class="resource-delete-btn">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Timer Alarm Modal -->
+<div class="modal fade" id="globalAlarmModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content alarm-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Timer Complete</h2>
+      </div>
+
+      <div class="modal-body">
+        <p id="globalAlarmMessage" class="mb-0">A timer has finished.</p>
+      </div>
+
+      <div class="modal-footer">
+        <button id="globalDismissAlarmBtn" type="button" class="btn btn-secondary">
+          Dismiss
+        </button>
+
+        <button id="globalOpenDashboardBtn" type="button" class="btn btn-primary-custom">
+          Open Dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<audio id="globalTimerSound" src="assets/audio/Alarm09.wav" preload="auto"></audio>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="./assets/js/global-alarm.js"></script>
+  <script type="module" src="./assets/js/directory.js"></script>
+</body>
+</html>

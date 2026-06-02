@@ -31,6 +31,9 @@ const historyRef = ref(db, "history");
 const presenceRef = ref(db, "presence");
 const seatStatusesRef = ref(db, "seatStatuses");
 
+// New reference for announcements
+const announcementsRef = ref(db, "announcements");
+
 // UI element references
 const timerList = document.getElementById("timerList");
 const historyList = document.getElementById("historyList");
@@ -75,20 +78,22 @@ const STAFF_NAMES = [
 let userPresenceRef = null;
 let currentStaffName = null;
 
-
-// Startup Video Modal Constants
-const startupVideoModalElement =
-  document.getElementById("startupVideoModal");
-
-const startupVideo =
-  document.getElementById("startupVideo");
-
-const startupVideoModal =
-  startupVideoModalElement
-    ? new bootstrap.Modal(startupVideoModalElement)
-    : null;
-
 const appShell = document.getElementById("appShell");
+
+// App Loader Constants
+const appLoader = document.getElementById("appLoader");
+
+function hideAppLoader() {
+  if (!appLoader) return;
+
+  setTimeout(() => {
+    appLoader.classList.add("is-hidden");
+
+    setTimeout(() => {
+      appLoader.remove();
+    }, 400);
+  }, 1000);
+}
 
 // Modal elements
 const seatConflictModalElement =
@@ -252,6 +257,37 @@ const dismissStartupSoundBtn =
   document.getElementById("dismissStartupSoundBtn");
 
 let pendingAdminAction = null;
+
+// Announcement Modal Constants
+const announcementBannerContainer =
+  document.getElementById("announcementBannerContainer");
+
+const addAnnouncementBtn =
+  document.getElementById("addAnnouncementBtn");
+
+const announcementModalElement =
+  document.getElementById("announcementModal");
+
+const announcementModal =
+  announcementModalElement
+    ? new bootstrap.Modal(announcementModalElement)
+    : null;
+
+const announcementTextInput =
+  document.getElementById("announcementTextInput");
+
+const announcementPriorityInput =
+  document.getElementById("announcementPriorityInput");
+
+const announcementExpirationInput =
+  document.getElementById("announcementExpirationInput");
+
+const saveAnnouncementBtn =
+  document.getElementById("saveAnnouncementBtn");
+
+// State variables
+let announcements = [];
+let editingAnnouncementId = null;
 
 let activeLab = "C";
 let timers = [];
@@ -1520,14 +1556,48 @@ enableSoundBtn.addEventListener("click", async () => {
 
     soundEnabled = true;
     enableSoundBtn.textContent = "🔊 Sound Enabled";
+    localStorage.setItem("dashboardSoundEnabled", "true");
     enableSoundBtn.classList.add("enabled");
   } catch (error) {
     showInfoModal("Sound could not be enabled. Try clicking the page once, then click Enable Sound again.");
   }
 });
 
-dismissStartupSoundBtn.addEventListener("click", () => {
-  sessionStorage.setItem("startupSoundReminderDismissed", "true");
+dismissStartupSoundBtn.addEventListener("click", async () => {
+
+  try {
+    timerSound.volume = 1;
+    timerSound.currentTime = 0;
+
+    await timerSound.play();
+
+    timerSound.pause();
+    timerSound.currentTime = 0;
+
+    soundEnabled = true;
+
+    localStorage.setItem(
+      "dashboardSoundEnabled",
+      "true"
+    );
+
+    enableSoundBtn.textContent =
+      "🔊 Sound Enabled";
+
+    enableSoundBtn.classList.add("enabled");
+
+    sessionStorage.setItem(
+      "startupSoundReminderDismissed",
+      "true"
+    );
+
+    startupSoundModal.hide();
+
+  } catch {
+    showInfoModal(
+      "Sound could not be enabled. Please try again."
+    );
+  }
 });
 
 function unlockDashboard() {
@@ -1550,42 +1620,25 @@ if (sessionStorage.getItem("staffCheckedIn") !== "true") {
 
 // Show startup video if not unlocked, otherwise show password screen
 if (sessionStorage.getItem("timerDashboardUnlocked") === "true") {
-
   appShell.classList.remove("startup-hidden");
   passwordScreen.classList.add("hidden");
 
   const savedStaffName = sessionStorage.getItem("staffName");
 
-if (sessionStorage.getItem("staffCheckedIn") === "true" && savedStaffName) {
-  registerPresence(savedStaffName);
+  if (sessionStorage.getItem("staffCheckedIn") === "true" && savedStaffName) {
+    registerPresence(savedStaffName);
+  } else {
+    setTimeout(() => {
+      openStaffCheckInModal();
+    }, 300);
+  }
+
+  hideAppLoader();
 } else {
-  setTimeout(() => {
-    openStaffCheckInModal();
-  }, 300);
-}
-} else if (startupVideoModal && startupVideo) {
-
-  passwordScreen.classList.add("hidden");
-  startupVideoModal.show();
-
-  startupVideo.play().catch(() => {
-    startupVideoModal.hide();
-
-    appShell.classList.remove("startup-hidden");
-    passwordScreen.classList.remove("hidden");
-  });
-
-  startupVideo.addEventListener("ended", () => {
-    startupVideoModal.hide();
-
-    appShell.classList.remove("startup-hidden");
-    passwordScreen.classList.remove("hidden");
-  });
-
-} else {
-
   appShell.classList.remove("startup-hidden");
   passwordScreen.classList.remove("hidden");
+
+  hideAppLoader();
 }
 
 passwordBtn.addEventListener("click", () => {
@@ -1950,6 +2003,282 @@ if (helpBody && helpBackToTopBtn) {
     });
   });
 }
+
+// Sidebar toggle functionality
+const sidebarToggleBtn =
+  document.getElementById("sidebarToggleBtn");
+
+const sidebarCloseBtn =
+  document.getElementById("sidebarCloseBtn");
+
+const appSidebar =
+  document.getElementById("appSidebar");
+
+const sidebarOverlay =
+  document.getElementById("sidebarOverlay");
+
+function openSidebar() {
+  appSidebar.classList.add("open");
+  sidebarOverlay.classList.add("show");
+}
+
+function closeSidebar() {
+  appSidebar.classList.remove("open");
+  sidebarOverlay.classList.remove("show");
+}
+
+sidebarToggleBtn?.addEventListener("click", openSidebar);
+sidebarCloseBtn?.addEventListener("click", closeSidebar);
+sidebarOverlay?.addEventListener("click", closeSidebar);
+
+// Add Announcement button functionality  
+addAnnouncementBtn?.addEventListener("click", () => {
+
+  editingAnnouncementId = null;
+
+  announcementTextInput.value = "";
+  announcementPriorityInput.value = "info";
+  announcementExpirationInput.value = "";
+
+  announcementModal.show();
+});
+
+// Save Announcement button functionality
+saveAnnouncementBtn?.addEventListener("click", () => {
+
+  const text =
+    announcementTextInput.value.trim();
+
+  if (!text) return;
+
+  const now = Date.now();
+  announcements.forEach(item => {
+  if (item.expiresAtMs && item.expiresAtMs <= now) {
+    remove(ref(db, `announcements/${item.id}`));
+  }
+});
+
+const activeAnnouncementCount = announcements.filter(item => {
+  if (editingAnnouncementId && item.id === editingAnnouncementId) {
+    return false;
+  }
+
+  if (!item.expiresAtMs) return true;
+
+  return item.expiresAtMs > now;
+}).length;
+
+if (!editingAnnouncementId && activeAnnouncementCount >= 2) {
+  showInfoModal("Only 2 active announcements are allowed. Delete or expire one before adding another.");
+  return;
+}
+
+  const priority =
+    announcementPriorityInput.value;
+
+  const expiration =
+    announcementExpirationInput.value;
+
+  const expiresAtMs =
+    expiration
+      ? new Date(expiration).getTime()
+      : null;
+
+  if (editingAnnouncementId) {
+
+    update(
+      ref(
+        db,
+        `announcements/${editingAnnouncementId}`
+      ),
+      {
+        text,
+        priority,
+        expiresAtMs,
+        updatedAtMs: Date.now()
+      }
+    );
+
+  } else {
+
+    const newRef =
+      push(announcementsRef);
+
+    set(newRef, {
+      id: newRef.key,
+      text,
+      priority,
+      expiresAtMs,
+      createdAtMs: Date.now(),
+      pinned: false
+    });
+  }
+
+  announcementModal.hide();
+});
+
+// Periodically clean up expired announcements and re-render to ensure expired ones are removed from display
+function cleanupExpiredAnnouncements() {
+  const now = Date.now();
+
+  announcements.forEach(item => {
+    if (item.expiresAtMs && item.expiresAtMs <= now) {
+      remove(ref(db, `announcements/${item.id}`));
+    }
+  });
+}
+
+setInterval(() => {
+  cleanupExpiredAnnouncements();
+  renderAnnouncements();
+}, 30000);
+
+// Format expiration date for display in announcement banner
+function formatAnnouncementExpiration(expiresAtMs) {
+  if (!expiresAtMs) return "";
+
+  return new Date(expiresAtMs).toLocaleString([], {
+    month: "numeric",
+    day: "numeric",
+    year: "2-digit",
+    hour: "numeric",
+    minute: "2-digit"
+  });
+}
+
+// Load and render announcements
+function renderAnnouncements() {
+
+  if (!announcementBannerContainer) return;
+
+  const now = Date.now();
+
+  const activeAnnouncements =
+    announcements.filter(item => {
+
+      if (!item.expiresAtMs) return true;
+
+      return item.expiresAtMs > now;
+    });
+
+  announcementBannerContainer.innerHTML = "";
+
+  activeAnnouncements.forEach(item => {
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      `announcement-banner announcement-${item.priority}`;
+
+    div.innerHTML = `
+      <div class="d-flex justify-content-between align-items-center">
+
+<div>
+  <div>📢 ${item.text}</div>
+
+  ${
+    item.expiresAtMs
+      ? `<div class="announcement-expiration">Expires ${formatAnnouncementExpiration(item.expiresAtMs)}</div>`
+      : ""
+  }
+</div>
+
+        <div class="d-flex gap-2">
+
+          <button
+            class="resource-edit-btn"
+            onclick="editAnnouncement('${item.id}')"
+          >
+            Edit
+          </button>
+
+          <button
+            class="resource-delete-btn"
+            onclick="deleteAnnouncement('${item.id}')"
+          >
+            Delete
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
+    announcementBannerContainer.appendChild(div);
+
+  });
+}
+
+// Listen for changes in announcements
+onValue(
+  announcementsRef,
+  snapshot => {
+
+    const data =
+      snapshot.val() || {};
+
+    announcements =
+      Object.values(data);
+
+    renderAnnouncements();
+  }
+);
+
+// Expose editAnnouncement to global scope for inline onclick handler
+window.editAnnouncement = function(id) {
+
+  const item =
+    announcements.find(
+      announcement =>
+        announcement.id === id
+    );
+
+  if (!item) return;
+
+  editingAnnouncementId = id;
+
+  announcementTextInput.value =
+    item.text || "";
+
+  announcementPriorityInput.value =
+    item.priority || "info";
+
+  if (item.expiresAtMs) {
+
+    const date =
+      new Date(item.expiresAtMs);
+
+    announcementExpirationInput.value =
+      date.toISOString().slice(0, 16);
+  }
+
+  announcementModal.show();
+};
+
+window.deleteAnnouncement = function(id) {
+
+  remove(
+    ref(
+      db,
+      `announcements/${id}`
+    )
+  );
+};
+
+const sidebarHelpBtn = document.getElementById("sidebarHelpBtn");
+
+sidebarHelpBtn?.addEventListener("click", () => {
+  closeSidebar();
+
+  setTimeout(() => {
+    const helpModalElement = document.getElementById("helpModal");
+    const helpModalInstance =
+      bootstrap.Modal.getOrCreateInstance(helpModalElement);
+
+    helpModalInstance.show();
+  }, 250);
+});
 
 renderTimers();
 renderSeatStatuses();
