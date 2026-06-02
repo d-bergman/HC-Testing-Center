@@ -2175,7 +2175,7 @@ function renderAnnouncements() {
       <div class="d-flex justify-content-between align-items-center">
 
 <div>
-  <div>📢 ${item.text}</div>
+  <div>📢 ${marked.parseInline(item.text)}</div>
 
   ${
     item.expiresAtMs
@@ -2209,6 +2209,31 @@ function renderAnnouncements() {
 
   });
 }
+
+// Handle click on changelog link to open help modal and switch to changelog tab
+document.addEventListener("click", event => {
+  const link = event.target.closest('a[href="#changelog"]');
+
+  if (!link) return;
+
+  event.preventDefault();
+
+  const helpModalElement = document.getElementById("helpModal");
+  const helpModalInstance =
+    bootstrap.Modal.getOrCreateInstance(helpModalElement);
+
+  const changelogTabButton =
+    document.querySelector('[data-bs-target="#changelogMarkdownPane"]');
+
+  helpModalInstance.show();
+
+  setTimeout(() => {
+    const changelogTab =
+      bootstrap.Tab.getOrCreateInstance(changelogTabButton);
+
+    changelogTab.show();
+  }, 150);
+});
 
 // Listen for changes in announcements
 onValue(
@@ -2246,11 +2271,14 @@ window.editAnnouncement = function(id) {
 
   if (item.expiresAtMs) {
 
-    const date =
-      new Date(item.expiresAtMs);
+    const date = new Date(item.expiresAtMs);
 
-    announcementExpirationInput.value =
-      date.toISOString().slice(0, 16);
+const localDateTime =
+  new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 16);
+
+announcementExpirationInput.value = localDateTime;
   }
 
   announcementModal.show();

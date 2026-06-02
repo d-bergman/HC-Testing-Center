@@ -37,6 +37,15 @@ const guideCount = document.getElementById("guideCount");
 const guideSearchInput = document.getElementById("guideSearchInput");
 const guideCategoryFilter = document.getElementById("guideCategoryFilter");
 
+const guideImageModalElement =
+  document.getElementById("guideImageModal");
+
+const guideImageModal =
+  new bootstrap.Modal(guideImageModalElement);
+
+const guideImageViewer =
+  document.getElementById("guideImageViewer");
+
 // Modals
 const viewGuideModalElement = document.getElementById("viewGuideModal");
 const viewGuideModal = new bootstrap.Modal(viewGuideModalElement);
@@ -397,5 +406,18 @@ function closeSidebar() {
 sidebarToggleBtn?.addEventListener("click", openSidebar);
 sidebarCloseBtn?.addEventListener("click", closeSidebar);
 sidebarOverlay?.addEventListener("click", closeSidebar);
+
+document.addEventListener("click", event => {
+
+  const image =
+    event.target.closest("#viewGuideContent img");
+
+  if (!image) return;
+
+  guideImageViewer.src = image.src;
+
+  guideImageModal.show();
+
+});
 
 loadVersion();

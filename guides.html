@@ -56,6 +56,11 @@
               rows="12"
               placeholder="# Placement Testing&#10;&#10;## Check In&#10;- Verify photo ID&#10;- Confirm appointment&#10;- Assign seat"
             ></textarea>
+            <div class="markdown-helper mt-2">
+  <strong>Markdown help:</strong>
+  <code>[link text](https://example.com)</code>
+  <code>**bold text**</code>
+</div>
 
             <button id="addGuideBtn" class="btn btn-primary-custom w-100 mt-3">
               + Add Guide
@@ -220,6 +225,36 @@
     </div>
   </div>
 </div>
+
+<!-- Guide Image Viewer -->
+<div class="modal fade" id="guideImageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content alarm-modal">
+
+      <div class="modal-header">
+        <h2 class="modal-title">Image Viewer</h2>
+
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <div class="modal-body text-center">
+        <img
+          id="guideImageViewer"
+          src=""
+          alt="Guide Image"
+          class="guide-image-viewer"
+        />
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 <audio id="globalTimerSound" src="assets/audio/Alarm09.wav" preload="auto"></audio>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>

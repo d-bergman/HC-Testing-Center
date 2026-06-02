@@ -4,6 +4,16 @@
 
 ## New Features
 
+### Guide Image Support
+
+* Added Markdown image support to Guides.
+* Guide screenshots can now be embedded directly within guide content.
+* Added image viewer modal.
+* Clicking a guide image now opens a full-size preview.
+* Images remain inside the dashboard experience without opening new browser tabs.
+
+---
+
 ### Dashboard Loader
 
 * Replaced startup video system with a custom dashboard loader.
