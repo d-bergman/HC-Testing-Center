@@ -52,6 +52,32 @@ const enableSoundBtn = document.getElementById("enableSoundBtn");
 let soundEnabled = false;
 const mapButtons = document.querySelectorAll(".map-btn");
 
+// Calculator elements
+const calculatorBorrowedField =
+  document.getElementById("calculatorBorrowedField");
+
+const seatStatusCalculatorBorrowedField =
+  document.getElementById("seatStatusCalculatorBorrowedField");
+
+const quickCalculatorBorrowedField =
+  document.getElementById("quickCalculatorBorrowedField");
+
+const quickSeatStatusCalculatorBorrowedField =
+  document.getElementById("quickSeatStatusCalculatorBorrowedField");
+
+// Calculator Return Modal Constants
+const calculatorReturnModalElement =
+  document.getElementById("calculatorReturnModal");
+
+const calculatorReturnModal =
+  new bootstrap.Modal(calculatorReturnModalElement);
+
+const calculatorReturnMessage =
+  document.getElementById("calculatorReturnMessage");
+
+const confirmCalculatorReturnBtn =
+  document.getElementById("confirmCalculatorReturnBtn");
+
 // Staff Check-In Modal Constants
 const staffCheckInModalElement =
   document.getElementById("staffCheckInModal");
@@ -129,6 +155,22 @@ const formTitle = document.getElementById("formTitle");
 const timerFields = document.getElementById("timerFields");
 const seatStatusFields = document.getElementById("seatStatusFields");
 const addSeatStatusBtn = document.getElementById("addSeatStatusBtn");
+
+// Seat Status Form Elements
+const testTypeInput = document.getElementById("testTypeInput");
+
+testTypeInput?.addEventListener("change", () => {
+  const isPlacement = testTypeInput.value === "Placement";
+
+  seatStatusCalculatorBorrowedField?.classList.toggle(
+    "d-none",
+    !isPlacement
+  );
+
+  if (!isPlacement) {
+    resetCalculatorBorrowed("seatStatusCalculatorBorrowed");
+  }
+});
 
 const timerTimeFields = document.getElementById("timerTimeFields");
 
@@ -367,7 +409,8 @@ function createNewTimerObject({
   seat,
   student,
   test,
-  minutes
+  minutes,
+  calculatorBorrowed = false
 }) {
   const newTimerRef = push(timersRef);
 
@@ -383,11 +426,43 @@ function createNewTimerObject({
     pausedRemaining: minutes * 60,
     alarmDismissed: false,
     flag: "none",
+    calculatorBorrowed,
     createdAt: new Date().toLocaleString(),
     createdAtMs: Date.now()
   };
 
   set(newTimerRef, timer);
+}
+
+// Function to check if a calculator is borrowed based on the selected radio button
+function isCalculatorBorrowed(name) {
+  const selected = document.querySelector(
+    `input[name="${name}"]:checked`
+  );
+
+  return selected?.value === "yes";
+}
+// Function to reset the calculator borrowed status to "no"
+function resetCalculatorBorrowed(name) {
+  const noOption = document.querySelector(
+    `input[name="${name}"][value="no"]`
+  );
+
+  if (noOption) {
+    noOption.checked = true;
+  }
+}
+// Function to set the calculator borrowed status based on a boolean value
+function setCalculatorBorrowed(name, borrowed) {
+  const value = borrowed ? "yes" : "no";
+
+  const option = document.querySelector(
+    `input[name="${name}"][value="${value}"]`
+  );
+
+  if (option) {
+    option.checked = true;
+  }
 }
 
 function normalizeSeat(lab, seatInput) {
@@ -445,6 +520,9 @@ const finalSeconds = Math.min(
 
 const finalMinutes = Math.ceil(finalSeconds / 60);
 
+const calculatorBorrowed =
+  isCalculatorBorrowed("calculatorBorrowed");
+
   if (!seat || !student || totalMinutes <= 0) {
     showInfoModal("Please complete all required fields.");
     return;
@@ -474,7 +552,8 @@ if (existingSeat) {
   seat,
   student,
   test,
-  minutes: finalMinutes
+  minutes: finalMinutes,
+  calculatorBorrowed
 });
 
     seatConflictModal.hide();
@@ -497,7 +576,8 @@ if (existingSeatStatus) {
       seat,
       student,
       test,
-      minutes: finalMinutes
+      minutes: finalMinutes,
+      calculatorBorrowed
     });
 
     seatConflictModal.hide();
@@ -507,6 +587,7 @@ if (existingSeatStatus) {
     document.getElementById("testInput").value = "";
     document.getElementById("hoursInput").value = "";
     document.getElementById("minutesInput").value = "";
+    resetCalculatorBorrowed("calculatorBorrowed");
   };
 
   return;
@@ -516,7 +597,8 @@ if (existingSeatStatus) {
   seat,
   student,
   test,
-  minutes: finalMinutes
+  minutes: finalMinutes,
+  calculatorBorrowed
 });
 
   document.getElementById("seatInput").value = "";
@@ -524,6 +606,7 @@ if (existingSeatStatus) {
   document.getElementById("testInput").value = "";
   document.getElementById("hoursInput").value = "";
   document.getElementById("minutesInput").value = "";
+  resetCalculatorBorrowed("calculatorBorrowed");
 }
 
 function createSeatStatusObject({
@@ -531,7 +614,8 @@ function createSeatStatusObject({
   seat,
   student,
   testType,
-  status
+  status,
+  calculatorBorrowed = false
 }) {
   const newSeatStatusRef = push(seatStatusesRef);
 
@@ -543,6 +627,7 @@ function createSeatStatusObject({
     testType,
     status,
     flag: "none",
+    calculatorBorrowed,
     createdAt: new Date().toLocaleString(),
     createdAtMs: Date.now()
   };
@@ -557,6 +642,10 @@ function createSeatStatus() {
   const student = document.getElementById("studentInput").value.trim();
   const testType = document.getElementById("testTypeInput").value;
   const status = document.getElementById("seatStatusInput").value;
+
+  const calculatorBorrowed =
+  testType === "Placement" &&
+  isCalculatorBorrowed("seatStatusCalculatorBorrowed");
 
   if (!seat || !testType || !status) {
     showInfoModal("Please complete the seat status fields.");
@@ -583,7 +672,8 @@ if (existingTimer) {
       seat,
       student,
       testType,
-      status
+      status,
+      calculatorBorrowed
     });
 
     seatConflictModal.hide();
@@ -606,7 +696,8 @@ if (existingSeatStatus) {
       seat,
       student,
       testType,
-      status
+      status,
+      calculatorBorrowed
     });
 
     seatConflictModal.hide();
@@ -620,7 +711,8 @@ if (existingSeatStatus) {
   seat,
   student,
   testType,
-  status
+  status,
+  calculatorBorrowed
 });
 
   document.getElementById("seatInput").value = "";
@@ -628,6 +720,7 @@ if (existingSeatStatus) {
   document.getElementById("testInput").value = "";
   document.getElementById("hoursInput").value = "";
   document.getElementById("minutesInput").value = "";
+  resetCalculatorBorrowed("seatStatusCalculatorBorrowed");
 }
 
 startTimerBtn.addEventListener("click", createTimer);
@@ -950,6 +1043,11 @@ function renderSeats() {
 
     seat.innerHTML = `
       <div class="camera-indicator ${cameraColor}"></div>
+      ${
+  (timer?.calculatorBorrowed || seatStatus?.calculatorBorrowed)
+    ? `<div class="calculator-indicator" title="Calculator">🧮</div>`
+    : ""
+}
 
       <div>
         <div class="seat-id">${seatId}</div>
@@ -1293,6 +1391,10 @@ window.openEditTimer = function(id) {
   const remaining = timer.pausedRemaining || 0;
   editHoursInput.value = Math.floor(remaining / 3600);
   editMinutesInput.value = Math.floor((remaining % 3600) / 60);
+  setCalculatorBorrowed(
+  "editCalculatorBorrowed",
+  Boolean(timer.calculatorBorrowed)
+);
 
   editTimerModal.show();
 };
@@ -1303,7 +1405,9 @@ window.deleteTimer = function(id) {
   if (!timer) return;
 
   deleteTimerMessage.textContent =
-    `Delete timer for ${timer.seat} - ${timer.student}?`;
+    timer.calculatorBorrowed
+    ? `Delete timer for ${timer.seat} - ${timer.student}?\n\nCalculator was borrowed for this seat. Confirm the calculator was returned before removing this timer.`
+    : `Delete timer for ${timer.seat} - ${timer.student}?`;
 
   confirmDeleteTimerBtn.onclick = () => {
     const historyItem = {
@@ -1671,19 +1775,36 @@ window.clearSeatStatus = function(id) {
   const seatStatus = seatStatuses.find(s => s.id === id);
   if (!seatStatus) return;
 
-  const shouldLogHistory =
-    seatStatus.status === "Occupied" || seatStatus.student;
+  const clearStatus = () => {
+    const shouldLogHistory =
+      seatStatus.status === "Occupied" || seatStatus.student;
 
-  if (shouldLogHistory) {
-    push(historyRef, {
-      ...seatStatus,
-      type: "seatStatus",
-      removedAt: new Date().toLocaleString(),
-      removedAtMs: Date.now()
-    });
+    if (shouldLogHistory) {
+      push(historyRef, {
+        ...seatStatus,
+        type: "seatStatus",
+        removedAt: new Date().toLocaleString(),
+        removedAtMs: Date.now()
+      });
+    }
+
+    remove(ref(db, `seatStatuses/${id}`));
+  };
+
+  if (seatStatus.calculatorBorrowed) {
+    calculatorReturnMessage.textContent =
+      `${seatStatus.seat} had a borrowed calculator. Confirm the calculator was returned before clearing this seat.`;
+
+    confirmCalculatorReturnBtn.onclick = () => {
+      clearStatus();
+      calculatorReturnModal.hide();
+    };
+
+    calculatorReturnModal.show();
+    return;
   }
 
-  remove(ref(db, `seatStatuses/${id}`));
+  clearStatus();
 };
 
 timerModeBtn.addEventListener("click", () => {
@@ -1696,6 +1817,7 @@ timerModeBtn.addEventListener("click", () => {
   seatStatusFields.classList.add("d-none");
   testOptionalField.classList.remove("d-none");
   timerTimeFields.classList.remove("d-none");
+  calculatorBorrowedField.classList.remove("d-none");
 });
 
 seatStatusModeBtn.addEventListener("click", () => {
@@ -1708,6 +1830,7 @@ seatStatusModeBtn.addEventListener("click", () => {
   seatStatusFields.classList.remove("d-none");
   testOptionalField.classList.add("d-none");
   timerTimeFields.classList.add("d-none");
+  calculatorBorrowedField.classList.add("d-none");
 });
 
 addSeatStatusBtn.addEventListener("click", createSeatStatus);
@@ -1781,6 +1904,9 @@ saveEditTimerBtn.addEventListener("click", () => {
     editTimerError.textContent = `${seat} is already in use.`;
     return;
   }
+  
+  const calculatorBorrowed =
+  isCalculatorBorrowed("editCalculatorBorrowed");
 
   update(ref(db, `timers/${editingTimerId}`), {
     lab,
@@ -1791,7 +1917,8 @@ saveEditTimerBtn.addEventListener("click", () => {
     paused: true,
     pausedRemaining: totalSeconds,
     endAt: null,
-    alarmDismissed: false
+    alarmDismissed: false,
+    calculatorBorrowed
   });
 
   editTimerModal.hide();
@@ -1855,6 +1982,10 @@ saveQuickSeatTimerBtn.addEventListener("click", () => {
     const testType = quickSeatTestTypeInput.value;
     const status = quickSeatStatusInput.value;
 
+    const calculatorBorrowed =
+  testType === "Placement" &&
+  isCalculatorBorrowed("quickSeatStatusCalculatorBorrowed");
+
     if (!testType || !status) {
       quickSeatError.textContent = "Please complete the seat status fields.";
       return;
@@ -1865,10 +1996,12 @@ saveQuickSeatTimerBtn.addEventListener("click", () => {
       seat,
       student,
       testType,
-      status
+      status,
+      calculatorBorrowed
     });
 
     seatQuickAddModal.hide();
+    resetCalculatorBorrowed("quickSeatStatusCalculatorBorrowed");
     return;
   }
 
@@ -1897,15 +2030,34 @@ const finalSeconds = Math.min(
 
 const finalMinutes = Math.ceil(finalSeconds / 60);
 
+const calculatorBorrowed =
+  isCalculatorBorrowed("quickCalculatorBorrowed");
+
 createNewTimerObject({
   lab,
   seat,
   student,
   test,
-  minutes: finalMinutes
+  minutes: finalMinutes,
+  calculatorBorrowed
 });
 
   seatQuickAddModal.hide();
+  resetCalculatorBorrowed("quickCalculatorBorrowed");
+});
+
+  // Check if the test type is "Placement" to determine if the calculator borrowed field should be shown
+  quickSeatTestTypeInput?.addEventListener("change", () => {
+  const isPlacement = quickSeatTestTypeInput.value === "Placement";
+
+  quickSeatStatusCalculatorBorrowedField?.classList.toggle(
+    "d-none",
+    !isPlacement
+  );
+
+  if (!isPlacement) {
+    resetCalculatorBorrowed("quickSeatStatusCalculatorBorrowed");
+  }
 });
 
 // Flagging functionality

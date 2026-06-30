@@ -222,7 +222,24 @@
     <input id="minutesInput" class="form-control" type="number" min="0" max="59" placeholder="30"/>
   </div>
 </div>
-                  <div id="timerFields" class="row g-3 align-items-end">
+
+  <div id="calculatorBorrowedField" class="col-12 col-md-6">
+  <label class="form-label d-block">Calculator?</label>
+
+  <div class="d-flex gap-3">
+    <label>
+      <input type="radio" name="calculatorBorrowed" value="no" checked />
+      No
+    </label>
+
+    <label>
+      <input type="radio" name="calculatorBorrowed" value="yes" />
+      Yes
+    </label>
+  </div>
+</div>
+
+    <div id="timerFields" class="row g-3 align-items-end">
   <div class="col-12 col-sm-6 col-lg-8">
     <button id="startTimerBtn" class="btn btn-primary-custom w-100">
       + Add Timer
@@ -251,6 +268,22 @@
       <option value="Other">Other</option>
     </select>
   </div>
+
+  <div id="seatStatusCalculatorBorrowedField" class="col-12 d-none">
+  <label class="form-label d-block">Calculator?</label>
+
+  <div class="d-flex gap-3">
+    <label>
+      <input type="radio" name="seatStatusCalculatorBorrowed" value="no" checked />
+      No
+    </label>
+
+    <label>
+      <input type="radio" name="seatStatusCalculatorBorrowed" value="yes" />
+      Yes
+    </label>
+  </div>
+</div>
 
   <div class="col-12">
     <button id="addSeatStatusBtn" class="btn btn-primary-custom w-100">
@@ -442,6 +475,31 @@
 
         <button id="confirmDeleteTimerBtn" type="button" class="btn btn-primary-custom">
           Delete Timer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Calculator Return Check -->
+<div class="modal fade" id="calculatorReturnModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content alarm-modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Calculator Return Check</h2>
+      </div>
+
+      <div class="modal-body">
+        <p id="calculatorReturnMessage" class="mb-0"></p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button id="confirmCalculatorReturnBtn" type="button" class="btn btn-primary-custom">
+          Calculator Returned
         </button>
       </div>
     </div>
@@ -652,6 +710,22 @@
           </div>
         </div>
 
+          <div class="col-12">
+          <label class="form-label d-block">Calculator?</label>
+
+          <div class="d-flex gap-3">
+            <label>
+              <input type="radio" name="editCalculatorBorrowed" value="no" checked />
+              No
+            </label>
+
+            <label>
+              <input type="radio" name="editCalculatorBorrowed" value="yes" />
+              Yes
+            </label>
+          </div>
+        </div>
+
         <p id="editTimerError" class="password-error"></p>
       </div>
 
@@ -725,6 +799,22 @@
     <label for="quickSeatMinutesInput" class="form-label">Minutes</label>
     <input id="quickSeatMinutesInput" class="form-control" type="number" min="0" max="59" />
   </div>
+
+  <div id="quickCalculatorBorrowedField" class="col-12">
+  <label class="form-label d-block">Calculator Borrowed?</label>
+
+  <div class="d-flex gap-3">
+    <label>
+      <input type="radio" name="quickCalculatorBorrowed" value="no" checked />
+      No
+    </label>
+
+    <label>
+      <input type="radio" name="quickCalculatorBorrowed" value="yes" />
+      Yes
+    </label>
+  </div>
+</div>
 </div>
 
         <div id="quickSeatStatusFields" class="row g-3 d-none">
@@ -748,6 +838,23 @@
       <option value="Other">Other</option>
     </select>
   </div>
+
+  <div id="quickSeatStatusCalculatorBorrowedField" class="col-12 d-none">
+  <label class="form-label d-block">Calculator Borrowed?</label>
+
+  <div class="d-flex gap-3">
+    <label>
+      <input type="radio" name="quickSeatStatusCalculatorBorrowed" value="no" checked />
+      No
+    </label>
+
+    <label>
+      <input type="radio" name="quickSeatStatusCalculatorBorrowed" value="yes" />
+      Yes
+    </label>
+  </div>
+</div>
+
 </div>
 
         <p id="quickSeatError" class="password-error"></p>

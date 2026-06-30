@@ -1,3 +1,40 @@
+# Version 2.3.1 - 6/30/26 - 11:21 PM
+
+### Calculator Workflow & Timer Editing Improvements
+
+## New Features
+
+### Calculator Borrow Tracking
+
+- Added calculator borrowing support for timed exams.
+- Staff can now indicate whether a Harper calculator has been issued to a student.
+- Calculator indicator is displayed directly on the seating map for improved visibility.
+- Supports both standard timer creation and Quick Add workflows.
+
+### Timer Editing Improvements
+
+- Added calculator borrowing controls to the Edit Timer workflow.
+- Staff can now update calculator status while a timer is active without recreating the timer.
+- Timer edits continue to preserve the paused state until manually resumed.
+- Calculator status updates immediately across all connected dashboards.
+
+---
+
+## Improvements
+
+- Improved mid-exam workflow for calculator replacements.
+- Reduced need to delete and recreate timers for simple equipment changes.
+- Improved operational flexibility when students request a calculator after testing has begun.
+- Improved consistency between timer creation and timer editing workflows.
+
+---
+
+## Fixes
+
+- Fixed calculator field visibility when switching between Add Timer and Add Seat Status modes.
+- Prevented duplicate calculator controls from appearing outside their intended workflows.
+- Minor UI consistency improvements.
+
 # Version 2.3.0 - 6/2/26 - 1:58 AM
 
 ### Dashboard Expansion, Analytics & Knowledge Management Update
