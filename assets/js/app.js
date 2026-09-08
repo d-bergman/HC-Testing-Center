@@ -98,6 +98,7 @@ const STAFF_NAMES = [
   "Dani",
   "Anita",
   "Joe",
+  "Janette",
   "TC"
 ];
 
