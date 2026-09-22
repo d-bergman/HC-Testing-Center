@@ -220,10 +220,12 @@
                     <input id="studentInput" class="form-control" type="text" placeholder="John" maxlength="12" />
                   </div>
 
-                  <div id="testOptionalField" class="col-12 col-md-6">
+<div id="testOptionalField" class="col-12 col-md-6">
   <label for="testInput" class="form-label">Instructor</label>
-  <input id="testInput" class="form-control" type="text" list="instructorLastNames" placeholder="Search or type last name" maxlength="64" autocomplete="off"/>
-  <datalist id="instructorLastNames"></datalist>
+  <div class="instructor-autocomplete">
+    <input id="testInput" class="form-control" type="text" placeholder="Search or type last name" maxlength="64" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="testInputSuggestions"/>
+    <ul id="testInputSuggestions" class="instructor-suggestions" role="listbox" hidden></ul>
+  </div>
 </div>
 <div id="timerTimeFields" class="col-12 col-md-6 d-flex gap-3">
   <div style="max-width: 110px;">
@@ -711,7 +713,10 @@
 
           <div class="col-12">
             <label for="editTestInput" class="form-label">Instructor</label>
-            <input id="editTestInput" class="form-control" type="text" list="instructorLastNames" maxlength="64" autocomplete="off" />
+            <div class="instructor-autocomplete">
+              <input id="editTestInput" class="form-control" type="text" maxlength="64" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="editTestInputSuggestions" />
+              <ul id="editTestInputSuggestions" class="instructor-suggestions" role="listbox" hidden></ul>
+            </div>
           </div>
 
           <div class="col-6">
@@ -802,7 +807,10 @@
 <div id="quickSeatTimerFields" class="row g-3 mt-1">
   <div class="col-12">
     <label for="quickSeatTestInput" class="form-label">Instructor</label>
-    <input id="quickSeatTestInput" class="form-control" type="text" list="instructorLastNames" maxlength="64" autocomplete="off" />
+    <div class="instructor-autocomplete">
+      <input id="quickSeatTestInput" class="form-control" type="text" maxlength="64" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="quickSeatTestInputSuggestions" />
+      <ul id="quickSeatTestInputSuggestions" class="instructor-suggestions" role="listbox" hidden></ul>
+    </div>
   </div>
 
   <div class="col-6">

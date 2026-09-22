@@ -1048,7 +1048,7 @@ function renderSeats() {
 
     seat.innerHTML = `
       ${seatStatus?.status === "Reserved"
-        ? `<input type="checkbox" class="seat-checkin-checkbox" aria-label="Check in ${seatId}" title="Check in ${seatId}" onchange="checkInReservedSeat('${seatStatus.id}', this)">`
+        ? `<button type="button" class="seat-checkin-btn" aria-label="Check in ${seatId}" title="Check in ${seatId}" onclick="checkInReservedSeat('${seatStatus.id}', this)">✓</button>`
         : ""}
       <div class="camera-indicator ${cameraColor}"></div>
       ${
@@ -1551,6 +1551,90 @@ onValue(seatStatusesRef, snapshot => {
   renderTimers();
 });
 
+function setupInstructorAutocomplete(input) {
+  const list = document.getElementById(`${input.id}Suggestions`);
+  let activeIndex = -1;
+
+  function hide() {
+    list.hidden = true;
+    input.setAttribute("aria-expanded", "false");
+    input.removeAttribute("aria-activedescendant");
+    activeIndex = -1;
+  }
+
+  function choose(name) {
+    input.value = name;
+    input.focus();
+    hide();
+  }
+
+  function setActive(index) {
+    const options = [...list.querySelectorAll('[role="option"]')];
+    activeIndex = index;
+    options.forEach((option, optionIndex) => {
+      const selected = optionIndex === index;
+      option.setAttribute("aria-selected", String(selected));
+      option.querySelector("button").classList.toggle("active", selected);
+    });
+    if (index >= 0) {
+      input.setAttribute("aria-activedescendant", options[index].id);
+      options[index].scrollIntoView({ block: "nearest" });
+    } else {
+      input.removeAttribute("aria-activedescendant");
+    }
+  }
+
+  function render() {
+    const query = input.value.trim().toLocaleLowerCase();
+    const matches = query
+      ? instructorLastNames.filter(name => name.toLocaleLowerCase().includes(query)).slice(0, 8)
+      : [];
+    list.replaceChildren();
+    activeIndex = -1;
+    input.removeAttribute("aria-activedescendant");
+
+    matches.forEach((name, index) => {
+      const option = document.createElement("li");
+      option.id = `${input.id}Suggestion${index}`;
+      option.setAttribute("role", "option");
+      option.setAttribute("aria-selected", "false");
+      const button = document.createElement("button");
+      button.type = "button";
+      button.tabIndex = -1;
+      button.textContent = name;
+      button.addEventListener("mousedown", event => event.preventDefault());
+      button.addEventListener("click", () => choose(name));
+      option.appendChild(button);
+      list.appendChild(option);
+    });
+
+    list.hidden = matches.length === 0 || document.activeElement !== input;
+    input.setAttribute("aria-expanded", String(!list.hidden));
+  }
+
+  input.addEventListener("input", render);
+  input.addEventListener("focus", render);
+  input.addEventListener("blur", () => setTimeout(hide, 150));
+  input.addEventListener("keydown", event => {
+    const count = list.children.length;
+    if (event.key === "Escape") {
+      hide();
+    } else if (!list.hidden && count && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
+      event.preventDefault();
+      const step = event.key === "ArrowDown" ? 1 : -1;
+      setActive(activeIndex < 0 ? (step > 0 ? 0 : count - 1) : (activeIndex + step + count) % count);
+    } else if (event.key === "Enter" && activeIndex >= 0 && !list.hidden) {
+      event.preventDefault();
+      choose(list.children[activeIndex].querySelector("button").textContent);
+    }
+  });
+
+  return render;
+}
+
+const refreshInstructorSuggestions = ["testInput", "editTestInput", "quickSeatTestInput"]
+  .map(id => setupInstructorAutocomplete(document.getElementById(id)));
+
 onValue(instructorsRef, snapshot => {
   const uniqueNames = new Map();
   Object.values(snapshot.val() || {}).forEach(instructor => {
@@ -1559,12 +1643,7 @@ onValue(instructorsRef, snapshot => {
   });
 
   instructorLastNames = [...uniqueNames.values()].sort((a, b) => a.localeCompare(b));
-  const list = document.getElementById("instructorLastNames");
-  list.replaceChildren(...instructorLastNames.map(name => {
-    const option = document.createElement("option");
-    option.value = name;
-    return option;
-  }));
+  refreshInstructorSuggestions.forEach(render => render());
 });
 
 //const userPresenceRef = push(presenceRef);
@@ -1832,8 +1911,8 @@ window.clearSeatStatus = function(id) {
   clearStatus();
 };
 
-window.checkInReservedSeat = async function(id, checkbox) {
-  checkbox.disabled = true;
+window.checkInReservedSeat = async function(id, button) {
+  button.disabled = true;
 
   try {
     const result = await runTransaction(ref(db, `seatStatuses/${id}`), current => {
@@ -1843,8 +1922,7 @@ window.checkInReservedSeat = async function(id, checkbox) {
 
     if (!result.committed) renderSeats();
   } catch (error) {
-    checkbox.checked = false;
-    checkbox.disabled = false;
+    button.disabled = false;
     showInfoModal("Could not check in this seat. Please try again.");
     console.error("Unable to check in reserved seat.", error);
   }

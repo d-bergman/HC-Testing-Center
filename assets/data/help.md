@@ -62,7 +62,7 @@ Each active timer shows an estimated end time under the countdown. This helps st
 5. Select the test type: CNA, GED, TEAS, CLEP, Placement, HonorLock, Blackboard, or Other.
 6. Click **Add Seat Status**.
 
-Reserved seats show a check-in checkbox in the upper-left corner of their map tile. Select it when the student arrives to change the seat to **Occupied** without clearing the reservation's student or test type.
+Reserved seats show a check-in checkmark in the upper-left corner of their map tile. Select it when the student arrives to change the seat to **Occupied** without clearing the reservation's student or test type.
 
 ## Seat Statuses List
 

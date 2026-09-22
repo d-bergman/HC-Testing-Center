@@ -1,3 +1,13 @@
+# Version 2.4.1 - 9/22/26
+
+## Fixes
+
+- Restored the full-width Add Timer and Add Seat Status mode buttons while keeping the final submit buttons compact.
+- Replaced the browser-native instructor suggestions with a themed, keyboard-accessible list that still allows free typing.
+- Replaced the reserved-seat checkbox with a checkmark check-in button.
+
+---
+
 # Version 2.4.0 - 9/22/26
 
 ## New Features
