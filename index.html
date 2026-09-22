@@ -223,7 +223,7 @@
 <div id="testOptionalField" class="col-12 col-md-6">
   <label for="testInput" class="form-label">Instructor</label>
   <div class="instructor-autocomplete">
-    <input id="testInput" class="form-control" type="text" placeholder="Search or type last name" maxlength="64" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="testInputSuggestions"/>
+    <input id="testInput" class="form-control" type="text" placeholder="Search or type last name" maxlength="64" autocomplete="off" required role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="testInputSuggestions"/>
     <ul id="testInputSuggestions" class="instructor-suggestions" role="listbox" hidden></ul>
   </div>
 </div>
@@ -242,15 +242,15 @@
   <div id="calculatorBorrowedField" class="col-12 col-md-6">
   <label class="form-label d-block">Calculator?</label>
 
-  <div class="d-flex gap-3">
-    <label>
+  <div class="calculator-toggle" role="radiogroup" aria-label="Calculator borrowed">
+    <label class="calculator-choice no">
       <input type="radio" name="calculatorBorrowed" value="no" checked />
-      No
+      <span>No</span>
     </label>
 
-    <label>
+    <label class="calculator-choice yes">
       <input type="radio" name="calculatorBorrowed" value="yes" />
-      Yes
+      <span>Yes</span>
     </label>
   </div>
 </div>
@@ -289,15 +289,15 @@
   <div id="seatStatusCalculatorBorrowedField" class="col-12 d-none">
   <label class="form-label d-block">Calculator?</label>
 
-  <div class="d-flex gap-3">
-    <label>
+  <div class="calculator-toggle" role="radiogroup" aria-label="Calculator borrowed">
+    <label class="calculator-choice no">
       <input type="radio" name="seatStatusCalculatorBorrowed" value="no" checked />
-      No
+      <span>No</span>
     </label>
 
-    <label>
+    <label class="calculator-choice yes">
       <input type="radio" name="seatStatusCalculatorBorrowed" value="yes" />
-      Yes
+      <span>Yes</span>
     </label>
   </div>
 </div>
@@ -714,7 +714,7 @@
           <div class="col-12">
             <label for="editTestInput" class="form-label">Instructor</label>
             <div class="instructor-autocomplete">
-              <input id="editTestInput" class="form-control" type="text" maxlength="64" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="editTestInputSuggestions" />
+              <input id="editTestInput" class="form-control" type="text" maxlength="64" autocomplete="off" required role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="editTestInputSuggestions" />
               <ul id="editTestInputSuggestions" class="instructor-suggestions" role="listbox" hidden></ul>
             </div>
           </div>
@@ -733,15 +733,15 @@
           <div class="col-12">
           <label class="form-label d-block">Calculator?</label>
 
-          <div class="d-flex gap-3">
-            <label>
+          <div class="calculator-toggle" role="radiogroup" aria-label="Calculator borrowed">
+            <label class="calculator-choice no">
               <input type="radio" name="editCalculatorBorrowed" value="no" checked />
-              No
+              <span>No</span>
             </label>
 
-            <label>
+            <label class="calculator-choice yes">
               <input type="radio" name="editCalculatorBorrowed" value="yes" />
-              Yes
+              <span>Yes</span>
             </label>
           </div>
         </div>
@@ -808,7 +808,7 @@
   <div class="col-12">
     <label for="quickSeatTestInput" class="form-label">Instructor</label>
     <div class="instructor-autocomplete">
-      <input id="quickSeatTestInput" class="form-control" type="text" maxlength="64" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="quickSeatTestInputSuggestions" />
+    <input id="quickSeatTestInput" class="form-control" type="text" maxlength="64" autocomplete="off" required role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="quickSeatTestInputSuggestions" />
       <ul id="quickSeatTestInputSuggestions" class="instructor-suggestions" role="listbox" hidden></ul>
     </div>
   </div>
@@ -826,15 +826,15 @@
   <div id="quickCalculatorBorrowedField" class="col-12">
   <label class="form-label d-block">Calculator Borrowed?</label>
 
-  <div class="d-flex gap-3">
-    <label>
+  <div class="calculator-toggle" role="radiogroup" aria-label="Calculator borrowed">
+    <label class="calculator-choice no">
       <input type="radio" name="quickCalculatorBorrowed" value="no" checked />
-      No
+      <span>No</span>
     </label>
 
-    <label>
+    <label class="calculator-choice yes">
       <input type="radio" name="quickCalculatorBorrowed" value="yes" />
-      Yes
+      <span>Yes</span>
     </label>
   </div>
 </div>
@@ -866,15 +866,15 @@
   <div id="quickSeatStatusCalculatorBorrowedField" class="col-12 d-none">
   <label class="form-label d-block">Calculator Borrowed?</label>
 
-  <div class="d-flex gap-3">
-    <label>
+  <div class="calculator-toggle" role="radiogroup" aria-label="Calculator borrowed">
+    <label class="calculator-choice no">
       <input type="radio" name="quickSeatStatusCalculatorBorrowed" value="no" checked />
-      No
+      <span>No</span>
     </label>
 
-    <label>
+    <label class="calculator-choice yes">
       <input type="radio" name="quickSeatStatusCalculatorBorrowed" value="yes" />
-      Yes
+      <span>Yes</span>
     </label>
   </div>
 </div>

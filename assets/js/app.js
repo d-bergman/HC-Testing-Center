@@ -533,6 +533,11 @@ const calculatorBorrowed =
     return;
   }
 
+  if (!test) {
+    showInfoModal("Instructor is required.");
+    return;
+  }
+
   const existingSeat = timers.find(
   t => t.seat.toUpperCase() === seat.toUpperCase()
 );
@@ -1587,7 +1592,17 @@ function setupInstructorAutocomplete(input) {
   function render() {
     const query = input.value.trim().toLocaleLowerCase();
     const matches = query
-      ? instructorLastNames.filter(name => name.toLocaleLowerCase().includes(query)).slice(0, 8)
+      ? instructorLastNames
+        .filter(name => name.toLocaleLowerCase().includes(query))
+        .sort((a, b) => {
+          const rank = name => {
+            const lower = name.toLocaleLowerCase();
+            if (lower.startsWith(query)) return 0;
+            return lower.split(/[\s-]+/).some(part => part.startsWith(query)) ? 1 : 2;
+          };
+          return rank(a) - rank(b) || a.localeCompare(b);
+        })
+        .slice(0, 8)
       : [];
     list.replaceChildren();
     activeIndex = -1;
@@ -1610,6 +1625,7 @@ function setupInstructorAutocomplete(input) {
 
     list.hidden = matches.length === 0 || document.activeElement !== input;
     input.setAttribute("aria-expanded", String(!list.hidden));
+    if (!list.hidden) setActive(0);
   }
 
   input.addEventListener("input", render);
@@ -1618,6 +1634,8 @@ function setupInstructorAutocomplete(input) {
   input.addEventListener("keydown", event => {
     const count = list.children.length;
     if (event.key === "Escape") {
+      event.preventDefault();
+      event.stopPropagation();
       hide();
     } else if (!list.hidden && count && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
       event.preventDefault();
@@ -1626,6 +1644,9 @@ function setupInstructorAutocomplete(input) {
     } else if (event.key === "Enter" && activeIndex >= 0 && !list.hidden) {
       event.preventDefault();
       choose(list.children[activeIndex].querySelector("button").textContent);
+    } else if (event.key === "Tab" && !event.shiftKey && activeIndex >= 0 && !list.hidden) {
+      input.value = list.children[activeIndex].querySelector("button").textContent;
+      hide();
     }
   });
 
@@ -2011,6 +2032,12 @@ saveEditTimerBtn.addEventListener("click", () => {
     return;
   }
 
+  if (!test) {
+    editTimerError.textContent = "Instructor is required.";
+    editTestInput.focus();
+    return;
+  }
+
   const duplicateTimer = timers.find(
     t =>
       t.id !== editingTimerId &&
@@ -2134,6 +2161,12 @@ saveQuickSeatTimerBtn.addEventListener("click", () => {
 
   if (!student || totalMinutes <= 0) {
     quickSeatError.textContent = "Please complete all timer fields.";
+    return;
+  }
+
+  if (!test) {
+    quickSeatError.textContent = "Instructor is required.";
+    quickSeatTestInput.focus();
     return;
   }
 

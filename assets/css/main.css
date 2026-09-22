@@ -218,6 +218,80 @@ h2 {
   border-radius: 6px;
 }
 
+.calculator-toggle {
+  display: flex;
+  gap: 5px;
+  width: min(100%, 220px);
+  height: 38px;
+}
+
+.calculator-choice {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  border: 1px solid;
+  border-radius: 6px;
+  background: #102235;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: flex-grow 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.calculator-choice.no {
+  border-color: rgba(248, 113, 113, 0.65);
+  color: #fecaca;
+}
+
+.calculator-choice.yes {
+  border-color: rgba(74, 222, 128, 0.65);
+  color: #bbf7d0;
+}
+
+.calculator-choice.no:has(input:checked) {
+  flex-grow: 1.7;
+  background: rgba(220, 38, 38, 0.17);
+}
+
+.calculator-choice.yes:has(input:checked) {
+  flex-grow: 1.7;
+  background: rgba(22, 163, 74, 0.2);
+}
+
+.calculator-toggle:has(.calculator-choice:hover) .calculator-choice {
+  flex-grow: 1;
+}
+
+.calculator-toggle:has(.calculator-choice:hover) .calculator-choice:hover {
+  flex-grow: 1.7;
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+
+.calculator-choice:focus-within {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.calculator-choice input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calculator-choice {
+    transition: none;
+  }
+}
+
 .instructor-autocomplete {
   position: relative;
 }
@@ -283,6 +357,13 @@ h2 {
   font-weight: 900;
   border: 0;
   padding: 14px;
+  transition: filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.map-btn:hover,
+.map-btn:focus-visible {
+  filter: brightness(1.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
 }
 
 .map-btn.purple {
@@ -501,10 +582,18 @@ h2 {
   border-radius: 8px;
   padding: 6px 9px;
   font-size: 0.85rem;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .action-buttons button:hover {
   background: #1c3655;
+  border-color: #6b8cac;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.action-buttons button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 
 .action-buttons .delete-btn {
@@ -718,6 +807,7 @@ h2 {
 
 .seat-checkin-btn:hover {
   background: rgba(8, 19, 36, 0.75);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
 }
 
 .seat-checkin-btn:focus-visible {
@@ -762,8 +852,15 @@ h2 {
   padding: 2px 8px;
 }
 
+.seat-add-btn,
+.seat-clear-btn,
+.seat-checkin-btn {
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
 .seat-add-btn:hover {
   background: rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
 }
 
 .seat-lock-btn {
@@ -773,6 +870,13 @@ h2 {
 
 .seat-clear-btn:hover {
   background: rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25);
+}
+
+.seat-add-btn:focus-visible,
+.seat-clear-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 
 .camera-indicator {

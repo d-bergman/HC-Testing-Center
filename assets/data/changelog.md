@@ -1,3 +1,14 @@
+# Version 2.5.0 - 9/22/26
+
+## Improvements
+
+- Instructor is required for new and edited timers, including seat quick-add and the Chrome extension.
+- Tab now fills the highlighted instructor suggestion and moves to the next field. Matching last names are prioritized by their beginning and word boundaries.
+- Replaced calculator Yes/No radios with a responsive segmented control that expands on hover and keeps the selected value.
+- Added subtle hover and keyboard-focus feedback to lab tabs, timer actions, and seat-map actions.
+
+---
+
 # Version 2.4.1 - 9/22/26
 
 ## Fixes

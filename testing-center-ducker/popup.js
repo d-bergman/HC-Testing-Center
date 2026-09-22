@@ -171,6 +171,12 @@ document.getElementById("quickAddBtn").addEventListener("click", async () => {
     minutes: document.getElementById("quickMinutes").value
   };
 
+  if (!data.test) {
+    showQuickStatus("Instructor is required.", "error");
+    document.getElementById("quickTest").focus();
+    return;
+  }
+
   const dashboardTab = await getDashboardTab();
 
 if (!dashboardTab) {

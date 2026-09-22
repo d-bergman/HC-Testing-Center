@@ -13,10 +13,12 @@ Use **Actions** beside Menu to add an instructor, resource, guide, or FAQ withou
 1. Select Lab B or Lab C.
 2. Enter the seat number. You can type **C16**, **B12**, or just **16** if the lab dropdown is correct.
 3. Enter the student name.
-4. Optional: start typing an instructor's last name in **Instructor** and select a directory suggestion, or type a last name manually.
+4. Required: start typing an instructor's last name in **Instructor**. Use Up/Down to choose a directory suggestion, then Tab to fill it and move on. You can also type the full last name manually.
 5. Enter hours and minutes.
 6. Click **Add Timer**.
 7. The timer will appear paused first. Press **Play** when the student is seated and ready to begin.
+
+**Calculator?** defaults to No. Hover or focus highlights an option; select Yes when a calculator is issued. The selected option remains active after the pointer moves away.
 
 ## Adding From the Seat Map
 
