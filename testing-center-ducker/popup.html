@@ -331,6 +331,7 @@ input::placeholder {
   <option value="CLEP">CLEP</option>
   <option value="Placement">Placement</option>
   <option value="HonorLock">HonorLock</option>
+  <option value="Blackboard">Blackboard</option>
   <option value="Other">Other</option>
 </select>
 
@@ -365,7 +366,8 @@ input::placeholder {
 
 <input id="quickSeat" type="text" placeholder="Seat" maxlength="3">
 <input id="quickStudent" type="text" placeholder="Student" maxlength="10">
-<input id="quickTest" type="text" placeholder="Test Optional" maxlength="10">
+<input id="quickTest" type="text" placeholder="Instructor" list="quickInstructorLastNames" maxlength="64" autocomplete="off">
+<datalist id="quickInstructorLastNames"></datalist>
 
 <div class="preset-row">
   <button class="preset-btn" data-hours="0" data-minutes="30">30m</button>
@@ -389,7 +391,7 @@ input::placeholder {
 </div>
 <div id="quickStatus" class="quick-status"></div>
 <div class="footer-note">
-    TC Dash Controller - v2.3.1<br>
+    TC Dash Controller - v2.4.0<br>
     Dashboard alarms duck audio automatically.
 </div>
   </div>

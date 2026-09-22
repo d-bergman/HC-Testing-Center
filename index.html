@@ -70,7 +70,7 @@
         </div>
       </div>
 
-      <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-3">
+      <div class="d-flex flex-row flex-wrap align-items-start align-items-sm-center gap-3">
         <div class="sync-status">
           <span class="sync-dot"></span>
           <span id="syncStatus">Live Sync: Connecting...</span>
@@ -81,6 +81,7 @@
 >
   📢
 </button>
+<div class="d-flex gap-2">
 <button
   id="sidebarToggleBtn"
   class="btn btn-sound"
@@ -88,6 +89,18 @@
 >
   ☰ Menu
 </button>
+<div class="dropdown">
+  <button id="actionsMenuBtn" class="btn btn-sound dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Actions
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end actions-menu" aria-labelledby="actionsMenuBtn">
+    <li><button class="dropdown-item" type="button" data-quick-action="instructor">Add Instructor</button></li>
+    <li><button class="dropdown-item" type="button" data-quick-action="resource">Add Resource</button></li>
+    <li><button class="dropdown-item" type="button" data-quick-action="guide">Add Guide</button></li>
+    <li><button class="dropdown-item" type="button" data-quick-action="faq">Add FAQ</button></li>
+  </ul>
+</div>
+</div>
 
 <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
@@ -208,8 +221,9 @@
                   </div>
 
                   <div id="testOptionalField" class="col-12 col-md-6">
-  <label for="testInput" class="form-label">Test Optional</label>
-  <input id="testInput" class="form-control" type="text" placeholder="Shryock" maxlength="12"/>
+  <label for="testInput" class="form-label">Instructor</label>
+  <input id="testInput" class="form-control" type="text" list="instructorLastNames" placeholder="Search or type last name" maxlength="64" autocomplete="off"/>
+  <datalist id="instructorLastNames"></datalist>
 </div>
 <div id="timerTimeFields" class="col-12 col-md-6 d-flex gap-3">
   <div style="max-width: 110px;">
@@ -240,8 +254,8 @@
 </div>
 
     <div id="timerFields" class="row g-3 align-items-end">
-  <div class="col-12 col-sm-6 col-lg-8">
-    <button id="startTimerBtn" class="btn btn-primary-custom w-100">
+  <div class="col-12">
+    <button id="startTimerBtn" class="btn btn-primary-custom compact-add-btn">
       + Add Timer
     </button>
   </div>
@@ -265,6 +279,7 @@
       <option value="CLEP">CLEP</option>
       <option value="Placement">Placement </option>
       <option value="HonorLock">HonorLock </option>
+      <option value="Blackboard">Blackboard</option>
       <option value="Other">Other</option>
     </select>
   </div>
@@ -286,7 +301,7 @@
 </div>
 
   <div class="col-12">
-    <button id="addSeatStatusBtn" class="btn btn-primary-custom w-100">
+    <button id="addSeatStatusBtn" class="btn btn-primary-custom compact-add-btn">
       + Add Seat Status
     </button>
   </div>
@@ -695,8 +710,8 @@
           </div>
 
           <div class="col-12">
-            <label for="editTestInput" class="form-label">Test Optional</label>
-            <input id="editTestInput" class="form-control" type="text" maxlength="10" />
+            <label for="editTestInput" class="form-label">Instructor</label>
+            <input id="editTestInput" class="form-control" type="text" list="instructorLastNames" maxlength="64" autocomplete="off" />
           </div>
 
           <div class="col-6">
@@ -786,8 +801,8 @@
 
 <div id="quickSeatTimerFields" class="row g-3 mt-1">
   <div class="col-12">
-    <label for="quickSeatTestInput" class="form-label">Test Optional</label>
-    <input id="quickSeatTestInput" class="form-control" type="text" maxlength="12" />
+    <label for="quickSeatTestInput" class="form-label">Instructor</label>
+    <input id="quickSeatTestInput" class="form-control" type="text" list="instructorLastNames" maxlength="64" autocomplete="off" />
   </div>
 
   <div class="col-6">
@@ -835,6 +850,7 @@
       <option value="CLEP">CLEP</option>
       <option value="Placement">Placement</option>
       <option value="HonorLock">HonorLock</option>
+      <option value="Blackboard">Blackboard</option>
       <option value="Other">Other</option>
     </select>
   </div>
@@ -1072,6 +1088,55 @@
         </button>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- Dashboard quick actions -->
+<div class="modal fade" id="quickActionModal" tabindex="-1" aria-labelledby="quickActionTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content alarm-modal">
+      <div class="modal-header">
+        <h2 id="quickActionTitle" class="modal-title">Add</h2>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form data-action-form="instructor" class="d-none">
+          <div class="row g-3">
+            <div class="col-sm-6"><label class="form-label" for="actionFirstName">First Name</label><input id="actionFirstName" name="firstName" class="form-control" type="text" required></div>
+            <div class="col-sm-6"><label class="form-label" for="actionLastName">Last Name</label><input id="actionLastName" name="lastName" class="form-control" type="text" required></div>
+            <div class="col-12"><label class="form-label" for="actionDepartment">Department</label><input id="actionDepartment" name="department" class="form-control" type="text" required></div>
+            <div class="col-sm-6"><label class="form-label" for="actionCode">Code</label><input id="actionCode" name="code" class="form-control" type="text"></div>
+            <div class="col-sm-6"><label class="form-label" for="actionExtension">Extension</label><input id="actionExtension" name="extension" class="form-control" type="text"></div>
+            <div class="col-12"><label class="form-label" for="actionAlternatePhone">Alternate Phone</label><input id="actionAlternatePhone" name="alternatePhone" class="form-control" type="text"></div>
+          </div>
+          <p class="password-error mt-2" role="alert" data-action-error></p>
+          <button class="btn btn-primary-custom mt-3" type="submit">Add Instructor</button>
+        </form>
+        <form data-action-form="resource" class="d-none">
+          <label class="form-label" for="actionResourceTitle">Title</label><input id="actionResourceTitle" name="title" class="form-control" type="text" required>
+          <label class="form-label mt-3" for="actionResourceUrl">URL</label><input id="actionResourceUrl" name="url" class="form-control" type="url" required>
+          <label class="form-label mt-3" for="actionResourceCategory">Category</label><input id="actionResourceCategory" name="category" class="form-control" type="text">
+          <label class="form-label mt-3" for="actionResourceDescription">Description Optional</label><textarea id="actionResourceDescription" name="description" class="form-control" rows="3"></textarea>
+          <p class="password-error mt-2" role="alert" data-action-error></p>
+          <button class="btn btn-primary-custom mt-3" type="submit">Add Resource</button>
+        </form>
+        <form data-action-form="guide" class="d-none">
+          <label class="form-label" for="actionGuideTitle">Title</label><input id="actionGuideTitle" name="title" class="form-control" type="text" required>
+          <label class="form-label mt-3" for="actionGuideCategory">Category</label><input id="actionGuideCategory" name="category" class="form-control" type="text">
+          <label class="form-label mt-3" for="actionGuideContent">Guide Content Markdown</label><textarea id="actionGuideContent" name="content" class="form-control" rows="10" required></textarea>
+          <div class="markdown-helper mt-2"><strong>Markdown help:</strong> <code>[link text](https://example.com)</code> <code>**bold text**</code></div>
+          <p class="password-error mt-2" role="alert" data-action-error></p>
+          <button class="btn btn-primary-custom mt-3" type="submit">Add Guide</button>
+        </form>
+        <form data-action-form="faq" class="d-none">
+          <label class="form-label" for="actionFaqQuestion">Question</label><input id="actionFaqQuestion" name="question" class="form-control" type="text" required>
+          <label class="form-label mt-3" for="actionFaqCategory">Category</label><input id="actionFaqCategory" name="category" class="form-control" type="text">
+          <label class="form-label mt-3" for="actionFaqAnswer">Answer</label><textarea id="actionFaqAnswer" name="answer" class="form-control" rows="8" required></textarea>
+          <p class="password-error mt-2" role="alert" data-action-error></p>
+          <button class="btn btn-primary-custom mt-3" type="submit">Add FAQ</button>
+        </form>
+      </div>
     </div>
   </div>
 </div>

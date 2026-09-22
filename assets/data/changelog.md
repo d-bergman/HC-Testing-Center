@@ -1,3 +1,21 @@
+# Version 2.4.0 - 9/22/26
+
+## New Features
+
+- Added instructor last-name suggestions from the Instructor Directory to the dashboard and extension timer forms. Staff can still type a last name manually.
+- Added a check-in checkbox to reserved seat tiles. Checking in changes the existing seat status to Occupied without clearing its details.
+- Added an Actions menu beside Menu for adding instructors, resources, guides, and FAQs from the dashboard.
+- Added Blackboard to the seat-status Test Type menus in the dashboard and extension.
+
+## Improvements
+
+- Renamed Test Optional to Instructor across timer entry and editing forms.
+- Made Add Timer and Add Seat Status controls more compact.
+- Reduced the seat-tile test-type label size by one point.
+- Refreshed active counts when seat statuses change.
+
+---
+
 # Version 2.3.1 - 6/30/26 - 11:21 PM
 
 ### Calculator Workflow & Timer Editing Improvements

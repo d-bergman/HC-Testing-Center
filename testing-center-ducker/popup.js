@@ -77,6 +77,13 @@ function getMiniSeatClass(seatId) {
 function renderMiniMap() {
   const miniMap = document.getElementById("miniMap");
   const seats = miniMapLab === "C" ? labCSeats : labBSeats;
+  const instructorList = document.getElementById("quickInstructorLastNames");
+
+  instructorList.replaceChildren(...(latestSeatMapData?.instructorLastNames || []).map(name => {
+    const option = document.createElement("option");
+    option.value = name;
+    return option;
+  }));
 
   miniMap.className = `mini-map lab-${miniMapLab.toLowerCase()}`;
   miniMap.innerHTML = "";

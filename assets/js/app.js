@@ -8,8 +8,10 @@ import {
   remove,
   onValue,
   onDisconnect,
+  runTransaction,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
+import { setupDashboardActions } from "./dashboard-actions.js";
 
 const firebaseConfig = {
   apiKey: "RemovedKEY",
@@ -30,6 +32,8 @@ const timersRef = ref(db, "timers");
 const historyRef = ref(db, "history");
 const presenceRef = ref(db, "presence");
 const seatStatusesRef = ref(db, "seatStatuses");
+const instructorsRef = ref(db, "instructors");
+let instructorLastNames = [];
 
 // New reference for announcements
 const announcementsRef = ref(db, "announcements");
@@ -1043,6 +1047,9 @@ function renderSeats() {
     const cameraColor = seatCameraMap[seatId] || "green";
 
     seat.innerHTML = `
+      ${seatStatus?.status === "Reserved"
+        ? `<input type="checkbox" class="seat-checkin-checkbox" aria-label="Check in ${seatId}" title="Check in ${seatId}" onchange="checkInReservedSeat('${seatStatus.id}', this)">`
+        : ""}
       <div class="camera-indicator ${cameraColor}"></div>
       ${
   (timer?.calculatorBorrowed || seatStatus?.calculatorBorrowed)
@@ -1064,8 +1071,8 @@ function renderSeats() {
     `
     : seatStatus
     ? `
-      <div class="seat-name">${seatStatus.student || seatStatus.testType}</div>
-      <div class="seat-time">${seatStatus.student ? seatStatus.testType : seatStatus.status}</div>
+      <div class="seat-name ${seatStatus.student ? "" : "seat-test-type"}">${seatStatus.student || seatStatus.testType}</div>
+      <div class="seat-time ${seatStatus.student ? "seat-test-type" : ""}">${seatStatus.student ? seatStatus.testType : seatStatus.status}</div>
       <!--<button class="seat-lock-btn" title="Seat is in use">🔒</button>-->
       <button class="seat-clear-btn" onclick="clearSeatStatus('${seatStatus.id}')">Clear</button>
     `
@@ -1541,6 +1548,23 @@ onValue(seatStatusesRef, snapshot => {
 
   renderSeats();
   renderSeatStatuses();
+  renderTimers();
+});
+
+onValue(instructorsRef, snapshot => {
+  const uniqueNames = new Map();
+  Object.values(snapshot.val() || {}).forEach(instructor => {
+    const lastName = String(instructor.lastName || "").trim();
+    if (lastName) uniqueNames.set(lastName.toLocaleLowerCase(), lastName);
+  });
+
+  instructorLastNames = [...uniqueNames.values()].sort((a, b) => a.localeCompare(b));
+  const list = document.getElementById("instructorLastNames");
+  list.replaceChildren(...instructorLastNames.map(name => {
+    const option = document.createElement("option");
+    option.value = name;
+    return option;
+  }));
 });
 
 //const userPresenceRef = push(presenceRef);
@@ -1808,6 +1832,24 @@ window.clearSeatStatus = function(id) {
   clearStatus();
 };
 
+window.checkInReservedSeat = async function(id, checkbox) {
+  checkbox.disabled = true;
+
+  try {
+    const result = await runTransaction(ref(db, `seatStatuses/${id}`), current => {
+      if (!current || current.status !== "Reserved") return;
+      return { ...current, status: "Occupied" };
+    }, { applyLocally: false });
+
+    if (!result.committed) renderSeats();
+  } catch (error) {
+    checkbox.checked = false;
+    checkbox.disabled = false;
+    showInfoModal("Could not check in this seat. Please try again.");
+    console.error("Unable to check in reserved seat.", error);
+  }
+};
+
 timerModeBtn.addEventListener("click", () => {
   timerModeBtn.classList.add("active");
   seatStatusModeBtn.classList.remove("active");
@@ -1937,7 +1979,8 @@ window.addEventListener("message", event => {
         data: {
           activeLab,
           timers,
-          seatStatuses
+          seatStatuses,
+          instructorLastNames
         }
       },
       "*"
@@ -2464,4 +2507,5 @@ sidebarHelpBtn?.addEventListener("click", () => {
 renderTimers();
 renderSeatStatuses();
 renderSeats();
+setupDashboardActions(db);
 renderHistory();

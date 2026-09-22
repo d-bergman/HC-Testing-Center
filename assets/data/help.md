@@ -4,12 +4,16 @@ This dashboard is used to manage live testing activity across Lab B and Lab C. I
 
 Staff can add timers or seat statuses from the main form, or directly from an empty seat on the map using the seat Quick Add button. Active timers and seat statuses appear on the left side for quick management.
 
+## Actions Menu
+
+Use **Actions** beside Menu to add an instructor, resource, guide, or FAQ without leaving the dashboard. Each form uses the same fields as its directory page.
+
 ## Adding a Timer
 
 1. Select Lab B or Lab C.
 2. Enter the seat number. You can type **C16**, **B12**, or just **16** if the lab dropdown is correct.
 3. Enter the student name.
-4. Optional: enter a test label, instructor name, or other note in **Test Optional**.
+4. Optional: start typing an instructor's last name in **Instructor** and select a directory suggestion, or type a last name manually.
 5. Enter hours and minutes.
 6. Click **Add Timer**.
 7. The timer will appear paused first. Press **Play** when the student is seated and ready to begin.
@@ -32,7 +36,7 @@ Auto-trim only happens when a timer is first added. The **+5** button and Edit T
 
 1. Pause the timer first.
 2. Click **Edit** under the student name.
-3. Update the lab, seat, student name, test label, hours, or minutes.
+3. Update the lab, seat, student name, instructor, hours, or minutes.
 4. Click **Save Timer**.
 5. The timer stays paused after editing. Press **Play** to resume.
 
@@ -55,8 +59,10 @@ Each active timer shows an estimated end time under the countdown. This helps st
 2. Select the lab and enter the seat.
 3. Student name is optional.
 4. Select **Reserved** or **Occupied**.
-5. Select the test type: CNA, GED, TEAS, CLEP, Placement, HonorLock, or Other.
+5. Select the test type: CNA, GED, TEAS, CLEP, Placement, HonorLock, Blackboard, or Other.
 6. Click **Add Seat Status**.
+
+Reserved seats show a check-in checkbox in the upper-left corner of their map tile. Select it when the student arrives to change the seat to **Occupied** without clearing the reservation's student or test type.
 
 ## Seat Statuses List
 
@@ -82,7 +88,7 @@ Example: **9 active - 3 Make-Up • 3 CNA • 2 GED • 1 CLEP**
 
 ## Seat Flags
 
-Seat flags are managed separately from the Test Optional field. Applying a flag changes the seat color without overwriting the test label, instructor name, or other notes.
+Seat flags are managed separately from the Instructor field. Applying a flag changes the seat color without overwriting the instructor name.
 
 - **ADS:** turns the seat yellow.
 - **Misconduct:** turns the seat pink.
