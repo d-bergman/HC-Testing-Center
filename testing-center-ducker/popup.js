@@ -58,9 +58,15 @@ function getMiniSeatClass(seatId) {
   const seatStatus = latestSeatMapData.seatStatuses.find(s => s.seat === seatId);
 
   if (timer) {
-    const remaining = timer.paused
+    let remaining = timer.paused
       ? timer.pausedRemaining || 0
       : Math.max(0, Math.ceil((timer.endAt - Date.now()) / 1000));
+    if (Number.isFinite(timer.closingDeadlineMs)) {
+      remaining = Math.min(
+        remaining,
+        Math.max(0, Math.floor((timer.closingDeadlineMs - Date.now()) / 1000))
+      );
+    }
 
     if (remaining <= 300) return "danger";
     if (remaining <= 900) return "warning";

@@ -191,11 +191,11 @@
               <section class="app-card mb-3">
                 <div class="form-mode-toggle mb-3">
   <button id="timerModeBtn" class="btn form-mode-btn active" type="button">
-    Add Timer
+    Timers
   </button>
 
   <button id="seatStatusModeBtn" class="btn form-mode-btn" type="button">
-    Add Seat Status
+    Sessions
   </button>
 </div>
 
@@ -242,17 +242,14 @@
   <div id="calculatorBorrowedField" class="col-12 col-md-6">
   <label class="form-label d-block">Calculator?</label>
 
-  <div class="calculator-toggle" role="radiogroup" aria-label="Calculator borrowed">
-    <label class="calculator-choice no">
-      <input type="radio" name="calculatorBorrowed" value="no" checked />
-      <span>No</span>
-    </label>
-
-    <label class="calculator-choice yes">
-      <input type="radio" name="calculatorBorrowed" value="yes" />
-      <span>Yes</span>
-    </label>
-  </div>
+  <label class="form-switch-control calculator-switch">
+    <input type="checkbox" name="calculatorBorrowed" role="switch" aria-label="Calculator borrowed" />
+    <span class="form-switch-track">
+      <span class="form-switch-thumb"></span>
+      <span class="form-switch-off">No</span>
+      <span class="form-switch-on">Yes</span>
+    </span>
+  </label>
 </div>
 
     <div id="timerFields" class="row g-3 align-items-end">
@@ -264,12 +261,30 @@
 </div>
 
 <div id="seatStatusFields" class="row g-3 align-items-end d-none">
-  <div class="col-12 col-sm-6">
-    <label for="seatStatusInput" class="form-label">Seat Status</label>
-    <select id="seatStatusInput" class="form-select">
-      <option value="Occupied">Occupied</option>
-      <option value="Reserved">Reserved</option>
-    </select>
+  <div class="col-12 col-sm-6 d-flex flex-wrap align-items-end gap-3">
+    <div class="seat-status-switch-field">
+      <label for="seatStatusInput" class="form-label d-block">Seat Status</label>
+      <label class="form-switch-control status-switch">
+        <input id="seatStatusInput" type="checkbox" role="switch" aria-label="Reserved seat status" />
+        <span class="form-switch-track">
+          <span class="form-switch-thumb"></span>
+          <span class="form-switch-off">Occupied</span>
+          <span class="form-switch-on">Reserved</span>
+        </span>
+      </label>
+    </div>
+
+    <div id="seatStatusCalculatorBorrowedField" class="seat-status-calculator-field d-none">
+      <label class="form-label d-block">Calculator?</label>
+      <label class="form-switch-control calculator-switch">
+        <input type="checkbox" name="seatStatusCalculatorBorrowed" role="switch" aria-label="Calculator borrowed" />
+        <span class="form-switch-track">
+          <span class="form-switch-thumb"></span>
+          <span class="form-switch-off">No</span>
+          <span class="form-switch-on">Yes</span>
+        </span>
+      </label>
+    </div>
   </div>
 
   <div class="col-12 col-sm-6">
@@ -286,25 +301,9 @@
     </select>
   </div>
 
-  <div id="seatStatusCalculatorBorrowedField" class="col-12 d-none">
-  <label class="form-label d-block">Calculator?</label>
-
-  <div class="calculator-toggle" role="radiogroup" aria-label="Calculator borrowed">
-    <label class="calculator-choice no">
-      <input type="radio" name="seatStatusCalculatorBorrowed" value="no" checked />
-      <span>No</span>
-    </label>
-
-    <label class="calculator-choice yes">
-      <input type="radio" name="seatStatusCalculatorBorrowed" value="yes" />
-      <span>Yes</span>
-    </label>
-  </div>
-</div>
-
   <div class="col-12">
     <button id="addSeatStatusBtn" class="btn btn-primary-custom compact-add-btn">
-      + Add Seat Status
+      + Add Session
     </button>
   </div>
 </div>
@@ -320,7 +319,7 @@
 
                 <div id="timerList" class="timer-list"></div>
                 <div class="d-flex align-items-center justify-content-between gap-2 mt-4 mb-2">
-                  <h2 class="mb-0">Seat Statuses</h2>
+                  <h2 class="mb-0">Active Sessions</h2>
                 </div>
 
                 <div id="seatStatusList" class="timer-list"></div>
@@ -733,17 +732,14 @@
           <div class="col-12">
           <label class="form-label d-block">Calculator?</label>
 
-          <div class="calculator-toggle" role="radiogroup" aria-label="Calculator borrowed">
-            <label class="calculator-choice no">
-              <input type="radio" name="editCalculatorBorrowed" value="no" checked />
-              <span>No</span>
-            </label>
-
-            <label class="calculator-choice yes">
-              <input type="radio" name="editCalculatorBorrowed" value="yes" />
-              <span>Yes</span>
-            </label>
-          </div>
+          <label class="form-switch-control calculator-switch">
+            <input type="checkbox" name="editCalculatorBorrowed" role="switch" aria-label="Calculator borrowed" />
+            <span class="form-switch-track">
+              <span class="form-switch-thumb"></span>
+              <span class="form-switch-off">No</span>
+              <span class="form-switch-on">Yes</span>
+            </span>
+          </label>
         </div>
 
         <p id="editTimerError" class="password-error"></p>
@@ -780,14 +776,14 @@
         </button>
 
         <button id="quickSeatStatusModeBtn" class="btn form-mode-btn" type="button">
-          Add Seat Status
+          Add Session
         </button>
       </div>
 
         <div class="row g-3">
   <div class="col-12 col-sm-4">
     <label for="quickSeatLabInput" class="form-label">Lab</label>
-    <select id="quickSeatLabInput" class="form-select">
+    <select id="quickSeatLabInput" class="form-select" disabled>
       <option value="C">Lab C</option>
       <option value="B">Lab B</option>
     </select>
@@ -795,7 +791,7 @@
 
   <div class="col-12 col-sm-4">
     <label for="quickSeatSeatInput" class="form-label">Seat</label>
-    <input id="quickSeatSeatInput" class="form-control" type="text" maxlength="3" />
+    <input id="quickSeatSeatInput" class="form-control" type="text" maxlength="3" disabled />
   </div>
 
   <div class="col-12 col-sm-4">
@@ -826,27 +822,28 @@
   <div id="quickCalculatorBorrowedField" class="col-12">
   <label class="form-label d-block">Calculator Borrowed?</label>
 
-  <div class="calculator-toggle" role="radiogroup" aria-label="Calculator borrowed">
-    <label class="calculator-choice no">
-      <input type="radio" name="quickCalculatorBorrowed" value="no" checked />
-      <span>No</span>
-    </label>
-
-    <label class="calculator-choice yes">
-      <input type="radio" name="quickCalculatorBorrowed" value="yes" />
-      <span>Yes</span>
-    </label>
-  </div>
+  <label class="form-switch-control calculator-switch">
+    <input type="checkbox" name="quickCalculatorBorrowed" role="switch" aria-label="Calculator borrowed" />
+    <span class="form-switch-track">
+      <span class="form-switch-thumb"></span>
+      <span class="form-switch-off">No</span>
+      <span class="form-switch-on">Yes</span>
+    </span>
+  </label>
 </div>
 </div>
 
-        <div id="quickSeatStatusFields" class="row g-3 d-none">
+        <div id="quickSeatStatusFields" class="row g-3 mt-2 d-none">
   <div class="col-12 col-sm-6">
-    <label for="quickSeatStatusInput" class="form-label">Seat Status</label>
-    <select id="quickSeatStatusInput" class="form-select">
-      <option value="Occupied">Occupied</option>
-      <option value="Reserved">Reserved</option>
-    </select>
+    <label for="quickSeatStatusInput" class="form-label d-block">Seat Status</label>
+    <label class="form-switch-control status-switch">
+      <input id="quickSeatStatusInput" type="checkbox" role="switch" aria-label="Reserved seat status" />
+      <span class="form-switch-track">
+        <span class="form-switch-thumb"></span>
+        <span class="form-switch-off">Occupied</span>
+        <span class="form-switch-on">Reserved</span>
+      </span>
+    </label>
   </div>
 
   <div class="col-12 col-sm-6">
@@ -866,17 +863,14 @@
   <div id="quickSeatStatusCalculatorBorrowedField" class="col-12 d-none">
   <label class="form-label d-block">Calculator Borrowed?</label>
 
-  <div class="calculator-toggle" role="radiogroup" aria-label="Calculator borrowed">
-    <label class="calculator-choice no">
-      <input type="radio" name="quickSeatStatusCalculatorBorrowed" value="no" checked />
-      <span>No</span>
-    </label>
-
-    <label class="calculator-choice yes">
-      <input type="radio" name="quickSeatStatusCalculatorBorrowed" value="yes" />
-      <span>Yes</span>
-    </label>
-  </div>
+  <label class="form-switch-control calculator-switch">
+    <input type="checkbox" name="quickSeatStatusCalculatorBorrowed" role="switch" aria-label="Calculator borrowed" />
+    <span class="form-switch-track">
+      <span class="form-switch-thumb"></span>
+      <span class="form-switch-off">No</span>
+      <span class="form-switch-on">Yes</span>
+    </span>
+  </label>
 </div>
 
 </div>

@@ -2,7 +2,7 @@
 
 This dashboard is used to manage live testing activity across Lab B and Lab C. It tracks active timers, occupied seats, reserved seats, seat flags, projected end times, alarms, connected users, and seat history in real time.
 
-Staff can add timers or seat statuses from the main form, or directly from an empty seat on the map using the seat Quick Add button. Active timers and seat statuses appear on the left side for quick management.
+Staff can add timers or sessions from the main form, or directly from an empty seat on the map using the seat Quick Add button. Active timers and sessions appear on the left side for quick management.
 
 ## Actions Menu
 
@@ -18,21 +18,21 @@ Use **Actions** beside Menu to add an instructor, resource, guide, or FAQ withou
 6. Click **Add Timer**.
 7. The timer will appear paused first. Press **Play** when the student is seated and ready to begin.
 
-**Calculator?** defaults to No. Hover or focus highlights an option; select Yes when a calculator is issued. The selected option remains active after the pointer moves away.
+**Calculator?** defaults to No. Use the switch to select Yes when a calculator is issued.
 
 ## Adding From the Seat Map
 
 1. Find an empty seat on the Lab B or Lab C map.
 2. Click the **+** button on the seat.
-3. The Add From Seat modal opens with the lab and seat already filled in.
-4. Choose **Add Timer** or **Add Seat Status**.
-5. Complete the required fields and click **Add**.
+3. The Add From Seat modal opens with the lab and seat filled in and locked to the selected tile.
+4. Choose **Add Timer** or **Add Session**.
+5. Complete the required fields and click **Add Timer** or **Add Session**.
 
 ## Closing Time Auto-Trim
 
 When a new timer is added, the dashboard automatically trims the timer if it would go past closing time. Closing time is currently 7:00 PM Monday–Thursday and 4:30 PM on Friday.
 
-Auto-trim only happens when a timer is first added. The **+5** button and Edit Timer feature do not auto-trim.
+While a timer is paused, its available time continues to shrink as closing approaches. Pressing Play cannot move its automatic end time beyond closing. The **+5** button and Edit Timer can intentionally extend that deadline.
 
 ## Editing a Timer
 
@@ -55,24 +55,26 @@ Auto-trim only happens when a timer is first added. The **+5** button and Edit T
 
 Each active timer shows an estimated end time under the countdown. This helps staff quickly see when a student is expected to finish.
 
-## Adding a Seat Status
+## Adding a Session
 
-1. Click **Add Seat Status**.
+1. Click **Sessions**.
 2. Select the lab and enter the seat.
 3. Student name is optional.
-4. Select **Reserved** or **Occupied**.
+4. Use the **Seat Status** switch to choose **Reserved** or **Occupied**. It defaults to Occupied.
 5. Select the test type: CNA, GED, TEAS, CLEP, Placement, HonorLock, Blackboard, or Other.
-6. Click **Add Seat Status**.
+6. Click **Add Session**.
+
+For Placement sessions, the **Calculator?** switch appears beside Seat Status and defaults to No.
 
 Reserved seats show a check-in checkmark in the upper-left corner of their map tile. Select it when the student arrives to change the seat to **Occupied** without clearing the reservation's student or test type.
 
-## Seat Statuses List
+## Active Sessions
 
-Occupied and reserved seats also appear in the **Seat Statuses** section under Active Timers. This section allows staff to quickly clear a seat status or apply a seat flag.
+Occupied and reserved seats also appear in **Active Sessions** under Active Timers. This section allows staff to clear a session or apply a seat flag.
 
 ## Active Count
 
-The Active Timers count includes active timers as **Make-Up** tests and also includes occupied seat statuses by test type.
+The Active Timers count includes active timers as **Make-Up** tests and also includes occupied sessions by test type.
 
 Example: **9 active - 3 Make-Up • 3 CNA • 2 GED • 1 CLEP**
 
@@ -95,7 +97,7 @@ Seat flags are managed separately from the Instructor field. Applying a flag cha
 - **ADS:** turns the seat yellow.
 - **Misconduct:** turns the seat pink.
 - **Broken:** turns the seat dark gray.
-- **None:** removes the flag and returns the seat to its normal timer or seat status color.
+- **None:** removes the flag and returns the seat to its normal timer or session color.
 
 ## Camera Dots
 
@@ -115,11 +117,11 @@ When an alarm is dismissed on one dashboard, the dismissal syncs across all open
 
 ## History
 
-The History tab can search past timers and cleared occupied seat statuses by student, seat, lab, test, or date. Reserved seats are not logged unless a student name was entered.
+The History tab can search past timers and cleared occupied sessions by student, seat, lab, test, or date. Reserved seats are not logged unless a student name was entered.
 
 ## Duplicate Seat Protection
 
-The dashboard prevents two active items from using the same seat. If a seat already has a timer or status, a confirmation popup will ask before replacing it.
+The dashboard prevents two active items from using the same seat. If a seat already has a timer or session, a confirmation popup will ask before replacing it.
 
 ### Important Notes
 

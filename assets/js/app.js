@@ -12,6 +12,14 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 import { setupDashboardActions } from "./dashboard-actions.js";
+import {
+  getEditDeadlineMs,
+  getFiveMinuteUpdate,
+  getNewTimerTiming,
+  getProjectedEndMs,
+  getRemainingSeconds,
+  getResumeEndMs
+} from "./timer-closing.mjs";
 
 const firebaseConfig = {
   apiKey: "RemovedKEY",
@@ -395,14 +403,6 @@ function formatTime(seconds) {
   ].join(":");
 }
 
-function getRemainingSeconds(timer) {
-  if (timer.paused) {
-    return timer.pausedRemaining || 0;
-  }
-
-  return Math.max(0, Math.ceil((timer.endAt - Date.now()) / 1000));
-}
-
 function getTimerStatus(seconds) {
   if (seconds <= 300) return "red";
   if (seconds <= 900) return "orange";
@@ -414,9 +414,16 @@ function createNewTimerObject({
   seat,
   student,
   test,
-  minutes,
+  requestedSeconds,
   calculatorBorrowed = false
 }) {
+  const { remainingSeconds, closingDeadlineMs } =
+    getNewTimerTiming(requestedSeconds);
+  if (remainingSeconds <= 0) {
+    showInfoModal("Closing time has passed. A new timer cannot be started today.");
+    return false;
+  }
+
   const newTimerRef = push(timersRef);
 
   const timer = {
@@ -425,10 +432,11 @@ function createNewTimerObject({
     seat,
     student,
     test,
-    durationSeconds: minutes * 60,
+    durationSeconds: remainingSeconds,
     endAt: null,
     paused: true,
-    pausedRemaining: minutes * 60,
+    pausedRemaining: remainingSeconds,
+    closingDeadlineMs,
     alarmDismissed: false,
     flag: "none",
     calculatorBorrowed,
@@ -437,37 +445,21 @@ function createNewTimerObject({
   };
 
   set(newTimerRef, timer);
+  return true;
 }
 
-// Function to check if a calculator is borrowed based on the selected radio button
 function isCalculatorBorrowed(name) {
-  const selected = document.querySelector(
-    `input[name="${name}"]:checked`
-  );
-
-  return selected?.value === "yes";
+  return Boolean(document.querySelector(`input[name="${name}"]`)?.checked);
 }
-// Function to reset the calculator borrowed status to "no"
+
 function resetCalculatorBorrowed(name) {
-  const noOption = document.querySelector(
-    `input[name="${name}"][value="no"]`
-  );
-
-  if (noOption) {
-    noOption.checked = true;
-  }
+  const input = document.querySelector(`input[name="${name}"]`);
+  if (input) input.checked = false;
 }
-// Function to set the calculator borrowed status based on a boolean value
+
 function setCalculatorBorrowed(name, borrowed) {
-  const value = borrowed ? "yes" : "no";
-
-  const option = document.querySelector(
-    `input[name="${name}"][value="${value}"]`
-  );
-
-  if (option) {
-    option.checked = true;
-  }
+  const input = document.querySelector(`input[name="${name}"]`);
+  if (input) input.checked = Boolean(borrowed);
 }
 
 function normalizeSeat(lab, seatInput) {
@@ -482,23 +474,6 @@ function normalizeSeat(lab, seatInput) {
   return `${lab}${cleaned}`;
 }
 
-function getClosingTimeToday() {
-  const now = new Date();
-  const day = now.getDay();
-
-  const closing = new Date();
-
-  // Friday
-  if (day === 5) {
-    closing.setHours(16, 30, 0, 0);
-  } else {
-    // Monday-Thursday + weekends fallback
-    closing.setHours(19, 0, 0, 0);
-  }
-
-  return closing;
-}
-
 function createTimer() {
   const lab = document.getElementById("labInput").value;
   const rawSeat = document.getElementById("seatInput").value;
@@ -506,29 +481,11 @@ function createTimer() {
   const student = document.getElementById("studentInput").value.trim();
   const test = document.getElementById("testInput").value.trim();
   const hours = parseInt(document.getElementById("hoursInput").value) || 0;
-const minutes = parseInt(document.getElementById("minutesInput").value) || 0;
-const totalMinutes = hours * 60 + minutes;
+  const minutes = parseInt(document.getElementById("minutesInput").value) || 0;
+  const requestedSeconds = (hours * 60 + minutes) * 60;
+  const calculatorBorrowed = isCalculatorBorrowed("calculatorBorrowed");
 
-// Closing Time Enforcement
-const closingTime = getClosingTimeToday();
-
-const secondsUntilClose = Math.floor(
-  (closingTime.getTime() - Date.now()) / 1000
-);
-
-const requestedSeconds = totalMinutes * 60;
-
-const finalSeconds = Math.min(
-  requestedSeconds,
-  Math.max(0, secondsUntilClose)
-);
-
-const finalMinutes = Math.ceil(finalSeconds / 60);
-
-const calculatorBorrowed =
-  isCalculatorBorrowed("calculatorBorrowed");
-
-  if (!seat || !student || totalMinutes <= 0) {
+  if (!seat || !student || requestedSeconds <= 0) {
     showInfoModal("Please complete all required fields.");
     return;
   }
@@ -538,78 +495,63 @@ const calculatorBorrowed =
     return;
   }
 
+  if (getNewTimerTiming(requestedSeconds).remainingSeconds <= 0) {
+    showInfoModal("Closing time has passed. A new timer cannot be started today.");
+    return;
+  }
+
   const existingSeat = timers.find(
-  t => t.seat.toUpperCase() === seat.toUpperCase()
-);
-const existingSeatStatus = seatStatuses.find(
-  s => s.seat.toUpperCase() === seat.toUpperCase()
-);
+    t => t.seat.toUpperCase() === seat.toUpperCase()
+  );
+  const existingSeatStatus = seatStatuses.find(
+    s => s.seat.toUpperCase() === seat.toUpperCase()
+  );
 
-
-if (existingSeat) {
-
-  seatConflictMessage.textContent =
-    `${seat} already has an active timer for ${existingSeat.student}.`;
-
-  seatConflictModal.show();
-
-  confirmSeatConflictBtn.onclick = () => {
-
-    deleteTimer(existingSeat.id);
-
-    createNewTimerObject({
-  lab,
-  seat,
-  student,
-  test,
-  minutes: finalMinutes,
-  calculatorBorrowed
-});
-
-    seatConflictModal.hide();
+  const timerDetails = {
+    lab,
+    seat,
+    student,
+    test,
+    requestedSeconds,
+    calculatorBorrowed
   };
 
-  return;
-}
+  if (existingSeat || existingSeatStatus) {
+    seatConflictMessage.textContent = existingSeat
+      ? `${seat} already has an active timer for ${existingSeat.student}.`
+      : `${seat} is currently ${existingSeatStatus.status} for ${existingSeatStatus.testType}.\n\nReplace session with timer?`;
 
-if (existingSeatStatus) {
-  seatConflictMessage.textContent =
-    `${seat} is currently ${existingSeatStatus.status} for ${existingSeatStatus.testType}.\n\nReplace seat status with timer?`;
+    confirmSeatConflictBtn.onclick = () => {
+      if (getNewTimerTiming(requestedSeconds).remainingSeconds <= 0) {
+        seatConflictModal.hide();
+        showInfoModal("Closing time has passed. A new timer cannot be started today.");
+        return;
+      }
 
-  seatConflictModal.show();
+      if (existingSeat) {
+        deleteTimer(existingSeat.id);
+      } else {
+        clearSeatStatus(existingSeatStatus.id);
+      }
 
-  confirmSeatConflictBtn.onclick = () => {
-    clearSeatStatus(existingSeatStatus.id);
+      createNewTimerObject(timerDetails);
+      seatConflictModal.hide();
 
-    createNewTimerObject({
-      lab,
-      seat,
-      student,
-      test,
-      minutes: finalMinutes,
-      calculatorBorrowed
-    });
+      if (existingSeatStatus) {
+        document.getElementById("seatInput").value = "";
+        document.getElementById("studentInput").value = "";
+        document.getElementById("testInput").value = "";
+        document.getElementById("hoursInput").value = "";
+        document.getElementById("minutesInput").value = "";
+        resetCalculatorBorrowed("calculatorBorrowed");
+      }
+    };
 
-    seatConflictModal.hide();
+    seatConflictModal.show();
+    return;
+  }
 
-    document.getElementById("seatInput").value = "";
-    document.getElementById("studentInput").value = "";
-    document.getElementById("testInput").value = "";
-    document.getElementById("hoursInput").value = "";
-    document.getElementById("minutesInput").value = "";
-    resetCalculatorBorrowed("calculatorBorrowed");
-  };
-
-  return;
-}
-  createNewTimerObject({
-  lab,
-  seat,
-  student,
-  test,
-  minutes: finalMinutes,
-  calculatorBorrowed
-});
+  createNewTimerObject(timerDetails);
 
   document.getElementById("seatInput").value = "";
   document.getElementById("studentInput").value = "";
@@ -651,14 +593,15 @@ function createSeatStatus() {
   const seat = normalizeSeat(lab, rawSeat);
   const student = document.getElementById("studentInput").value.trim();
   const testType = document.getElementById("testTypeInput").value;
-  const status = document.getElementById("seatStatusInput").value;
+  const status = document.getElementById("seatStatusInput").checked
+    ? "Reserved" : "Occupied";
 
   const calculatorBorrowed =
   testType === "Placement" &&
   isCalculatorBorrowed("seatStatusCalculatorBorrowed");
 
   if (!seat || !testType || !status) {
-    showInfoModal("Please complete the seat status fields.");
+    showInfoModal("Please complete the session fields.");
     return;
   }
   const existingSeatStatus = seatStatuses.find(
@@ -670,7 +613,7 @@ const existingTimer = timers.find(
 
 if (existingTimer) {
   seatConflictMessage.textContent =
-    `${seat} already has an active timer for ${existingTimer.student}.\n\nReplace timer with seat status?`;
+    `${seat} already has an active timer for ${existingTimer.student}.\n\nReplace timer with session?`;
 
   seatConflictModal.show();
 
@@ -736,17 +679,7 @@ if (existingSeatStatus) {
 startTimerBtn.addEventListener("click", createTimer);
 
 function getProjectedEndTime(timer) {
-  let endTime;
-
-  if (timer.paused) {
-    endTime = new Date(
-      Date.now() + (timer.pausedRemaining || 0) * 1000
-    );
-  } else {
-    endTime = new Date(timer.endAt);
-  }
-
-  return endTime.toLocaleTimeString([], {
+  return new Date(getProjectedEndMs(timer)).toLocaleTimeString([], {
     hour: "numeric",
     minute: "2-digit"
   });
@@ -796,6 +729,7 @@ document.getElementById("timerCount").textContent =
 
     const item = document.createElement("div");
     item.className = "timer-item";
+    item.dataset.timerId = timer.id;
 
     item.innerHTML = `
       <div>
@@ -881,7 +815,7 @@ function renderSeatStatuses() {
 
   if (!seatStatuses.length) {
     seatStatusList.innerHTML =
-      `<div class="empty-state">No active seat statuses.</div>`;
+      `<div class="empty-state">No active sessions.</div>`;
     return;
   }
 
@@ -1001,6 +935,8 @@ function renderSeats() {
       seatGrid.appendChild(seat);
       return;
     }
+
+    seat.dataset.seatId = seatId;
 
     let statusClass = "";
 
@@ -1197,9 +1133,46 @@ const historyTest = isSeatStatus
 }
 
 function refreshScreen() {
-  renderTimers();
-  renderSeatStatuses();
-  renderSeats();
+  const rows = new Map(
+    [...timerList.querySelectorAll("[data-timer-id]")]
+      .map(row => [row.dataset.timerId, row])
+  );
+  const seats = new Map(
+    [...seatGrid.querySelectorAll("[data-seat-id]")]
+      .map(seat => [seat.dataset.seatId, seat])
+  );
+
+  timers.forEach(timer => {
+    const remaining = getRemainingSeconds(timer);
+    const row = rows.get(timer.id);
+
+    if (row) {
+      const countdown = row.querySelector(".remaining");
+      countdown.textContent = formatTime(remaining);
+      const countdownClass = `remaining ${getTimerStatus(remaining)} ${timer.paused ? "paused-timer" : ""}`.trim();
+      if (countdown.className !== countdownClass) {
+        countdown.className = countdownClass;
+      }
+      row.querySelector(".projected-end").textContent =
+        `Ends ${getProjectedEndTime(timer)}`;
+      row.querySelector(".status-label").textContent = timer.paused
+        ? "Paused"
+        : remaining <= 0 ? "Time Up" : "Running";
+    }
+
+    const seat = seats.get(timer.seat);
+    if (seat) {
+      seat.querySelector(".seat-time").textContent = formatTime(remaining);
+      const seatClass = getTimerSeatClass(timer, remaining);
+      if (seatClass && !seat.classList.contains(seatClass)) {
+        seat.classList.remove(
+          "active-green", "active-orange", "active-red",
+          "active-ads", "active-misconduct", "active-broken"
+        );
+        seat.classList.add(seatClass);
+      }
+    }
+  });
 }
 
 function startAlarmLoop(timer) {
@@ -1277,6 +1250,7 @@ function checkTimerSounds() {
     const remaining = getRemainingSeconds(timer);
 
     if (
+      !timer.paused &&
       remaining <= 0 &&
       !timer.alarmDismissed &&
       !playedSounds.has(timer.id)
@@ -1298,7 +1272,11 @@ window.togglePause = function(id) {
   const timerRef = ref(db, `timers/${id}`);
 
   if (timer.paused) {
-    const newEndAt = Date.now() + (timer.pausedRemaining || 0) * 1000;
+    const newEndAt = getResumeEndMs(timer);
+    if (newEndAt === null) {
+      showInfoModal("This timer has reached closing time. Use +5 or Edit to extend it.");
+      return;
+    }
 
     update(timerRef, {
       paused: false,
@@ -1349,7 +1327,7 @@ window.openFlagModal = function(type, id) {
   if (!item) return;
 
   flagModalMessage.textContent =
-    `Set flag for ${item.seat} - ${item.student || item.testType || "Seat Status"}`;
+    `Set flag for ${item.seat} - ${item.student || item.testType || "Session"}`;
 
   flagSelectInput.value = item.flag || "none";
 
@@ -1361,18 +1339,7 @@ window.addFive = function(id) {
   if (!timer) return;
 
   const timerRef = ref(db, `timers/${id}`);
-
-  if (timer.paused) {
-    update(timerRef, {
-      pausedRemaining: (timer.pausedRemaining || 0) + 300,
-      alarmDismissed: false
-    });
-  } else {
-    update(timerRef, {
-      endAt: Math.max(timer.endAt, Date.now()) + 300000,
-      alarmDismissed: false
-    });
-  }
+  update(timerRef, getFiveMinuteUpdate(timer));
 
   playedSounds.delete(id);
 };
@@ -1401,9 +1368,10 @@ window.openEditTimer = function(id) {
   editStudentInput.value = timer.student || "";
   editTestInput.value = timer.test || "";
 
-  const remaining = timer.pausedRemaining || 0;
-  editHoursInput.value = Math.floor(remaining / 3600);
-  editMinutesInput.value = Math.floor((remaining % 3600) / 60);
+  const remaining = getRemainingSeconds(timer);
+  const displayMinutes = Math.ceil(remaining / 60);
+  editHoursInput.value = Math.floor(displayMinutes / 60);
+  editMinutesInput.value = displayMinutes % 60;
   setCalculatorBorrowed(
   "editCalculatorBorrowed",
   Boolean(timer.calculatorBorrowed)
@@ -1966,7 +1934,7 @@ seatStatusModeBtn.addEventListener("click", () => {
   seatStatusModeBtn.classList.add("active");
   timerModeBtn.classList.remove("active");
 
-  formTitle.textContent = "Add Seat Status";
+  formTitle.textContent = "Add Session";
 
   timerFields.classList.add("d-none");
   seatStatusFields.classList.remove("d-none");
@@ -2055,6 +2023,11 @@ saveEditTimerBtn.addEventListener("click", () => {
   
   const calculatorBorrowed =
   isCalculatorBorrowed("editCalculatorBorrowed");
+  const currentTimer = timers.find(timer => timer.id === editingTimerId);
+  if (!currentTimer) {
+    editTimerError.textContent = "This timer is no longer available.";
+    return;
+  }
 
   update(ref(db, `timers/${editingTimerId}`), {
     lab,
@@ -2065,6 +2038,7 @@ saveEditTimerBtn.addEventListener("click", () => {
     paused: true,
     pausedRemaining: totalSeconds,
     endAt: null,
+    closingDeadlineMs: getEditDeadlineMs(currentTimer, totalSeconds),
     alarmDismissed: false,
     calculatorBorrowed
   });
@@ -2112,7 +2086,7 @@ quickSeatStatusModeBtn.addEventListener("click", () => {
   quickSeatStatusFields.classList.remove("d-none");
   quickSeatTimerFields.classList.add("d-none");
 
-  saveQuickSeatTimerBtn.textContent = "Add Seat Status";
+  saveQuickSeatTimerBtn.textContent = "Add Session";
   quickSeatError.textContent = "";
 });
 
@@ -2129,14 +2103,14 @@ saveQuickSeatTimerBtn.addEventListener("click", () => {
 
   if (quickSeatStatusModeBtn.classList.contains("active")) {
     const testType = quickSeatTestTypeInput.value;
-    const status = quickSeatStatusInput.value;
+    const status = quickSeatStatusInput.checked ? "Reserved" : "Occupied";
 
     const calculatorBorrowed =
   testType === "Placement" &&
   isCalculatorBorrowed("quickSeatStatusCalculatorBorrowed");
 
     if (!testType || !status) {
-      quickSeatError.textContent = "Please complete the seat status fields.";
+      quickSeatError.textContent = "Please complete the session fields.";
       return;
     }
 
@@ -2170,32 +2144,16 @@ saveQuickSeatTimerBtn.addEventListener("click", () => {
     return;
   }
 
-  const closingTime = getClosingTimeToday();
-
-const secondsUntilClose = Math.floor(
-  (closingTime.getTime() - Date.now()) / 1000
-);
-
-const requestedSeconds = totalMinutes * 60;
-
-const finalSeconds = Math.min(
-  requestedSeconds,
-  Math.max(0, secondsUntilClose)
-);
-
-const finalMinutes = Math.ceil(finalSeconds / 60);
-
-const calculatorBorrowed =
-  isCalculatorBorrowed("quickCalculatorBorrowed");
-
-createNewTimerObject({
-  lab,
-  seat,
-  student,
-  test,
-  minutes: finalMinutes,
-  calculatorBorrowed
-});
+  const requestedSeconds = totalMinutes * 60;
+  const calculatorBorrowed = isCalculatorBorrowed("quickCalculatorBorrowed");
+  if (!createNewTimerObject({
+    lab,
+    seat,
+    student,
+    test,
+    requestedSeconds,
+    calculatorBorrowed
+  })) return;
 
   seatQuickAddModal.hide();
   resetCalculatorBorrowed("quickCalculatorBorrowed");

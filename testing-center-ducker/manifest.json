@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Testing Center Dash Controller",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "Ducks YouTube audio for Testing Center timer alarms and provides quick add functionality.",
   "permissions": ["tabs", "scripting"],
   "host_permissions": [

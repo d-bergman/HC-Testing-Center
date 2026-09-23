@@ -1,3 +1,16 @@
+# Version 2.6.0 - 9/23/26
+
+## Improvements
+
+- New timers store a closing deadline and trim to it at second precision. Time spent paused reduces the available time, and pressing Play cannot push the automatic end past closing. Paused timers do not sound the completion alarm at closing.
+- **+5** and Edit can deliberately extend that deadline. The extension mini-map also reflects the shrinking time while a timer is paused. Existing timers without a stored deadline keep their previous timing behavior.
+- Replaced the calculator Yes/No and Occupied/Reserved selectors with compact, rounded-rectangle switches. The Placement calculator switch sits beside Seat Status, and rapid clicks no longer select switch text.
+- Renamed the main mode buttons to **Timers** and **Sessions**, the session form and submit button to **Add Session**, and the list to **Active Sessions**. The Add From Seat modal retains **Add Timer** and uses **Add Session** for its mode and submit button.
+- Locked Lab and Seat to the selected tile in the Add From Seat modal and added spacing before its Seat Status fields.
+- The one-second countdown refresh now updates timer text and seat colors in place instead of rebuilding tile and timer action buttons, preventing hover flashes.
+
+---
+
 # Version 2.5.0 - 9/22/26
 
 ## Improvements
