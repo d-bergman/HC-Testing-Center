@@ -545,6 +545,32 @@ h2 {
   gap: 10px;
 }
 
+.timer-popout-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: #14283f;
+  color: var(--text);
+  font-size: 1.15rem;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.timer-popout-btn:hover {
+  background: #1c3655;
+  border-color: #6b8cac;
+}
+
+.timer-popout-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
 .timer-item,
 .history-item {
   display: grid;

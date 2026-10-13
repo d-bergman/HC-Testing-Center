@@ -44,6 +44,8 @@ While a timer is paused, its available time continues to shrink as closing appro
 
 ## Timer Controls
 
+Click the arrow beside **Active Timers** to open a separate, read-only timer window. Move it to another monitor or use its full-screen button. Use the minus and plus controls to adjust text size. Timers are sorted by soonest completion and automatically rotate through pages every 12 seconds, with up to 10 timers per page. Smaller windows or larger text show fewer per page so no row is cut off. Timers under five minutes remain in the alert strip above the pages. The window uses your current dashboard session and does not ask you to select a staff member again. Keep the main dashboard open for timer controls and alarms.
+
 - **Play/Pause:** starts or pauses the timer.
 - **+5:** adds five minutes to the timer.
 - **Edit:** allows a paused timer to be updated.

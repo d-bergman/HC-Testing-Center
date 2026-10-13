@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Active Timers - Testing Center Dashboard</title>
+  <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <link rel="stylesheet" href="assets/css/active-timers.css" />
+</head>
+<body class="timer-window-body">
+  <div id="accessMessage" class="timer-window-access" hidden>
+    Open this window from an unlocked Testing Center Dashboard.
+  </div>
+
+  <main id="timerWindow" class="timer-window" hidden>
+    <header class="timer-window-header">
+      <div class="timer-window-heading">
+        <h1>Active Timers</h1>
+        <span id="timerWindowCount" class="timer-window-count" aria-live="polite">0 active</span>
+      </div>
+      <div class="timer-window-tools" aria-label="Window controls">
+        <div class="timer-scale-controls" role="group" aria-label="Timer text size">
+          <button id="decreaseTimerFont" type="button" aria-label="Decrease text size" title="Decrease text size">−</button>
+          <output id="timerFontScale" aria-label="Text size">100%</output>
+          <button id="increaseTimerFont" type="button" aria-label="Increase text size" title="Increase text size">+</button>
+        </div>
+        <button id="timerFullscreenBtn" class="timer-fullscreen-btn" type="button" aria-label="Enter full screen" title="Enter full screen">⛶</button>
+      </div>
+    </header>
+
+    <div id="urgentTimerStrip" class="timer-urgent-strip" hidden>
+      <strong>Under 5 min</strong>
+      <div id="urgentTimerList" class="timer-urgent-list"></div>
+    </div>
+
+    <div class="timer-window-columns" aria-hidden="true">
+      <span>Seat</span>
+      <span>Name</span>
+      <span>Instructor</span>
+      <span>Timer / End Time</span>
+      <span>Status</span>
+    </div>
+    <div id="timerWindowList" class="timer-window-list" aria-label="Active timers"></div>
+    <footer class="timer-window-footer">
+      <span id="timerPageIndicator" class="timer-page-indicator">Page 1 of 1</span>
+      <span id="timerWindowSync" class="timer-window-sync" role="status">Connecting...</span>
+    </footer>
+  </main>
+
+  <script type="module" src="assets/js/active-timers.js"></script>
+</body>
+</html>

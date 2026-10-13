@@ -1,3 +1,18 @@
+# Version 2.7.0 - 10/13/26
+
+## New Features
+
+- Added a separate, read-only Active Timers window that opens from the arrow beside the dashboard heading. It reuses the current browser session without another staff check-in or duplicate presence or alarms.
+- Added adjustable text size and a full-screen control for a dedicated second-monitor display.
+- Timers appear in soonest-completion order and rotate automatically every 12 seconds. Each page shows up to 10 timers; the page size adjusts to the window height and text size so rows remain visible without manual scrolling.
+- Timers with five minutes or less remaining stay in an alert strip while pages rotate. A page indicator shows the current page and total.
+
+## Documentation
+
+- Updated Help with the monitor window and automatic rotation workflow.
+
+---
+
 # Version 2.6.0 - 9/23/26
 
 ## Improvements

@@ -48,6 +48,7 @@ const announcementsRef = ref(db, "announcements");
 
 // UI element references
 const timerList = document.getElementById("timerList");
+const openTimerWindowBtn = document.getElementById("openTimerWindowBtn");
 const historyList = document.getElementById("historyList");
 const seatGrid = document.getElementById("seatGrid");
 
@@ -1349,6 +1350,20 @@ function showInfoModal(message) {
   infoModalMessage.textContent = message;
   infoModal.show();
 }
+
+openTimerWindowBtn.addEventListener("click", () => {
+  const timerWindow = window.open(
+    new URL("./active-timers.html", document.baseURI).href,
+    "hcActiveTimers",
+    "popup,width=1100,height=760"
+  );
+
+  if (timerWindow) {
+    timerWindow.focus();
+  } else {
+    showInfoModal("The timer window was blocked. Allow pop-ups for this site and try again.");
+  }
+});
 
 // Expose functions to global scope for inline onclick handlers
 window.openEditTimer = function(id) {
