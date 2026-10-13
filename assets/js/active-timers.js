@@ -2,10 +2,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/fireba
 import { getDatabase, onValue, ref } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 import { getProjectedEndMs, getRemainingSeconds } from "./timer-closing.mjs";
 import {
+  getPageRotationMs,
   getTimerPage,
-  getUrgentTimers,
   MAX_TIMERS_PER_PAGE,
-  PAGE_ROTATION_MS,
   sortTimersByCompletion
 } from "./timer-monitor.mjs";
 
@@ -37,9 +36,6 @@ if (
   const sync = document.getElementById("timerWindowSync");
   const scaleOutput = document.getElementById("timerFontScale");
   const fullScreenButton = document.getElementById("timerFullscreenBtn");
-  const pageIndicator = document.getElementById("timerPageIndicator");
-  const urgentStrip = document.getElementById("urgentTimerStrip");
-  const urgentList = document.getElementById("urgentTimerList");
   let timers = [];
   let rows = new Map();
   let currentPage = 0;
@@ -47,12 +43,12 @@ if (
   let lastPageTurn = Date.now();
 
   const storedScale = Number(localStorage.getItem("activeTimerFontScale"));
-  let fontScale = Number.isFinite(storedScale) && storedScale >= 80 && storedScale <= 160
+  let fontScale = Number.isFinite(storedScale) && storedScale >= 80 && storedScale <= 200
     ? storedScale
     : 100;
 
   function setFontScale(value) {
-    fontScale = Math.max(80, Math.min(160, value));
+    fontScale = Math.max(80, Math.min(200, value));
     document.documentElement.style.setProperty("--timer-scale", fontScale / 100);
     scaleOutput.textContent = `${fontScale}%`;
     localStorage.setItem("activeTimerFontScale", String(fontScale));
@@ -81,9 +77,10 @@ if (
   });
 
   document.addEventListener("fullscreenchange", () => {
-    const exiting = Boolean(document.fullscreenElement);
-    fullScreenButton.setAttribute("aria-label", exiting ? "Exit full screen" : "Enter full screen");
-    fullScreenButton.title = exiting ? "Exit full screen" : "Enter full screen";
+    const isFullscreen = Boolean(document.fullscreenElement);
+    fullScreenButton.setAttribute("aria-label", isFullscreen ? "Exit full screen" : "Enter full screen");
+    fullScreenButton.setAttribute("aria-pressed", String(isFullscreen));
+    fullScreenButton.title = isFullscreen ? "Exit full screen" : "Enter full screen";
   });
 
   function formatTime(seconds) {
@@ -117,9 +114,8 @@ if (
     const clock = document.createElement("div");
     clock.className = "monitor-clock";
     clock.appendChild(cell("monitor-time", "00:00:00"));
-    clock.appendChild(cell("monitor-end", "Ends --"));
     row.appendChild(clock);
-    row.appendChild(cell("monitor-status", "Paused"));
+    row.appendChild(cell("monitor-end", "--"));
     return row;
   }
 
@@ -153,14 +149,14 @@ if (
       list.replaceChildren(cell("empty-state", "No active timers."));
       pageCount = 1;
       currentPage = 0;
-      pageIndicator.textContent = "Page 1 of 1";
       return;
     }
 
     const pageSize = getPageSize();
-    pageCount = Math.ceil(timers.length / pageSize);
+    const nextPageCount = Math.ceil(timers.length / pageSize);
+    if (nextPageCount !== pageCount) lastPageTurn = Date.now();
+    pageCount = nextPageCount;
     currentPage = Math.min(currentPage, pageCount - 1);
-    pageIndicator.textContent = `Page ${currentPage + 1} of ${pageCount}`;
 
     const fragment = document.createDocumentFragment();
     for (const timer of getTimerPage(timers, currentPage, pageSize)) {
@@ -170,25 +166,6 @@ if (
     }
     list.replaceChildren(fragment);
     refreshTimers();
-  }
-
-  function updateUrgentStrip(nowMs = Date.now()) {
-    const urgent = getUrgentTimers(timers, nowMs);
-    const visibilityChanged = urgentStrip.hidden !== (urgent.length === 0);
-    urgentStrip.hidden = urgent.length === 0;
-
-    const fragment = document.createDocumentFragment();
-    urgent.slice(0, 3).forEach(timer => {
-      fragment.appendChild(cell(
-        "timer-urgent-item",
-        `${timer.seat}: ${formatTime(getRemainingSeconds(timer, nowMs))}`
-      ));
-    });
-    if (urgent.length > 3) {
-      fragment.appendChild(cell("timer-urgent-item", `+${urgent.length - 3} more`));
-    }
-    urgentList.replaceChildren(fragment);
-    return visibilityChanged;
   }
 
   function refreshTimers() {
@@ -201,19 +178,15 @@ if (
       const color = remaining <= 300 ? "red" : remaining <= 900 ? "orange" : "green";
       time.textContent = formatTime(remaining);
       time.className = `monitor-time ${timer.paused ? "paused-timer" : color}`;
-      row.querySelector(".monitor-end").textContent = `Ends ${new Date(getProjectedEndMs(timer)).toLocaleTimeString([], {
+      row.querySelector(".monitor-end").textContent = new Date(getProjectedEndMs(timer)).toLocaleTimeString([], {
         hour: "numeric",
         minute: "2-digit"
-      })}`;
-      row.querySelector(".monitor-status").textContent = timer.paused
-        ? "Paused"
-        : remaining <= 0 ? "Time Up" : "Running";
+      });
     }
   }
 
   onValue(ref(db, "timers"), snapshot => {
     timers = sortTimersByCompletion(Object.values(snapshot.val() || {}));
-    updateUrgentStrip();
     renderPage();
     lastPageTurn = Date.now();
   }, () => {
@@ -236,14 +209,14 @@ if (
     const sorted = sortTimersByCompletion(timers, nowMs);
     const orderChanged = sorted.some((timer, index) => timer.id !== timers[index]?.id);
     timers = sorted;
-    const alertChanged = updateUrgentStrip(nowMs);
 
-    if (orderChanged || alertChanged) renderPage();
+    if (orderChanged) renderPage();
 
-    if (pageCount > 1 && nowMs - lastPageTurn >= PAGE_ROTATION_MS) {
-      const elapsedPages = Math.floor((nowMs - lastPageTurn) / PAGE_ROTATION_MS);
+    const rotationMs = getPageRotationMs(pageCount);
+    if (rotationMs && nowMs - lastPageTurn >= rotationMs) {
+      const elapsedPages = Math.floor((nowMs - lastPageTurn) / rotationMs);
       currentPage = (currentPage + elapsedPages) % pageCount;
-      lastPageTurn += elapsedPages * PAGE_ROTATION_MS;
+      lastPageTurn += elapsedPages * rotationMs;
       renderPage();
     } else if (pageCount === 1) {
       lastPageTurn = nowMs;

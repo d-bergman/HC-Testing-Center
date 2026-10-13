@@ -1,3 +1,15 @@
+# Version 2.7.1 - 10/13/26
+
+## Improvements
+
+- Adjusted automatic page rotation by page count: 20 seconds for two pages, 15 seconds for three, and 10 seconds for four or more.
+- Raised the monitor's text-size limit to 200% and gave the window wider margins for second-monitor overscan.
+- Replaced the status column with a larger, bold End Time column. Removed the five-minute alert strip, page footer, and page indicator to give the timer list more room.
+- Moved the active count and Live Sync indicator into the header controls. Kept the full-screen button square and corrected its icon sizing and connection-dot alignment.
+- Updated Help to match the monitor layout and rotation behavior.
+
+---
+
 # Version 2.7.0 - 10/13/26
 
 ## New Features

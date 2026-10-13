@@ -1,7 +1,13 @@
 import { getProjectedEndMs, getRemainingSeconds } from "./timer-closing.mjs";
 
 export const MAX_TIMERS_PER_PAGE = 10;
-export const PAGE_ROTATION_MS = 12_000;
+
+export function getPageRotationMs(pageCount) {
+  if (pageCount <= 1) return 0;
+  if (pageCount === 2) return 20_000;
+  if (pageCount === 3) return 15_000;
+  return 10_000;
+}
 
 export function sortTimersByCompletion(timers, nowMs = Date.now()) {
   return [...timers].sort((a, b) =>
@@ -9,12 +15,6 @@ export function sortTimersByCompletion(timers, nowMs = Date.now()) {
     getProjectedEndMs(a, nowMs) - getProjectedEndMs(b, nowMs) ||
     (a.createdAtMs || 0) - (b.createdAtMs || 0) ||
     String(a.id).localeCompare(String(b.id))
-  );
-}
-
-export function getUrgentTimers(timers, nowMs = Date.now()) {
-  return sortTimersByCompletion(timers, nowMs).filter(
-    timer => getRemainingSeconds(timer, nowMs) <= 300
   );
 }
 
