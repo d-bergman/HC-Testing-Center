@@ -42,16 +42,12 @@ if (
   let pageCount = 1;
   let lastPageTurn = Date.now();
 
-  const storedScale = Number(localStorage.getItem("activeTimerFontScale"));
-  let fontScale = Number.isFinite(storedScale) && storedScale >= 80 && storedScale <= 200
-    ? storedScale
-    : 100;
+  let fontScale = 200;
 
   function setFontScale(value) {
     fontScale = Math.max(80, Math.min(200, value));
     document.documentElement.style.setProperty("--timer-scale", fontScale / 100);
     scaleOutput.textContent = `${fontScale}%`;
-    localStorage.setItem("activeTimerFontScale", String(fontScale));
     if (timers.length) renderPage();
   }
 

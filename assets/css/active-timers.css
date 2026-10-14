@@ -1,4 +1,5 @@
 html {
+  --timer-scale: 2;
   font-size: calc(16px * var(--timer-scale, 1));
 }
 

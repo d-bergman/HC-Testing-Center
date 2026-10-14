@@ -1,3 +1,12 @@
+# Maintenance update - 10/14/26
+
+## Improvements
+
+- The dedicated Active Timers window now opens at 200% text size each time; the on-window controls can still adjust it.
+- Removed the unrelated Spot the Cheater page and its script from the repository.
+
+---
+
 # Version 2.7.1 - 10/13/26
 
 ## Improvements
