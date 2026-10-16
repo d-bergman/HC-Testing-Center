@@ -23,7 +23,7 @@ export function getTimerPage(timers, pageIndex, pageSize) {
   return timers.slice(pageIndex * size, (pageIndex + 1) * size);
 }
 
-export function getCompletionTransitions(timers, previousRemaining, nowMs = Date.now()) {
+export function getCompletionTransitions(timers, previousRemaining, nowMs = Date.now(), previousTimers = []) {
   const remainingById = new Map();
   let completed = false;
 
@@ -33,6 +33,14 @@ export function getCompletionTransitions(timers, previousRemaining, nowMs = Date
       completed = true;
     }
     remainingById.set(timer.id, remaining);
+  }
+
+  // A cleared timer can expire between display ticks, before the next snapshot arrives.
+  for (const timer of previousTimers) {
+    if (!remainingById.has(timer.id) && !timer.paused &&
+        previousRemaining.get(timer.id) > 0 && getRemainingSeconds(timer, nowMs) === 0) {
+      completed = true;
+    }
   }
 
   return { completed, remainingById };

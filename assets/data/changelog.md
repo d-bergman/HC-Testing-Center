@@ -1,3 +1,12 @@
+# Version 2.7.3 - 10/16/26
+
+## Fixes
+
+- The Active Timers window now checks completion when timer data changes as well as on its display tick, including timers cleared immediately after expiry. The page-1 jump still holds for five seconds before normal rotation resumes, and is skipped when there is only one page.
+- If page 1 is already showing, timer completion starts the five-second hold there. The hold is cancelled if the list shrinks to one page.
+
+---
+
 # Version 2.7.2 - 10/16/26
 
 ## Improvements

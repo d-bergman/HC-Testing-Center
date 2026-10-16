@@ -73,3 +73,29 @@ test("paused or newly seen completed timers do not trigger the completion jump",
   assert.equal(getCompletionTransitions([timer], new Map([[timer.id, 1]]), now).completed, false);
   assert.equal(getCompletionTransitions([{ ...timer, paused: false }], new Map(), now).completed, false);
 });
+
+test("a timer cleared after expiry is detected even before the next display tick", () => {
+  const timer = running("cleared", 1 / 60);
+  const remaining = new Map([[timer.id, 1]]);
+  const result = getCompletionTransitions([], remaining, now + 1000, [timer]);
+  assert.equal(result.completed, true);
+  assert.equal(result.remainingById.has(timer.id), false);
+  assert.equal(getCompletionTransitions([], result.remainingById, now + 2000, [timer]).completed, false);
+});
+
+test("clearing a timer before expiry or while paused does not report completion", () => {
+  const timer = running("cleared", 1);
+  const remaining = new Map([[timer.id, 60]]);
+  assert.equal(getCompletionTransitions([], remaining, now + 1000, [timer]).completed, false);
+  assert.equal(getCompletionTransitions([], remaining, now + 60_000, [
+    { ...timer, paused: true, pausedRemaining: 60 }
+  ]).completed, false);
+});
+
+test("a database update at expiry is observed once before the next display tick", () => {
+  const timer = running("dismissed", 1 / 60);
+  const updated = { ...timer, alarmDismissed: true };
+  const result = getCompletionTransitions([updated], new Map([[timer.id, 1]]), now + 1000, [timer]);
+  assert.equal(result.completed, true);
+  assert.equal(getCompletionTransitions([updated], result.remainingById, now + 2000).completed, false);
+});

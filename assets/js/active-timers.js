@@ -148,6 +148,7 @@ if (
       list.replaceChildren(cell("empty-state", "No active timers."));
       pageCount = 1;
       currentPage = 0;
+      completionHoldUntil = 0;
       return;
     }
 
@@ -155,6 +156,7 @@ if (
     const nextPageCount = Math.ceil(timers.length / pageSize);
     if (nextPageCount !== pageCount) lastPageTurn = Date.now();
     pageCount = nextPageCount;
+    if (pageCount === 1) completionHoldUntil = 0;
     currentPage = Math.min(currentPage, pageCount - 1);
 
     const fragment = document.createDocumentFragment();
@@ -184,15 +186,27 @@ if (
     }
   }
 
+  function holdFirstPageOnCompletion(completed, nowMs) {
+    if (!completed || pageCount <= 1) return false;
+    currentPage = 0;
+    completionHoldUntil = nowMs + 5000;
+    lastPageTurn = nowMs;
+    renderPage();
+    return true;
+  }
+
   onValue(ref(db, "timers"), snapshot => {
-    timers = sortTimersByCompletion(Object.values(snapshot.val() || {}));
-    previousRemaining = new Map(timers.map(timer => [
-      timer.id,
-      previousRemaining.has(timer.id) ? previousRemaining.get(timer.id) : getRemainingSeconds(timer)
-    ]));
+    const nowMs = Date.now();
+    const nextTimers = sortTimersByCompletion(Object.values(snapshot.val() || {}), nowMs);
+    const { completed, remainingById } = getCompletionTransitions(
+      nextTimers, previousRemaining, nowMs, timers
+    );
+    timers = nextTimers;
+    previousRemaining = remainingById;
     if (completionHoldUntil) currentPage = 0;
     renderPage();
-    lastPageTurn = Date.now();
+    holdFirstPageOnCompletion(completed, nowMs);
+    lastPageTurn = nowMs;
   }, () => {
     sync.textContent = "Timer data is unavailable.";
     sync.className = "timer-window-sync disconnected";
@@ -216,13 +230,7 @@ if (
     const orderChanged = sorted.some((timer, index) => timer.id !== timers[index]?.id);
     timers = sorted;
 
-    if (completed) {
-      currentPage = 0;
-      completionHoldUntil = nowMs + 5000;
-      lastPageTurn = nowMs;
-      renderPage();
-      return;
-    }
+    if (holdFirstPageOnCompletion(completed, nowMs)) return;
 
     if (completionHoldUntil) {
       if (nowMs < completionHoldUntil) {
