@@ -1,8 +1,9 @@
-# Maintenance update - 10/14/26
+# Version 2.7.2 - 10/16/26
 
 ## Improvements
 
 - The dedicated Active Timers window now opens at 200% text size each time; the on-window controls can still adjust it.
+- When a running timer reaches zero, the Active Timers window jumps to page 1 for five seconds, then advances and resumes its normal page rotation. A timer already at zero does not restart the hold.
 - Removed the unrelated Spot the Cheater page and its script from the repository.
 
 ---
