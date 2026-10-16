@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  getCompletionTransitions,
   getPageRotationMs,
   getTimerPage,
   MAX_TIMERS_PER_PAGE,
@@ -52,4 +53,23 @@ test("a smaller display can use fewer rows without losing a timer", () => {
   const timers = Array.from({ length: 20 }, (_, index) => running(String(index), index + 1));
   const pages = [0, 1, 2].flatMap(index => getTimerPage(timers, index, 7));
   assert.deepEqual(pages.map(timer => timer.id), timers.map(timer => timer.id));
+});
+
+test("a running timer reaching zero triggers once, and can trigger again after an extension", () => {
+  const timer = running("seat-c1", 1 / 60);
+  const before = new Map([[timer.id, 1]]);
+  const finished = getCompletionTransitions([timer], before, now + 1000);
+  assert.equal(finished.completed, true);
+  assert.equal(getCompletionTransitions([timer], finished.remainingById, now + 2000).completed, false);
+
+  const extended = { ...timer, endAt: now + 7000 };
+  const rearmed = getCompletionTransitions([extended], finished.remainingById, now + 2000);
+  assert.equal(rearmed.completed, false);
+  assert.equal(getCompletionTransitions([extended], rearmed.remainingById, now + 7000).completed, true);
+});
+
+test("paused or newly seen completed timers do not trigger the completion jump", () => {
+  const timer = { ...running("seat-c2", 0), paused: true, pausedRemaining: 0 };
+  assert.equal(getCompletionTransitions([timer], new Map([[timer.id, 1]]), now).completed, false);
+  assert.equal(getCompletionTransitions([{ ...timer, paused: false }], new Map(), now).completed, false);
 });

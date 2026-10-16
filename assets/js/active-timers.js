@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/fireba
 import { getDatabase, onValue, ref } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js";
 import { getProjectedEndMs, getRemainingSeconds } from "./timer-closing.mjs";
 import {
+  getCompletionTransitions,
   getPageRotationMs,
   getTimerPage,
   MAX_TIMERS_PER_PAGE,
@@ -41,6 +42,8 @@ if (
   let currentPage = 0;
   let pageCount = 1;
   let lastPageTurn = Date.now();
+  let previousRemaining = new Map();
+  let completionHoldUntil = 0;
 
   let fontScale = 200;
 
@@ -183,6 +186,11 @@ if (
 
   onValue(ref(db, "timers"), snapshot => {
     timers = sortTimersByCompletion(Object.values(snapshot.val() || {}));
+    previousRemaining = new Map(timers.map(timer => [
+      timer.id,
+      previousRemaining.has(timer.id) ? previousRemaining.get(timer.id) : getRemainingSeconds(timer)
+    ]));
+    if (completionHoldUntil) currentPage = 0;
     renderPage();
     lastPageTurn = Date.now();
   }, () => {
@@ -202,9 +210,32 @@ if (
 
   setInterval(() => {
     const nowMs = Date.now();
+    const { completed, remainingById } = getCompletionTransitions(timers, previousRemaining, nowMs);
+    previousRemaining = remainingById;
     const sorted = sortTimersByCompletion(timers, nowMs);
     const orderChanged = sorted.some((timer, index) => timer.id !== timers[index]?.id);
     timers = sorted;
+
+    if (completed) {
+      currentPage = 0;
+      completionHoldUntil = nowMs + 5000;
+      lastPageTurn = nowMs;
+      renderPage();
+      return;
+    }
+
+    if (completionHoldUntil) {
+      if (nowMs < completionHoldUntil) {
+        if (orderChanged) renderPage();
+        refreshTimers();
+        return;
+      }
+      completionHoldUntil = 0;
+      currentPage = pageCount > 1 ? 1 : 0;
+      lastPageTurn = nowMs;
+      renderPage();
+      return;
+    }
 
     if (orderChanged) renderPage();
 

@@ -22,3 +22,18 @@ export function getTimerPage(timers, pageIndex, pageSize) {
   const size = Math.max(1, Math.min(MAX_TIMERS_PER_PAGE, pageSize));
   return timers.slice(pageIndex * size, (pageIndex + 1) * size);
 }
+
+export function getCompletionTransitions(timers, previousRemaining, nowMs = Date.now()) {
+  const remainingById = new Map();
+  let completed = false;
+
+  for (const timer of timers) {
+    const remaining = getRemainingSeconds(timer, nowMs);
+    if (!timer.paused && previousRemaining.get(timer.id) > 0 && remaining === 0) {
+      completed = true;
+    }
+    remainingById.set(timer.id, remaining);
+  }
+
+  return { completed, remainingById };
+}
